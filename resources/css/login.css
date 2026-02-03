@@ -1,0 +1,26 @@
+/* Smooth transition for inputs */
+.input-field {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Slight lift effect on login button hover */
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Image side hover zoom */
+.image-side img:hover {
+    transform: scale(1.03);
+    transition: transform 0.4s ease-in-out;
+}
+
+/* Fade in animation for form */
+.login-page-wrapper {
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
