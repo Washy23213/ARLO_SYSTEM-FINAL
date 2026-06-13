@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # CMU ARLO
 
 CMU ARLO is a Laravel-based alumni management and engagement system for Central Mindanao University. It supports three user roles:
@@ -245,3 +246,6 @@ That restores the sample admin account, alumni accounts, jobs, announcements, an
 - External email delivery still depends on valid SMTP credentials. The app is configured for SMTP transport, but real inbox delivery requires a working mail server or provider account.
 - Detailed tracer and employment analytics remain available in the admin workspace, not the alumni dashboard.
 - More `FormRequest` extraction can still be done in deeper admin and settings flows.
+=======
+# ARLO_SYSTEM-FINAL
+>>>>>>> 889d8ab7f1fa28d0b3d702218ff06279cd88b14b
