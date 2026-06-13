@@ -1,0 +1,144 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 40, "rankSpacing": 70}, "themeVariables": {"background": "#ffffff", "primaryColor": "#eef7ec", "primaryBorderColor": "#006000", "primaryTextColor": "#102414", "lineColor": "#35543b", "fontFamily": "Inter, Arial, sans-serif", "fontSize": "16px"}}}%%
+flowchart LR
+    Alumni["Actor: Alumni"]
+    Admin["Actor: Administrator"]
+    AlumniMgr["Actor: Alumni Records Manager"]
+    JobMgr["Actor: Job Manager"]
+    SuperAdmin["Actor: Super Admin"]
+
+    subgraph System["Web-Based Tracer and Employment Analytics System"]
+        direction TB
+
+        subgraph AlumniCases["Alumni Use Cases"]
+            direction TB
+            A1(["Register and verify alumni record"])
+            A2(["Verify registration email code"])
+            A3(["Log in"])
+            A4(["Reset password"])
+            A5(["View alumni dashboard"])
+            A6(["Manage profile and settings"])
+            A7(["Submit or update tracer record"])
+            A8(["Upload or view employment proof"])
+            A9(["Browse approved job postings"])
+            A10(["Submit job opportunity for review"])
+            A11(["View announcements"])
+            A12(["View and mark notifications"])
+            A13(["Submit feedback"])
+            A14(["Delete own account"])
+        end
+
+        subgraph AdminCases["Administrator Use Cases"]
+            direction TB
+            B1(["Log in"])
+            B2(["Reset password"])
+            B3(["View admin dashboard"])
+            B4(["Manage alumni records"])
+            B5(["Import alumni roster"])
+            B6(["Notify selected alumni"])
+            B7(["Monitor tracer submissions"])
+            B8(["Download employment proof"])
+            B9(["Manage job postings"])
+            B10(["Review alumni job submissions"])
+            B11(["Manage announcements"])
+            B12(["Sync or publish Facebook announcements"])
+            B13(["Send announcement notifications"])
+            B14(["Manage feedback status and assignment"])
+            B15(["View analytics"])
+            B16(["Export CSV reports"])
+            B17(["View audit logs"])
+        end
+
+        subgraph ScopedCases["Scoped Admin Use Cases"]
+            direction TB
+            C1(["Manage alumni records only"])
+            C2(["Import alumni roster only"])
+            C3(["Notify alumni from records only"])
+            C4(["Manage job postings only"])
+            C5(["Approve or reject job submissions only"])
+        end
+
+        subgraph SuperCases["Super Admin Use Cases"]
+            direction TB
+            D1(["Log in"])
+            D2(["Reset password"])
+            D3(["View account-control workspace"])
+            D4(["Create administrator account"])
+            D5(["Edit administrator account"])
+            D6(["Assign or update administrator role"])
+            D7(["Remove administrative access"])
+            D8(["Supervise alumni records"])
+            D9(["View Super Admin audit logs"])
+        end
+    end
+
+    Alumni --- A1
+    Alumni --- A2
+    Alumni --- A3
+    Alumni --- A4
+    Alumni --- A5
+    Alumni --- A6
+    Alumni --- A7
+    Alumni --- A8
+    Alumni --- A9
+    Alumni --- A10
+    Alumni --- A11
+    Alumni --- A12
+    Alumni --- A13
+    Alumni --- A14
+
+    Admin --- B1
+    Admin --- B2
+    Admin --- B3
+    Admin --- B4
+    Admin --- B5
+    Admin --- B6
+    Admin --- B7
+    Admin --- B8
+    Admin --- B9
+    Admin --- B10
+    Admin --- B11
+    Admin --- B12
+    Admin --- B13
+    Admin --- B14
+    Admin --- B15
+    Admin --- B16
+    Admin --- B17
+
+    AlumniMgr --- C1
+    AlumniMgr --- C2
+    AlumniMgr --- C3
+    JobMgr --- C4
+    JobMgr --- C5
+
+    SuperAdmin --- D1
+    SuperAdmin --- D2
+    SuperAdmin --- D3
+    SuperAdmin --- D4
+    SuperAdmin --- D5
+    SuperAdmin --- D6
+    SuperAdmin --- D7
+    SuperAdmin --- D8
+    SuperAdmin --- D9
+
+    A1 -. "includes" .-> A2
+    A7 -. "may include" .-> A8
+    A10 -. "requires admin review" .-> B10
+    B10 -. "may create approved posting" .-> B9
+    B11 -. "may trigger" .-> B13
+    B11 -. "may use" .-> B12
+    B16 -. "extends" .-> B15
+    D4 -. "includes" .-> D6
+    D5 -. "may include" .-> D6
+    D5 -. "may extend to" .-> D7
+
+    classDef actor fill:#006000,stroke:#003300,stroke-width:2px,color:#ffffff;
+    classDef alumni fill:#eef7ec,stroke:#006000,stroke-width:2px,color:#102414;
+    classDef admin fill:#fff4c2,stroke:#ffc000,stroke-width:2px,color:#102414;
+    classDef scoped fill:#f8fff4,stroke:#5f8800,stroke-width:2px,color:#102414;
+    classDef super fill:#f8faf8,stroke:#35543b,stroke-width:2px,color:#102414;
+
+    class Alumni,Admin,AlumniMgr,JobMgr,SuperAdmin actor;
+    class A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14 alumni;
+    class B1,B2,B3,B4,B5,B6,B7,B8,B9,B10,B11,B12,B13,B14,B15,B16,B17 admin;
+    class C1,C2,C3,C4,C5 scoped;
+    class D1,D2,D3,D4,D5,D6,D7,D8,D9 super;

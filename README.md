@@ -1,60 +1,247 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# CMU ARLO
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+CMU ARLO is a Laravel-based alumni management and engagement system for Central Mindanao University. It supports three user roles:
 
-## About Laravel
+- `Super Admin` for full administrative access and top-level account ownership
+- `Admin` for managing alumni records, jobs, announcements, feedback, analytics, and audit logs
+- `Alumni` for viewing records, exploring jobs, updating profiles, and submitting feedback
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The project includes a seeded sample dataset so the system is usable immediately for demos and presentations.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Core Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Shared login page backed by separate admin and alumni account tables
+- Login rate limiting and password reset flow
+- Alumni dashboard with personal profile, tracer, application, and notification summaries
+- Alumni directory and detailed record views
+- Job board with alumni applications and alumni-submitted job postings
+- Announcement publishing and viewing
+- Exportable analytics reports and chart downloads
+- Profile, privacy, password, and session management
+- Feedback submission and admin-side monitoring
+- Admin CRUD for alumni, jobs, and announcements
+- Admin analytics and audit logging
 
-## Learning Laravel
+## Tech Stack
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- PHP 8.2
+- Laravel 12
+- PostgreSQL for local app data
+- SQLite in-memory for automated tests
+- Blade templates
+- Vite
+- Tailwind CSS
+- Chart.js
+- Boxicons
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Project Structure
 
-## Laravel Sponsors
+- `app/Http/Controllers` contains admin, alumni, and auth controllers
+- `admins` stores administrative accounts, while `users` stores alumni accounts
+- `app/Services` contains reporting, analytics, dashboard, and audit services
+- `resources/views` contains Blade templates for alumni, admin, and auth pages
+- `database/migrations` contains the Laravel schema
+- `database/seeders` contains the sample dataset and default seeding flow
+- `tests/Feature` contains end-to-end feature coverage for key user flows
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Local Setup
 
-### Premium Partners
+1. Install dependencies:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+composer install
+npm install
+```
 
-## Contributing
+2. Create your environment file:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+copy .env.example .env
+php artisan key:generate
+```
 
-## Code of Conduct
+3. Configure the database in `.env`.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+For the current local setup used in this project, the database values are:
 
-## Security Vulnerabilities
+```env
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=cmu_arlo_db
+DB_USERNAME=cmu_user
+DB_PASSWORD=1234
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+4. Run migrations and seed sample data:
 
-## License
+```bash
+php artisan migrate --force
+php artisan db:seed --force
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-"# capstone_copilot" 
+5. Configure mail in `.env`.
+
+For local testing, the project is now SMTP-ready and defaults to a local SMTP catcher such as Mailpit:
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=127.0.0.1
+MAIL_PORT=2525
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_FROM_ADDRESS=noreply@cmu.edu.ph
+MAIL_FROM_NAME="CMU ARLO"
+```
+
+To send to real inboxes, replace those values with your actual SMTP provider credentials.
+
+6. Start the app:
+
+```bash
+composer run dev
+```
+
+If you prefer separate terminals:
+
+```bash
+php artisan serve
+npm run dev
+```
+
+## Demo Accounts
+
+All seeded sample accounts use the password:
+
+```text
+password
+```
+
+Super admin account:
+
+- `admin@cmu.edu.ph`
+
+Admin account:
+
+- `oarl.admin@cmu.edu.ph`
+
+Sample alumni accounts:
+
+- `john.mabuhay@cmu.edu.ph`
+- `maria.caballero@cmu.edu.ph`
+- `rico.salvador@cmu.edu.ph`
+- `anne.dizon@cmu.edu.ph`
+- `kevin.alonzo@cmu.edu.ph`
+- `jessa.neri@cmu.edu.ph`
+- `paolo.ventura@cmu.edu.ph`
+
+## Useful Commands
+
+Install and build everything:
+
+```bash
+composer run setup
+```
+
+Run the test suite:
+
+```bash
+php artisan test
+```
+
+Clear caches after data or config changes:
+
+```bash
+php artisan optimize:clear
+```
+
+Seed sample data into the current database without wiping tables:
+
+```bash
+php artisan db:seed --force
+```
+
+Promote an existing account to super admin:
+
+```bash
+php artisan user:make-super-admin your-email@example.com
+```
+
+Reset the database and recreate the sample dataset:
+
+```bash
+php artisan migrate:fresh --seed --force
+```
+
+## Important Data Warning
+
+`php artisan migrate:fresh --seed --force` is destructive.
+
+It will:
+
+- drop all existing tables
+- delete current records
+- recreate the schema
+- load only the seeded sample dataset
+
+Use `php artisan db:seed --force` if you want to add the sample dataset without wiping the whole database.
+
+## Database Notes
+
+- The live app is configured for PostgreSQL.
+- The automated tests use SQLite in memory through `phpunit.xml`.
+- Some analytics queries are written with PostgreSQL behavior in mind, so PostgreSQL is recommended for full local feature parity.
+
+## Seeded Sample Data
+
+The current sample seeder creates a working demo dataset that includes:
+
+- 1 admin account
+- 7 alumni accounts
+- 3 job postings
+- 3 announcements
+- multi-month tracer records from October 2025 to March 2026
+- 3 feedback entries
+- linked job applications and system logs
+
+Seeder files:
+
+- `database/seeders/DatabaseSeeder.php`
+- `database/seeders/SampleDataSeeder.php`
+
+## Testing Status
+
+The current feature coverage includes:
+
+- authentication and password reset
+- admin CRUD flows
+- admin audit logs
+- admin feedback monitoring
+- alumni job applications
+- alumni feedback
+- alumni dashboard privacy-safe rendering
+- announcement visibility rules
+- account deletion cascade behavior
+
+Run:
+
+```bash
+php artisan test
+```
+
+## Presentation Notes
+
+For presentation/demo use, the easiest reset flow is:
+
+```bash
+php artisan migrate:fresh --seed --force
+php artisan optimize:clear
+```
+
+That restores the sample admin account, alumni accounts, jobs, announcements, and tracer data to a known state.
+
+## Current Limitations
+
+- External email delivery still depends on valid SMTP credentials. The app is configured for SMTP transport, but real inbox delivery requires a working mail server or provider account.
+- Detailed tracer and employment analytics remain available in the admin workspace, not the alumni dashboard.
+- More `FormRequest` extraction can still be done in deeper admin and settings flows.

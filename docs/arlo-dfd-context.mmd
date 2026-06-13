@@ -1,0 +1,18 @@
+flowchart LR
+    Alumni[Alumni]
+    Admin[ARLO Admin]
+    SuperAdmin[Super Admin]
+    UniversityAdmins[University Administrators]
+    System((0\nCMU ARLO Web-Based Tracer\nand Employment Analytics System))
+
+    Alumni -->|registration, profile,\ntracer and feedback data| System
+    System -->|announcements,\nnotifications and job posts| Alumni
+
+    Admin -->|alumni, job, announcement\nand review updates| System
+    System -->|alumni records, analytics,\nreports and feedback logs| Admin
+
+    SuperAdmin -->|admin account, role\nand security requests| System
+    System -->|account, role\nand audit reports| SuperAdmin
+
+    UniversityAdmins -->|monitoring and\nreport requests| System
+    System -->|employment analytics\nand summary reports| UniversityAdmins

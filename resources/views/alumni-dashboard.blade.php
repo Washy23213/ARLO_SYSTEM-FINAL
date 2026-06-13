@@ -3,492 +3,360 @@
 @section('title', 'Dashboard')
 
 @section('content')
-<div class="pl-8 pr-6 pt-6 pb-6"></div>
-        <!-- STAT CARDS -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex items-center gap-4">
-                <div class="bg-green-700 text-white p-3 rounded-lg">
-                    <i class='bx bxs-user-detail text-xl'></i>
-                </div>
+@php
+    $user = $user ?? auth()->user();
+    $latestTracer = $latestTracer ?? null;
+    $profileChecklist = $profileChecklist ?? [];
+    $profilePercent = $profilePercent ?? 0;
+    $profileCompleted = $profileCompleted ?? collect($profileChecklist)->filter()->count();
+    $profileTotal = count($profileChecklist);
+    $missingCount = max(0, $profileTotal - $profileCompleted);
+    $missingProfileItems = collect($profileChecklist)
+        ->reject(fn ($done) => (bool) $done)
+        ->keys()
+        ->values();
+    $profileNextItems = $missingProfileItems->take(2)->implode(', ');
+    $profileNextLabel = $missingCount > 0
+        ? 'Next: ' . $profileNextItems . ($missingCount > 2 ? ' +' . ($missingCount - 2) . ' more' : '')
+        : 'Profile ready for alumni records.';
+    $employmentStatus = $employmentStatus ?? 'Unknown';
+    $tracerStatus = $tracerStatus ?? ['label' => 'Not submitted', 'tone' => 'amber', 'detail' => '', 'date_label' => 'No submission yet'];
+    $tracerCardCopy = ($tracerStatus['tone'] ?? 'amber') === 'emerald'
+        ? 'Used for graduate tracer reports and employment insights.'
+        : ($tracerStatus['detail'] ?? 'Your tracer details appear here.');
+    $tracerDateLabel = $tracerStatus['date_label'] ?? 'No tracer date yet';
+    $tracerPillLabel = $tracerDateLabel === 'No submission yet'
+        ? $tracerDateLabel
+        : 'Last submitted: ' . $tracerDateLabel;
+    $jobOpportunitySummary = $jobOpportunitySummary ?? ['total' => 0, 'pending' => 0, 'reviewed' => 0, 'latest_status' => 'No submissions yet', 'latest_job_title' => 'You have not posted a job opportunity yet.', 'latest_company' => null, 'latest_submitted_label' => 'Open the jobs module to post an opportunity.'];
+    $jobPostsTotal = (int) ($jobOpportunitySummary['total'] ?? 0);
+    $jobPostsPending = (int) ($jobOpportunitySummary['pending'] ?? 0);
+    $jobPostsReviewed = (int) ($jobOpportunitySummary['reviewed'] ?? 0);
+    $latestJobPostTitle = trim((string) ($jobOpportunitySummary['latest_job_title'] ?? ''));
+    $latestJobPostStatus = trim((string) ($jobOpportunitySummary['latest_status'] ?? ''));
+    $jobPostsCopy = $jobPostsTotal > 0
+        ? 'Submitted opportunities for OARL review.'
+        : 'Share relevant job openings with fellow alumni.';
+    $jobPostsMeta = $jobPostsTotal > 0
+        ? 'Latest: ' . \Illuminate\Support\Str::limit($latestJobPostTitle !== '' ? $latestJobPostTitle : 'Job opportunity', 34) . ($latestJobPostStatus !== '' ? ' - ' . $latestJobPostStatus : '')
+        : 'No submitted job opportunities yet.';
+    $jobOpportunityListings = collect($jobOpportunityListings ?? []);
+    $statusBadgeClasses = match ($employmentStatus) {
+        'Employed' => 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200',
+        'Self-Employed' => 'bg-amber-100 text-amber-700 ring-1 ring-amber-200',
+        'Unemployed' => 'bg-rose-100 text-rose-700 ring-1 ring-rose-200',
+        default => 'bg-slate-100 text-slate-600 ring-1 ring-slate-200',
+    };
+    $tracerBadgeClasses = ($tracerStatus['tone'] ?? 'amber') === 'emerald'
+        ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200'
+        : 'bg-amber-100 text-amber-700 ring-1 ring-amber-200';
+    $profileCardClasses = $profilePercent >= 100
+        ? 'border-emerald-200 bg-gradient-to-br from-white via-emerald-50/60 to-emerald-100/50'
+        : 'border-amber-200 bg-gradient-to-br from-white via-amber-50/60 to-amber-100/50';
+    $tracerCardClasses = ($tracerStatus['tone'] ?? 'amber') === 'emerald'
+        ? 'border-emerald-200 bg-gradient-to-br from-emerald-50/90 via-white to-emerald-100/50'
+        : 'border-amber-200 bg-gradient-to-br from-amber-50/90 via-white to-orange-100/45';
+    $checklistTargets = [
+        'Phone number' => [
+            'url' => route('profile', ['from' => 'overview', 'focus_field' => 'phone']) . '#profile-phone-field',
+            'page' => 'Profile',
+        ],
+        'College' => [
+            'url' => route('profile', ['from' => 'overview', 'focus_field' => 'department']) . '#profile-department-field',
+            'page' => 'Profile',
+        ],
+        'Degree' => [
+            'url' => route('profile', ['from' => 'overview', 'focus_field' => 'degree']) . '#profile-degree-field',
+            'page' => 'Profile',
+        ],
+        'Batch' => [
+            'url' => route('profile', ['from' => 'overview', 'focus_field' => 'year_graduated']) . '#profile-year-graduated-field',
+            'page' => 'Profile',
+        ],
+        'Location' => [
+            'url' => route('profile', ['from' => 'overview', 'focus_field' => 'location']) . '#profile-location-field',
+            'page' => 'Profile',
+        ],
+        'Skills' => [
+            'url' => route('profile', ['from' => 'overview', 'focus_field' => 'skills']) . '#profile-skills-field',
+            'page' => 'Profile',
+        ],
+        'Employment summary' => [
+            'url' => route('tracer.index', ['from' => 'overview', 'focus_field' => 'employment_summary']) . '#tracer-form',
+            'page' => 'Tracer',
+        ],
+        'Latest tracer record' => [
+            'url' => route('tracer.index', ['from' => 'overview', 'focus_field' => 'latest_tracer_record']) . '#tracer-form',
+            'page' => 'Tracer',
+        ],
+    ];
+
+@endphp
+
+<div class="alumni-overview -mt-2 space-y-6">
+    <div class="alumni-overview-stats grid grid-cols-1 gap-4 md:grid-cols-3">
+        <section class="alumni-overview-stat alumni-overview-stat--profile surface-card overflow-hidden border p-5 {{ $profileCardClasses }}">
+            <div class="flex items-start justify-between gap-4">
                 <div>
-                    <p class="text-gray-600 text-sm font-medium">Total Alumni</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ number_format($totalAlumni) }}</p>
+                    <p class="alumni-overview-stat__eyebrow text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Profile Completion</p>
+                    <p class="alumni-overview-stat__value mt-4 text-4xl font-black leading-none text-slate-900">{{ $profilePercent }}%</p>
                 </div>
+                <span class="alumni-overview-stat__icon inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-emerald-700 shadow-sm ring-1 ring-emerald-100">
+                    <i class='bx bx-id-card text-2xl'></i>
+                </span>
             </div>
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex items-center gap-4">
-                <div class="bg-green-600 text-white p-3 rounded-lg">
-                    <i class='bx bxs-briefcase text-xl'></i>
-                </div>
+            <p class="alumni-overview-stat__copy mt-3 text-sm text-slate-600">{{ $profileCompleted }} of {{ $profileTotal }} key profile fields complete.</p>
+            <div class="alumni-overview-stat__progress mt-4 h-2.5 overflow-hidden rounded-full bg-white/80 ring-1 ring-black/5">
+                <div class="alumni-overview-stat__progress-fill h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-500" style="width: {{ $profilePercent }}%"></div>
+            </div>
+            <p class="alumni-overview-stat__meta mt-3 text-xs font-medium text-slate-500">{{ $profileNextLabel }}</p>
+        </section>
+
+        <section class="alumni-overview-stat alumni-overview-stat--tracer surface-card overflow-hidden border p-5 {{ $tracerCardClasses }}">
+            <div class="flex items-start justify-between gap-4">
                 <div>
-                    <p class="text-gray-600 text-sm font-medium">Employed</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ number_format($employed) }}</p>
+                    <p class="alumni-overview-stat__eyebrow text-xs font-semibold uppercase tracking-[0.18em] {{ ($tracerStatus['tone'] ?? 'amber') === 'emerald' ? 'text-emerald-700' : 'text-amber-700' }}">Tracer Status</p>
+                    <p class="alumni-overview-stat__value alumni-overview-stat__value--compact mt-4 text-2xl font-black leading-tight text-slate-900">{{ $tracerStatus['label'] ?? 'Not submitted' }}</p>
                 </div>
+                <span class="alumni-overview-stat__icon inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white {{ ($tracerStatus['tone'] ?? 'amber') === 'emerald' ? 'text-emerald-700 ring-emerald-100' : 'text-amber-700 ring-amber-100' }} shadow-sm ring-1">
+                    <i class='bx bx-spreadsheet text-2xl'></i>
+                </span>
             </div>
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex items-center gap-4">
-                <div class="bg-yellow-500 text-white p-3 rounded-lg">
-                    <i class='bx bxs-store text-xl'></i>
-                </div>
+            <p class="alumni-overview-stat__copy mt-3 text-sm text-slate-600">{{ $tracerCardCopy }}</p>
+            <div class="alumni-overview-stat__pill mt-4 inline-flex rounded-full bg-white/85 px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-black/5">
+                {{ $tracerPillLabel }}
+            </div>
+        </section>
+
+        <section class="alumni-overview-stat alumni-overview-stat--jobs surface-card overflow-hidden border border-slate-200 bg-gradient-to-br from-white via-slate-50/80 to-slate-100/60 p-5">
+            <div class="flex items-start justify-between gap-4">
                 <div>
-                    <p class="text-gray-600 text-sm font-medium">Self-Employed</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ number_format($selfEmployed) }}</p>
+                    <p class="alumni-overview-stat__eyebrow text-xs font-semibold uppercase tracking-[0.18em] text-slate-700">My Job Posts</p>
+                    <p class="alumni-overview-stat__value mt-4 text-4xl font-black leading-none text-slate-900">{{ $jobPostsTotal }}</p>
                 </div>
+                <span class="alumni-overview-stat__icon inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-slate-700 shadow-sm ring-1 ring-slate-200">
+                    <i class='bx bx-message-square-add text-2xl'></i>
+                </span>
             </div>
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex items-center gap-4">
-                <div class="bg-red-500 text-white p-3 rounded-lg">
-                    <i class='bx bx-history text-xl'></i>
+            <p class="alumni-overview-stat__copy mt-3 text-sm text-slate-600">{{ $jobPostsCopy }}</p>
+            @if($jobPostsTotal > 0)
+                <div class="mt-5 grid grid-cols-2 gap-3 border-y border-slate-200/70 py-3">
+                    <div>
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Pending</p>
+                        <p class="mt-1 text-2xl font-black leading-none text-slate-900">{{ $jobPostsPending }}</p>
+                    </div>
+                    <div>
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Reviewed</p>
+                        <p class="mt-1 text-2xl font-black leading-none text-slate-900">{{ $jobPostsReviewed }}</p>
+                    </div>
                 </div>
-                <div>
-                    <p class="text-gray-600 text-sm font-medium">Unemployed</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ number_format($unemployed) }}</p>
+            @else
+                <a href="{{ route('jobs') }}" class="alumni-overview-stat__pill mt-5 inline-flex rounded-full bg-white/85 px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-100">
+                    Post Opportunity
+                </a>
+            @endif
+            <p class="alumni-overview-stat__meta mt-4 text-sm font-medium text-slate-600">{{ $jobPostsMeta }}</p>
+        </section>
+
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.12fr)_minmax(320px,0.88fr)]">
+        <div class="space-y-6">
+            <section class="alumni-overview-panel alumni-overview-panel--employment surface-card overflow-hidden p-0">
+                <div class="alumni-overview-panel__mast border-b border-slate-200/80 bg-gradient-to-r from-slate-900 via-[#133824] to-[#184d32] px-6 py-6 text-white">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-white/65">Employment Snapshot</p>
+                        <h2 class="mt-2 text-2xl font-black">My Latest Employment Record</h2>
+                        <p class="mt-2 max-w-2xl text-sm leading-relaxed text-white/78">Your latest tracer details.</p>
+                    </div>
                 </div>
-            </div>
+
+                <div class="p-6">
+                    @if ($latestTracer)
+                        <div class="alumni-overview-highlight rounded-[1.7rem] border border-emerald-100 bg-gradient-to-r from-emerald-50/90 via-white to-sky-50/70 p-5 shadow-[0_18px_34px_rgba(15,23,42,0.06)]">
+                            <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                                <div>
+                                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Current Role</p>
+                                    <h3 class="mt-2 text-2xl font-black text-slate-900">{{ $latestTracer->current_position ?? ($user->current_position ?? 'Position not set') }}</h3>
+                                    <p class="mt-1 text-base text-slate-600">{{ $latestTracer->current_company ?? ($user->company ?? 'Company not set') }}</p>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $statusBadgeClasses }}">{{ $employmentStatus }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div class="alumni-overview-detail rounded-[1.5rem] border border-slate-200 bg-white px-4 py-4 shadow-sm">
+                                <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Tracer Date</p>
+                                <p class="mt-2 text-sm font-medium text-slate-900">{{ optional($latestTracer->tracer_date)->format('M d, Y') ?? ($tracerStatus['date_label'] ?? 'N/A') }}</p>
+                            </div>
+                            <div class="alumni-overview-detail rounded-[1.5rem] border border-slate-200 bg-white px-4 py-4 shadow-sm">
+                                <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Employment Type</p>
+                                <p class="mt-2 text-sm font-medium text-slate-900">{{ $latestTracer->employment_type ?? 'N/A' }}</p>
+                            </div>
+                            <div class="alumni-overview-detail rounded-[1.5rem] border border-slate-200 bg-white px-4 py-4 shadow-sm">
+                                <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Industry</p>
+                                <p class="mt-2 text-sm font-medium text-slate-900">{{ $latestTracer->industry ?? ($user->industry ?? 'N/A') }}</p>
+                            </div>
+                            <div class="alumni-overview-detail rounded-[1.5rem] border border-slate-200 bg-white px-4 py-4 shadow-sm">
+                                <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Job Satisfaction</p>
+                                <p class="mt-2 text-sm font-medium text-slate-900">{{ $latestTracer->job_satisfaction ? $latestTracer->job_satisfaction . ' / 5' : 'N/A' }}</p>
+                            </div>
+                            <div class="alumni-overview-detail rounded-[1.5rem] border border-slate-200 bg-white px-4 py-4 shadow-sm">
+                                <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Monthly Income Range</p>
+                                <p class="mt-2 text-sm font-medium text-slate-900">{{ $latestTracer->monthly_income ?: 'N/A' }}</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 grid grid-cols-1 gap-4">
+                            <div class="alumni-overview-detail rounded-[1.5rem] border border-slate-200 bg-white px-4 py-4 shadow-sm">
+                                <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Skills Used</p>
+                                <p class="mt-2 text-sm leading-relaxed text-slate-700">{{ $latestTracer->skills_used ?? 'N/A' }}</p>
+                            </div>
+                            <div class="alumni-overview-detail rounded-[1.5rem] border border-slate-200 bg-white px-4 py-4 shadow-sm">
+                                <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Recommendations</p>
+                                <p class="mt-2 text-sm leading-relaxed text-slate-700">{{ $latestTracer->recommendations ?? 'N/A' }}</p>
+                            </div>
+                        </div>
+                    @else
+                        <div class="empty-state-card mt-1">
+                            <span class="empty-state-card__icon">
+                                <i class='bx bx-notepad'></i>
+                            </span>
+                            <p class="empty-state-card__title">No tracer record yet</p>
+                            <p class="empty-state-card__body">Add a tracer entry to see it here.</p>
+                        </div>
+                    @endif
+                </div>
+            </section>
+
         </div>
 
-        <!-- Alumni Records Summary -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-semibold text-gray-900">Recent Alumni Tracer Records</h2>
-                <a href="#" class="text-green-700 hover:text-green-800 text-sm font-medium">View All</a>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year Graduated</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Degree</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employment Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Industry</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse($recentAlumni as $alumni)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {{ $alumni->firstname ?? 'N/A' }} {{ $alumni->lastname ?? '' }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $alumni->yearGraduated ?? 'N/A' }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $alumni->degree ?? 'N/A' }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                @if($alumni->employedAfterGrad ?? null == 'Yes')
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Employed</span>
-                                @elseif($alumni->employedAfterGrad ?? null == 'No')
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Unemployed</span>
-                                @else
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Unknown</span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $alumni->industry ?? 'N/A' }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <button class="text-green-600 hover:text-green-900">View Details</button>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="6" class="px-6 py-4 text-center text-gray-500">No alumni records found</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- CHARTS -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <!-- Employment Trends -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Employment Trends</h3>
-                    <select class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-                        <option>Last 12 Months</option>
-                        <option>Last 6 Months</option>
-                        <option>Last 3 Months</option>
-                    </select>
-                </div>
-                <div class="h-80">
-                    <canvas id="employmentChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Traced Graduates Per Year/Month/College -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Traced Graduates</h3>
-                    <div class="flex gap-2">
-                        <select class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option>Per Year</option>
-                            <option>Per Month</option>
-                        </select>
-                        <select class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option>All Colleges</option>
-                            <option>College of Engineering</option>
-                            <option>College of Business</option>
-                        </select>
+        <div class="space-y-6">
+            <section class="alumni-overview-panel alumni-overview-panel--checklist surface-card overflow-hidden p-0">
+                <div class="alumni-overview-panel__mast border-b border-slate-200/80 bg-gradient-to-r from-white via-emerald-50/70 to-white px-6 py-5">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Readiness</p>
+                            <h2 class="mt-2 text-lg font-semibold text-slate-900">Checklist</h2>
+                            <p class="mt-1 text-sm text-slate-600">Details that still need attention.</p>
+                        </div>
+                        <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100">{{ $profilePercent }}%</span>
                     </div>
                 </div>
-                <div class="h-80">
-                    <canvas id="tracedGraduatesChart"></canvas>
-                </div>
-            </div>
 
-            <!-- Industry Distribution -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Industry Distribution</h3>
-                    <div class="flex gap-2">
-                        <select class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option>Per Industry</option>
-                        </select>
-                        <select class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option>2024</option>
-                            <option>2023</option>
-                        </select>
-                        <select class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option>All Colleges</option>
-                            <option>College of Engineering</option>
-                        </select>
+                <div class="p-5">
+                    <div class="h-3 overflow-hidden rounded-full bg-slate-100">
+                        <div class="h-full rounded-full bg-gradient-to-r from-emerald-500 via-teal-500 to-sky-500" style="width: {{ $profilePercent }}%"></div>
+                    </div>
+
+                    <div class="mt-5 space-y-2">
+                        @foreach($profileChecklist as $item => $done)
+                            @php
+                                $checklistTarget = !$done ? ($checklistTargets[$item] ?? null) : null;
+                            @endphp
+                            @if($checklistTarget)
+                                <a
+                                    href="{{ $checklistTarget['url'] }}"
+                                    class="alumni-overview-checklist-item group flex items-center justify-between gap-4 rounded-[1.35rem] border border-amber-100 bg-amber-50/75 px-4 py-3 transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50 hover:shadow-sm"
+                                >
+                                    <div class="flex items-center gap-3">
+                                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-amber-700 ring-1 ring-amber-200">
+                                            <i class='bx bx-time-five text-lg'></i>
+                                        </span>
+                                        <div>
+                                            <span class="block text-sm text-amber-900">{{ $item }}</span>
+                                            <span class="mt-1 block text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500 group-hover:text-slate-700">Open {{ $checklistTarget['page'] }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs font-semibold text-amber-700">Needs update</span>
+                                        <span class="mt-1 inline-flex items-center gap-1 text-xs font-medium text-slate-500 group-hover:text-slate-700">
+                                            Go now
+                                            <i class='bx bx-right-arrow-alt text-sm'></i>
+                                        </span>
+                                    </div>
+                                </a>
+                            @else
+                                <div class="alumni-overview-checklist-item flex items-center justify-between gap-4 rounded-[1.35rem] border px-4 py-3 {{ $done ? 'border-emerald-100 bg-emerald-50/60' : 'border-amber-100 bg-amber-50/75' }}">
+                                    <div class="flex items-center gap-3">
+                                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-2xl {{ $done ? 'bg-white text-emerald-700 ring-1 ring-emerald-200' : 'bg-white text-amber-700 ring-1 ring-amber-200' }}">
+                                            <i class='bx {{ $done ? 'bx-check' : 'bx-time-five' }} text-lg'></i>
+                                        </span>
+                                        <span class="text-sm {{ $done ? 'text-emerald-900' : 'text-amber-900' }}">{{ $item }}</span>
+                                    </div>
+                                    <span class="text-xs font-semibold {{ $done ? 'text-emerald-700' : 'text-amber-700' }}">{{ $done ? 'Complete' : 'Needs update' }}</span>
+                                </div>
+                            @endif
+                        @endforeach
                     </div>
                 </div>
-                <div class="h-80 flex items-center justify-center">
-                    <canvas id="industryChart" style="max-width: 300px; max-height: 300px;"></canvas>
-                </div>
-            </div>
+            </section>
 
-            <!-- Employability Rate -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Employability Rate</h3>
-                    <div class="flex gap-2">
-                        <select class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option>Per Industry</option>
-                        </select>
-                        <select class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option>2024</option>
-                            <option>2023</option>
-                        </select>
-                        <select class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option>All Colleges</option>
-                            <option>College of Engineering</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="h-80">
-                    <canvas id="employabilityChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Global Distribution Bar Graph -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Global Distribution</h3>
-                    <div class="flex gap-2">
-                        <select class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option>Per Industry</option>
-                        </select>
-                        <select class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option>All Colleges</option>
-                            <option>College of Engineering</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="h-80">
-                    <canvas id="globalDistributionChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Feedbacks Bar Graph -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Feedbacks</h3>
-                </div>
-                <div class="h-80">
-                    <canvas id="feedbacksChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Reasons Why Not Yet Employed -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 lg:col-span-2">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Reasons Why Not Yet Employed</h3>
-                </div>
-                <div class="h-80">
-                    <canvas id="reasonsChart"></canvas>
-                </div>
-            </div>
         </div>
     </div>
 
-<script>
-// Current date
-document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-});
+    <section id="dashboard-job-opportunities" class="alumni-job-opportunities-section surface-card overflow-hidden border border-emerald-100 bg-gradient-to-br from-white via-emerald-50/70 to-amber-50/45 p-0">
+        <div class="flex flex-col gap-4 border-b border-emerald-950/10 px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-[0.22em] text-[#9a6800]">Job Opportunity</p>
+                <h2 class="mt-2 text-2xl font-black leading-tight text-[#072714]">Current openings for alumni</h2>
+                <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-600">Approved job posts and alumni-submitted opportunities are available from your portal after login.</p>
+            </div>
+            <div class="flex flex-col gap-2 sm:flex-row">
+                <a href="{{ route('jobs') }}" class="alumni-job-action alumni-job-action--view inline-flex items-center justify-center rounded-xl border border-[#0B3B1F]/15 bg-white px-4 py-2.5 text-sm font-bold text-[#0B3B1F] shadow-sm hover:bg-[#EEF4EF]">
+                    <i class='bx bx-briefcase-alt-2 mr-2 text-lg'></i>
+                    View Opportunities
+                </a>
+                <a href="{{ route('jobs') }}" class="alumni-job-action alumni-job-action--post inline-flex items-center justify-center rounded-xl bg-[#862633] px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#701f2a]">
+                    <i class='bx bx-plus-circle mr-2 text-lg'></i>
+                    Post Opportunity
+                </a>
+            </div>
+        </div>
 
-// Employment Status Trends Chart
-const employmentCtx = document.getElementById('employmentChart').getContext('2d');
-new Chart(employmentCtx, {
-    type: 'line',
-    data: {
-        labels: @json($employmentTrends['labels']),
-        datasets: [{
-            label: 'Employed',
-            data: @json($employmentTrends['employed']),
-            borderColor: '#16a34a',
-            backgroundColor: 'rgba(22, 163, 74, 0.1)',
-            tension: 0.4
-        }, {
-            label: 'Self-Employed',
-            data: @json($employmentTrends['selfEmployed']),
-            borderColor: '#eab308',
-            backgroundColor: 'rgba(234, 179, 8, 0.1)',
-            tension: 0.4
-        }, {
-            label: 'Unemployed',
-            data: @json($employmentTrends['unemployed']),
-            borderColor: '#dc2626',
-            backgroundColor: 'rgba(220, 38, 38, 0.1)',
-            tension: 0.4
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'top',
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
-});
-
-// Industry Distribution Chart
-const industryCtx = document.getElementById('industryChart').getContext('2d');
-new Chart(industryCtx, {
-    type: 'doughnut',
-    data: {
-        labels: @json($industryData['labels']),
-        datasets: [{
-            data: @json($industryData['data']),
-            backgroundColor: [
-                '#16a34a',
-                '#059669',
-                '#047857',
-                '#065f46',
-                '#064e3b',
-                '#022c22'
-            ]
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'bottom',
-            }
-        }
-    }
-});
-
-// Traced Graduates Per Year Chart
-const tracedCtx = document.getElementById('tracedGraduatesChart').getContext('2d');
-new Chart(tracedCtx, {
-    type: 'bar',
-    data: {
-        labels: @json($tracedGraduates['labels']),
-        datasets: [{
-            label: 'Traced Graduates',
-            data: @json($tracedGraduates['data']),
-            backgroundColor: '#16a34a',
-            borderColor: '#16a34a',
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: false
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
-});
-
-// Employment Trends by College Chart
-const collegeCtx = document.getElementById('collegeTrendsChart').getContext('2d');
-new Chart(collegeCtx, {
-    type: 'bar',
-    data: {
-        labels: @json($collegeTrends['labels']),
-        datasets: [{
-            label: 'Employed',
-            data: @json($collegeTrends['employed']),
-            backgroundColor: '#16a34a'
-        }, {
-            label: 'Self-Employed',
-            data: @json($collegeTrends['selfEmployed']),
-            backgroundColor: '#eab308'
-        }, {
-            label: 'Unemployed',
-            data: @json($collegeTrends['unemployed']),
-            backgroundColor: '#dc2626'
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'top',
-            }
-        },
-        scales: {
-            x: {
-                stacked: true
-            },
-            y: {
-                stacked: true,
-                beginAtZero: true
-            }
-        }
-    }
-});
-
-// Employability Rate Chart
-const employabilityCtx = document.getElementById('employabilityChart').getContext('2d');
-new Chart(employabilityCtx, {
-    type: 'line',
-    data: {
-        labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
-        datasets: [{
-            label: 'Employability Rate (%)',
-            data: [85, 82, 88, 90, 92, 94],
-            borderColor: '#16a34a',
-            backgroundColor: 'rgba(22, 163, 74, 0.1)',
-            tension: 0.4
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'top',
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                max: 100
-            }
-        }
-    }
-});
-
-// Global Distribution Chart
-const globalCtx = document.getElementById('globalDistributionChart').getContext('2d');
-new Chart(globalCtx, {
-    type: 'bar',
-    data: {
-        labels: ['Philippines', 'USA', 'Canada', 'Australia', 'UK', 'Others'],
-        datasets: [{
-            label: 'Alumni Distribution',
-            data: [1200, 300, 150, 100, 80, 200],
-            backgroundColor: '#16a34a'
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: false
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
-});
-
-// Feedbacks Chart
-const feedbacksCtx = document.getElementById('feedbacksChart').getContext('2d');
-new Chart(feedbacksCtx, {
-    type: 'bar',
-    data: {
-        labels: ['Very Satisfied', 'Satisfied', 'Neutral', 'Dissatisfied', 'Very Dissatisfied'],
-        datasets: [{
-            label: 'Feedback Count',
-            data: [450, 380, 120, 50, 20],
-            backgroundColor: '#16a34a'
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: false
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
-});
-
-// Reasons Why Not Yet Employed Chart
-const reasonsCtx = document.getElementById('reasonsChart').getContext('2d');
-new Chart(reasonsCtx, {
-    type: 'horizontalBar',
-    data: {
-        labels: ['Lack of Experience', 'No Job Opportunities', 'Family Reasons', 'Further Studies', 'Health Issues', 'Other'],
-        datasets: [{
-            label: 'Number of Alumni',
-            data: [120, 95, 60, 45, 25, 30],
-            backgroundColor: '#dc2626'
-        }]
-    },
-    options: {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: false
-            }
-        },
-        scales: {
-            x: {
-                beginAtZero: true
-            }
-        }
-    }
-});
-</script>
+        <div class="p-5">
+            @if($jobOpportunityListings->isNotEmpty())
+                <div class="grid gap-3 lg:grid-cols-3">
+                    @foreach($jobOpportunityListings as $jobOpportunity)
+                        <a href="{{ route('job.detail', $jobOpportunity->id) }}" class="alumni-job-opening-card block rounded-2xl border border-emerald-950/10 bg-white/90 px-4 py-4 shadow-sm hover:border-emerald-200 hover:bg-white">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <h3 class="line-clamp-2 text-base font-extrabold leading-snug text-slate-950">{{ $jobOpportunity->title }}</h3>
+                                    <p class="mt-1 truncate text-sm font-semibold text-slate-600">{{ $jobOpportunity->company ?? 'Company not specified' }}</p>
+                                </div>
+                                <span class="alumni-job-opening-card__arrow inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
+                                    <i class='bx bx-right-arrow-alt text-xl'></i>
+                                </span>
+                            </div>
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                <span class="alumni-job-opening-card__type rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700 ring-1 ring-emerald-100">{{ $jobOpportunity->type ?? 'Job opportunity' }}</span>
+                                <span class="alumni-job-opening-card__location rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700 ring-1 ring-slate-200">{{ $jobOpportunity->location ?? 'Location not set' }}</span>
+                            </div>
+                            <p class="mt-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                                Posted {{ !empty($jobOpportunity->created_at) ? \Carbon\Carbon::parse($jobOpportunity->created_at)->diffForHumans() : 'recently' }}
+                            </p>
+                        </a>
+                    @endforeach
+                </div>
+            @else
+                <div class="flex flex-col gap-4 rounded-2xl border border-dashed border-emerald-200 bg-white/75 px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex items-start gap-3">
+                        <span class="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
+                            <i class='bx bx-briefcase-alt-2 text-2xl'></i>
+                        </span>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900">No active job openings yet</h3>
+                            <p class="mt-1 text-sm leading-6 text-slate-600">You can still post a job opportunity for OARL review.</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('jobs') }}" class="inline-flex items-center justify-center rounded-xl bg-[#862633] px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#701f2a]">
+                        Post Opportunity
+                    </a>
+                </div>
+            @endif
+        </div>
+    </section>
+</div>
 @endsection

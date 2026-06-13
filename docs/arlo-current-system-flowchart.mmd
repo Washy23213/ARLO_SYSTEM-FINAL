@@ -1,0 +1,99 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 45, "rankSpacing": 65}, "themeVariables": {"background": "#ffffff", "primaryColor": "#eef7ec", "primaryBorderColor": "#006000", "primaryTextColor": "#102414", "lineColor": "#35543b", "fontFamily": "Inter, Arial, sans-serif", "fontSize": "15px"}}}%%
+flowchart TD
+    Start([User opens ARLO web system])
+    HasAccount{Has an account?}
+    Login[Enter email and password]
+    Forgot[Request password reset link]
+    AuthValid{Credentials valid?}
+    Guard{Authenticated guard or role}
+
+    Start --> HasAccount
+    HasAccount -- Yes --> Login
+    HasAccount -- Forgot password --> Forgot --> Login
+    HasAccount -- No --> VerifyAlumni[Submit alumni identity for graduate-record verification]
+    VerifyAlumni --> AlumniMatch{Matching CMU alumni record found?}
+    AlumniMatch -- No --> VerifyError[Show verification error and ask user to correct details]
+    VerifyError --> VerifyAlumni
+    AlumniMatch -- Yes --> EmailCode[Send and verify registration email code]
+    EmailCode --> EmailOk{Email verified?}
+    EmailOk -- No --> EmailCode
+    EmailOk -- Yes --> Register[Create alumni account or claim imported roster record]
+    Register --> Login
+
+    Login --> AuthValid
+    AuthValid -- No --> LoginError[Show login error or recovery option]
+    LoginError --> Login
+    AuthValid -- Yes --> Guard
+
+    Guard -- web alumni --> AlumniDash[Open alumni dashboard]
+    Guard -- admin guard --> AdminPermission{Check admin permission}
+    Guard -- super_admin guard --> SuperDash[Open Super Admin account-control workspace]
+
+    AlumniDash --> AlumniProfile[Manage profile, settings, scholarship, and password]
+    AlumniDash --> AlumniTracer[Submit or update tracer record and employment proof]
+    AlumniDash --> AlumniJobs[Browse approved job postings]
+    AlumniDash --> AlumniSubmitJob[Submit job opportunity for admin review]
+    AlumniDash --> AlumniAnnouncements[View announcements]
+    AlumniDash --> AlumniNotifications[View or mark notifications]
+    AlumniDash --> AlumniFeedback[Submit feedback]
+
+    AdminPermission -- manage_alumni --> AdminAlumni[Manage alumni records, imports, reminders, tracer proof]
+    AdminPermission -- manage_jobs --> AdminJobs[Create jobs and approve or reject job submissions]
+    AdminPermission -- manage_announcements --> AdminAnnouncements[Create, publish, notify, and sync Facebook announcements]
+    AdminPermission -- manage_feedback --> AdminFeedback[Review feedback status, priority, and assignment]
+    AdminPermission -- view_analytics --> AdminAnalytics[View analytics and export CSV reports]
+    AdminPermission -- view_audit_logs --> AdminLogs[View audit logs]
+    AdminPermission -- denied --> AdminDenied[Redirect to allowed admin workspace]
+
+    SuperDash --> SuperAdmins[Create, edit, role-assign, or delete admin accounts]
+    SuperDash --> SuperAlumni[Supervise alumni records through shared alumni-management route]
+    SuperDash --> SuperLogs[View Super Admin audit logs]
+
+    AlumniSubmitJob --> JobSubStore[(job_submissions)]
+    AdminJobs --> JobSubStore
+    AdminJobs --> JobsStore[(jobs)]
+    AlumniJobs --> JobsStore
+    AlumniAnnouncements --> AnnStore[(announcements)]
+    AdminAnnouncements --> AnnStore
+    AdminAnnouncements --> AnnReadStore[(announcement_reads)]
+    AlumniNotifications --> NotifStore[(notifications)]
+    AdminAnnouncements --> NotifStore
+    AdminAlumni --> NotifStore
+    AlumniFeedback --> FeedbackStore[(feedback)]
+    AdminFeedback --> FeedbackStore
+    AlumniProfile --> UsersStore[(users)]
+    AdminAlumni --> UsersStore
+    SuperAlumni --> UsersStore
+    AlumniTracer --> TracerStore[(tracer_records)]
+    AdminAlumni --> TracerStore
+    SuperAdmins --> AdminStore[(admins, roles, permissions)]
+    SuperAdmins --> SuperStore[(super_admins)]
+    AdminAnalytics --> ReportStores[(users and tracer_records summaries)]
+
+    AlumniProfile --> Audit[(system_logs)]
+    AlumniTracer --> Audit
+    AlumniSubmitJob --> Audit
+    AdminAlumni --> Audit
+    AdminJobs --> Audit
+    AdminAnnouncements --> Audit
+    AdminFeedback --> Audit
+    SuperAdmins --> Audit
+    Login --> Audit
+
+    classDef entry fill:#006000,stroke:#003300,stroke-width:2px,color:#ffffff;
+    classDef auth fill:#eef7ec,stroke:#006000,stroke-width:2px,color:#102414;
+    classDef decision fill:#fff4c2,stroke:#ffc000,stroke-width:2px,color:#102414;
+    classDef alumni fill:#f8fff4,stroke:#5f8800,stroke-width:2px,color:#102414;
+    classDef admin fill:#fff9dc,stroke:#d39a00,stroke-width:2px,color:#102414;
+    classDef super fill:#f8faf8,stroke:#35543b,stroke-width:2px,color:#102414;
+    classDef data fill:#ffffff,stroke:#006000,stroke-width:2px,color:#102414;
+    classDef notice fill:#fff4c2,stroke:#d39a00,stroke-width:2px,color:#102414;
+
+    class Start entry;
+    class Login,Forgot,VerifyAlumni,VerifyError,EmailCode,EmailOk,Register,LoginError auth;
+    class HasAccount,AuthValid,Guard,AlumniMatch,AdminPermission decision;
+    class AlumniDash,AlumniProfile,AlumniTracer,AlumniJobs,AlumniSubmitJob,AlumniAnnouncements,AlumniNotifications,AlumniFeedback alumni;
+    class AdminAlumni,AdminJobs,AdminAnnouncements,AdminFeedback,AdminAnalytics,AdminLogs admin;
+    class SuperDash,SuperAdmins,SuperAlumni,SuperLogs super;
+    class JobSubStore,JobsStore,AnnStore,AnnReadStore,NotifStore,FeedbackStore,UsersStore,TracerStore,AdminStore,SuperStore,ReportStores,Audit data;
+    class AdminDenied notice;

@@ -11,7 +11,17 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->append(\App\Http\Middleware\PreventBackHistory::class);
+        $middleware->alias([
+            'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
+            'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+            'admin' => \App\Http\Middleware\AdminOnly::class,
+            'regular_admin' => \App\Http\Middleware\RegularAdminOnly::class,
+            'super_admin' => \App\Http\Middleware\SuperAdminOnly::class,
+            'no_admin' => \App\Http\Middleware\EnsureNotAdmin::class,
+            'admin_role' => \App\Http\Middleware\EnsureAdminRole::class,
+            'admin_permission' => \App\Http\Middleware\EnsureAdminPermission::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

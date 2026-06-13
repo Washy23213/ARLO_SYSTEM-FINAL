@@ -1,0 +1,54 @@
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#f8fafc", "primaryBorderColor": "#334155", "primaryTextColor": "#0f172a", "lineColor": "#475569", "fontFamily": "Inter, Arial, sans-serif", "fontSize": "16px"}}}%%
+flowchart LR
+    subgraph ALUMNI_ZONE["Alumni Accounts"]
+        USERS["<b>USERS</b><br/>PK id<br/>UK email<br/>firstname, lastname<br/>department, degree<br/>year_graduated<br/>profile and tracer summary"]
+        SESSIONS["<b>SESSIONS</b><br/>PK id<br/>FK user_id<br/>ip_address<br/>last_activity"]
+        NOTIFICATIONS["<b>NOTIFICATIONS</b><br/>PK id<br/>FK notifiable_id<br/>type<br/>data<br/>read_at"]
+    end
+
+    subgraph ACTIVITY_ZONE["Alumni Activity and Records"]
+        TRACER_RECORDS["<b>TRACER_RECORDS</b><br/>PK id<br/>FK user_id<br/>tracer_date<br/>employment status<br/>job satisfaction"]
+        JOB_SUBMISSIONS["<b>JOB_SUBMISSIONS</b><br/>PK id<br/>FK user_id<br/>FK reviewed_by<br/>title, company<br/>status"]
+        JOB_APPLICATIONS["<b>JOB_APPLICATIONS</b><br/>PK id<br/>FK job_id<br/>FK user_id<br/>FK reviewed_by<br/>status"]
+        FEEDBACK["<b>FEEDBACK</b><br/>PK id<br/>FK user_id<br/>FK assigned_to<br/>subject<br/>status, priority"]
+    end
+
+    subgraph ADMIN_ZONE["Administration"]
+        SUPER_ADMINS["<b>SUPER_ADMINS</b><br/>PK id<br/>UK email<br/>firstname, lastname<br/>separate account authority<br/>email_verified_at"]
+        ADMINS["<b>ADMINS</b><br/>PK id<br/>UK email<br/>firstname, lastname<br/>assigned admin role<br/>is_active"]
+        JOBS["<b>JOBS</b><br/>PK id<br/>FK created_by<br/>FK archived_by<br/>title, company<br/>is_active"]
+        ANNOUNCEMENTS["<b>ANNOUNCEMENTS</b><br/>PK id<br/>FK created_by<br/>FK archived_by<br/>title, content<br/>is_published"]
+        SYSTEM_LOGS["<b>SYSTEM_LOGS</b><br/>PK id<br/>FK user_id<br/>FK admin_id<br/>FK super_admin_id<br/>action<br/>created_at"]
+    end
+
+    USERS -->|"1 to many<br/>has"| TRACER_RECORDS
+    USERS -->|"1 to many<br/>proposes"| JOB_SUBMISSIONS
+    USERS -->|"1 to many<br/>applies"| JOB_APPLICATIONS
+    USERS -->|"1 to many<br/>submits"| FEEDBACK
+    USERS -->|"1 to many<br/>receives"| NOTIFICATIONS
+    USERS -->|"1 to many<br/>owns"| SESSIONS
+
+    ADMINS -->|"1 to many<br/>reviews"| JOB_SUBMISSIONS
+    ADMINS -->|"1 to many<br/>reviews"| JOB_APPLICATIONS
+    ADMINS -->|"1 to many<br/>handles"| FEEDBACK
+    ADMINS -->|"1 to many<br/>creates / archives"| JOBS
+    ADMINS -->|"1 to many<br/>creates / archives"| ANNOUNCEMENTS
+    SUPER_ADMINS -->|"1 to many<br/>creates / edits / deletes"| ADMINS
+    SUPER_ADMINS -.->|"edits account details"| USERS
+
+    JOBS -->|"1 to many<br/>receives"| JOB_APPLICATIONS
+
+    USERS -.->|"activity log"| SYSTEM_LOGS
+    ADMINS -.->|"activity log"| SYSTEM_LOGS
+    SUPER_ADMINS -.->|"account-control audit log"| SYSTEM_LOGS
+
+    classDef alumni fill:#e0f2fe,stroke:#0369a1,stroke-width:2px,color:#0f172a;
+    classDef activity fill:#f8fafc,stroke:#475569,stroke-width:2px,color:#0f172a;
+    classDef admin fill:#ecfdf5,stroke:#047857,stroke-width:2px,color:#0f172a;
+    classDef log fill:#fff7ed,stroke:#c2410c,stroke-width:2px,color:#0f172a;
+    classDef zone fill:#ffffff,stroke:#cbd5e1,stroke-width:1px,color:#334155;
+
+    class USERS,SESSIONS,NOTIFICATIONS alumni;
+    class TRACER_RECORDS,JOB_SUBMISSIONS,JOB_APPLICATIONS,FEEDBACK activity;
+    class SUPER_ADMINS,ADMINS,JOBS,ANNOUNCEMENTS admin;
+    class SYSTEM_LOGS log;

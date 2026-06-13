@@ -1,20 +1,3318 @@
-/* resources/css/app.css */
+@import './alumni-dashboard.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@layer utilities {
-  .animate-fadeSlide {
-    animation: fadeSlide 0.35s ease;
-  }
 
-  @keyframes fadeSlide {
+body.portal-page,
+body.alumni-portal,
+body.admin-portal {
+    overflow-x: hidden;
+}
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none !important;
+}
+
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-contacts-auto-fill-button,
+input[type="password"]::-webkit-caps-lock-indicator,
+input[type="password"]::-webkit-textfield-decoration-container {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+body.portal-page [data-tooltip]::before,
+body.portal-page [data-tooltip]::after,
+body.alumni-portal [data-tooltip]::before,
+body.alumni-portal [data-tooltip]::after,
+body.admin-portal [data-tooltip]::before,
+body.admin-portal [data-tooltip]::after {
+    content: none !important;
+    display: none !important;
+}
+
+.admin-portal .portal-stat-card__meta {
+    display: none !important;
+}
+
+.dashboard-content,
+.page-section,
+.surface-card {
+    min-width: 0;
+}
+
+.surface-card canvas {
+    max-width: 100%;
+}
+
+.portal-field-error,
+.portal-radio-error {
+    margin-top: 0.45rem;
+    color: #dc2626;
+    font-size: 0.8rem;
+    font-weight: 500;
+    line-height: 1.45;
+    letter-spacing: 0;
+}
+
+.portal-field-error[hidden],
+.portal-radio-error[hidden] {
+    display: none !important;
+}
+
+.admin-record-hero {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(11, 59, 31, 0.12);
+    border-radius: 1.6rem;
+    background: #fffdf8;
+    box-shadow: 0 20px 44px rgba(7, 24, 14, 0.1);
+}
+
+.admin-record-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: 5.5rem;
+    pointer-events: none;
+    background: linear-gradient(135deg, rgba(20, 87, 38, 0.06), rgba(255, 255, 255, 0));
+}
+
+.admin-record-hero__content {
+    position: relative;
+    z-index: 1;
+}
+
+[data-tooltip] {
+    position: relative;
+}
+
+[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 0.8rem);
+    transform: translate(-50%, 0.35rem);
+    width: max-content;
+    max-width: min(18rem, calc(100vw - 2rem));
+    padding: 0.65rem 0.8rem;
+    border-radius: 0.9rem;
+    background: rgba(15, 23, 42, 0.96);
+    color: #f8fafc;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.45;
+    text-align: center;
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.24);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 80;
+    transition:
+        opacity 0.18s ease 2s,
+        visibility 0s linear 2s,
+        transform 0.18s ease 2s;
+}
+
+[data-tooltip]::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 0.35rem);
+    transform: translateX(-50%);
+    border-width: 0.4rem 0.35rem 0;
+    border-style: solid;
+    border-color: rgba(15, 23, 42, 0.96) transparent transparent;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 79;
+    transition:
+        opacity 0.18s ease 2s,
+        visibility 0s linear 2s;
+}
+
+[data-tooltip]:hover::after,
+[data-tooltip]:hover::before,
+[data-tooltip]:focus-visible::after,
+[data-tooltip]:focus-visible::before {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+}
+
+[data-tooltip]:hover::before,
+[data-tooltip]:focus-visible::before {
+    transform: translateX(-50%);
+}
+
+/* Keep tooltip timing consistent across alumni and admin screens. */
+[data-tooltip]::after {
+    transition:
+        opacity 0.18s ease 2s,
+        visibility 0s linear 2s,
+        transform 0.18s ease 2s !important;
+}
+
+[data-tooltip]::before {
+    transition:
+        opacity 0.18s ease 2s,
+        visibility 0s linear 2s !important;
+}
+
+[data-tooltip]:hover::after,
+[data-tooltip]:hover::before,
+[data-tooltip]:focus-visible::after,
+[data-tooltip]:focus-visible::before {
+    transition-delay: 2s !important;
+}
+
+/* Compact portal cards: flatter, denser, and less decorative across alumni/admin. */
+:root {
+    --portal-card-radius: 0.5rem;
+    --portal-card-bg: #fff;
+    --portal-card-border: rgba(15, 23, 42, 0.12);
+    --portal-card-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.admin-portal .dashboard-content,
+.alumni-portal .dashboard-content {
+    max-width: 1360px;
+}
+
+.admin-portal .dashboard-content .grid.gap-6,
+.alumni-portal .dashboard-content .grid.gap-6 {
+    gap: 1rem !important;
+}
+
+.admin-portal .dashboard-content .space-y-6 > :not([hidden]) ~ :not([hidden]),
+.alumni-portal .dashboard-content .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 1rem !important;
+}
+
+.admin-portal .alumni-topbar,
+.alumni-portal .alumni-topbar,
+.admin-record-hero,
+.page-section,
+.surface-card,
+.portal-stat-card,
+.analytics-chart-card,
+.empty-state-card,
+.settings-surface,
+.settings-tool-card,
+.settings-overview-card,
+.notification-feed-item,
+.portal-clickable-item,
+.alumni-summary-card,
+.alumni-session-card,
+.alumni-metric-card,
+.alumni-danger-card,
+.alumni-callout,
+.alumni-footer-card,
+.alumni-overview-stat,
+.alumni-overview-panel,
+.alumni-overview-highlight,
+.alumni-overview-identity-card,
+.alumni-overview-detail,
+.alumni-overview-checklist-item,
+.alumni-overview-notification,
+.alumni-job-opportunities-section,
+.alumni-jobs-summary,
+.alumni-job-board,
+.alumni-job-opening-card,
+.alumni-notification-preview,
+.alumni-preview-empty,
+.alumni-membership-card,
+.admin-portal .dashboard-content .bg-white.rounded-lg.shadow-sm.border.border-gray-200,
+.admin-portal .dashboard-content .bg-white.rounded-xl.shadow-sm.border.border-gray-200,
+.alumni-portal .dashboard-content .bg-white.rounded-lg.shadow-sm.border.border-gray-200,
+.alumni-portal .dashboard-content .bg-white.rounded-xl.shadow-sm.border.border-gray-200 {
+    border-color: var(--portal-card-border) !important;
+    border-radius: var(--portal-card-radius) !important;
+    background: var(--portal-card-bg) !important;
+    box-shadow: var(--portal-card-shadow) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.admin-portal .dashboard-content :is(.rounded-xl, .rounded-2xl, .rounded-3xl)[class*="border"][class*="bg-"],
+.admin-portal .dashboard-content :is(.rounded-xl, .rounded-2xl, .rounded-3xl)[class*="shadow"],
+.admin-portal .dashboard-content [class*="rounded-["][class*="border"][class*="bg-"],
+.admin-portal .dashboard-content [class*="rounded-["][class*="shadow"],
+.alumni-portal .dashboard-content :is(.rounded-xl, .rounded-2xl, .rounded-3xl)[class*="border"][class*="bg-"],
+.alumni-portal .dashboard-content :is(.rounded-xl, .rounded-2xl, .rounded-3xl)[class*="shadow"],
+.alumni-portal .dashboard-content [class*="rounded-["][class*="border"][class*="bg-"],
+.alumni-portal .dashboard-content [class*="rounded-["][class*="shadow"] {
+    border-radius: var(--portal-card-radius) !important;
+    box-shadow: var(--portal-card-shadow) !important;
+}
+
+.admin-portal .dashboard-content :is([class*="bg-gradient-to-"])[class*="border"],
+.alumni-portal .dashboard-content :is([class*="bg-gradient-to-"])[class*="border"] {
+    background-image: none !important;
+    background-color: var(--portal-card-bg) !important;
+}
+
+.admin-portal .alumni-topbar,
+.alumni-portal .alumni-topbar {
+    padding: 1rem !important;
+}
+
+.admin-portal .alumni-topbar__title,
+.alumni-portal .alumni-topbar__title {
+    font-size: clamp(1.45rem, 2vw, 2.1rem) !important;
+    line-height: 1.12 !important;
+    letter-spacing: 0 !important;
+}
+
+.admin-portal .alumni-topbar__meta,
+.alumni-portal .alumni-topbar__meta {
+    gap: 0.5rem !important;
+}
+
+.admin-portal .alumni-topbar__meta-chip,
+.alumni-portal .alumni-topbar__meta-chip,
+.admin-portal .alumni-topbar-notice,
+.admin-portal .alumni-topbar-cta,
+.alumni-portal .alumni-topbar-chip,
+.alumni-portal .alumni-topbar-notice,
+.alumni-portal .alumni-topbar-cta {
+    min-height: 2.4rem !important;
+    border-radius: var(--portal-card-radius) !important;
+    padding: 0.55rem 0.75rem !important;
+    box-shadow: none !important;
+}
+
+.admin-record-hero,
+.page-section,
+.surface-card,
+.analytics-chart-card,
+.empty-state-card,
+.settings-surface,
+.settings-tool-card,
+.settings-overview-card,
+.alumni-summary-card,
+.alumni-session-card,
+.alumni-metric-card,
+.alumni-danger-card,
+.alumni-callout,
+.alumni-footer-card,
+.alumni-overview-panel,
+.alumni-overview-highlight,
+.alumni-overview-identity-card,
+.admin-portal .dashboard-content .bg-white.rounded-lg.shadow-sm.border.border-gray-200,
+.admin-portal .dashboard-content .bg-white.rounded-xl.shadow-sm.border.border-gray-200,
+.alumni-portal .dashboard-content .bg-white.rounded-lg.shadow-sm.border.border-gray-200,
+.alumni-portal .dashboard-content .bg-white.rounded-xl.shadow-sm.border.border-gray-200 {
+    padding: 1rem !important;
+}
+
+.portal-stat-grid,
+.alumni-summary-grid,
+.alumni-settings-grid {
+    gap: 1rem !important;
+}
+
+.portal-stat-card,
+.alumni-overview-stat {
+    min-height: auto !important;
+    padding: 1rem !important;
+}
+
+.portal-stat-card__layout,
+.alumni-overview-stat__body {
+    gap: 0.75rem !important;
+}
+
+.portal-stat-card__icon,
+.empty-state-card__icon,
+.dashboard-hero-icon,
+.settings-tool-icon,
+.notification-feed-item__indicator,
+.alumni-jobs-summary__metric-icon,
+.alumni-notification-preview__icon,
+.alumni-overview-stat__icon {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    border-radius: var(--portal-card-radius) !important;
+    background: #eef5f0 !important;
+    color: #0b3b1f !important;
+    box-shadow: none !important;
+}
+
+.portal-stat-card__value {
+    margin-top: 0.25rem !important;
+    font-size: 1.55rem !important;
+    letter-spacing: 0 !important;
+}
+
+.portal-stat-card__value--compact {
+    font-size: 1.35rem !important;
+}
+
+.alumni-overview-stat__value,
+.alumni-summary-card__value,
+.alumni-jobs-summary__metric-value {
+    font-size: 1.55rem !important;
+    letter-spacing: 0 !important;
+}
+
+.portal-stat-card__kicker,
+.alumni-summary-card__label,
+.alumni-jobs-summary__kicker,
+.alumni-job-board__kicker {
+    letter-spacing: 0.1em !important;
+    font-size: 0.7rem !important;
+}
+
+.portal-stat-card__meta,
+.alumni-summary-card__note,
+.alumni-panel-copy,
+.alumni-jobs-summary__copy,
+.alumni-job-board__copy {
+    margin-top: 0.4rem !important;
+    font-size: 0.86rem !important;
+    line-height: 1.5 !important;
+}
+
+.alumni-job-board__header {
+    padding: 1rem !important;
+    background: var(--portal-card-bg) !important;
+}
+
+.alumni-jobs-summary {
+    padding: 1rem !important;
+}
+
+.alumni-jobs-summary__metric {
+    min-width: 0 !important;
+    padding: 0.75rem !important;
+    border-radius: var(--portal-card-radius) !important;
+    box-shadow: none !important;
+}
+
+.alumni-job-opening-card {
+    padding: 0.9rem 1rem !important;
+}
+
+.alumni-notification-preview {
+    width: min(20rem, calc(100vw - 2rem)) !important;
+    padding: 0.85rem !important;
+}
+
+.admin-portal .alumni-topbar::before,
+.admin-portal .alumni-topbar::after,
+.alumni-portal .alumni-topbar::before,
+.alumni-portal .alumni-topbar::after,
+.admin-record-hero::before,
+.admin-record-hero::after,
+.page-section::before,
+.page-section::after,
+.portal-stat-card::before,
+.portal-stat-card::after,
+.alumni-overview::before,
+.alumni-overview::after,
+.alumni-overview-stat::before,
+.alumni-overview-stat::after,
+.alumni-overview-panel::before,
+.alumni-overview-panel::after,
+.alumni-overview-panel__mast::before,
+.alumni-overview-panel__mast::after,
+.alumni-overview-highlight::after,
+.alumni-overview-identity-card::before,
+.alumni-overview-identity-card::after,
+.alumni-overview-notification::before,
+.alumni-job-opportunities-section::before,
+.alumni-jobs-summary::before,
+.alumni-job-board::before {
+    content: none !important;
+    display: none !important;
+}
+
+.alumni-overview-panel__mast,
+.alumni-overview-panel--employment .alumni-overview-panel__mast,
+.alumni-overview-identity-card {
+    background: #fff !important;
+    color: #0f172a !important;
+    border-bottom-color: var(--portal-card-border) !important;
+    box-shadow: none !important;
+}
+
+.alumni-overview-panel__mast :is(.text-white, .text-white\/60, .text-white\/65, .text-white\/75, .text-white\/78),
+.alumni-overview-identity-card :is(.text-white, .text-white\/60, .text-white\/75) {
+    color: #475569 !important;
+    text-shadow: none !important;
+}
+
+.alumni-overview-panel__mast h2,
+.alumni-overview-identity-card h2,
+.alumni-jobs-summary__title,
+.alumni-job-board__title,
+.section-heading {
+    letter-spacing: 0 !important;
+}
+
+@media (max-width: 767px) {
+    .admin-portal .alumni-topbar,
+    .alumni-portal .alumni-topbar,
+    .admin-record-hero,
+    .page-section,
+    .surface-card,
+    .portal-stat-card,
+    .analytics-chart-card,
+    .empty-state-card,
+    .alumni-overview-stat,
+    .alumni-overview-panel,
+    .alumni-overview-highlight,
+    .alumni-overview-identity-card,
+    .alumni-jobs-summary,
+    .alumni-job-board,
+    .alumni-job-opening-card,
+    .alumni-footer-card {
+        border-radius: var(--portal-card-radius) !important;
+    }
+}
+
+.portal-sidebar-toggle {
+    width: 2.75rem;
+    height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+}
+
+body.sidebar-collapsed .sidebar-brand {
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+body.sidebar-collapsed .portal-sidebar-toggle {
+    margin: 0.65rem auto 0;
+}
+
+body.sidebar-collapsed .portal-sidebar-toggle[data-tooltip]::after {
+    top: 50%;
+    bottom: auto;
+    left: calc(100% + 0.5rem);
+    transform: translateY(-50%);
+}
+
+.portal-feature-card__image {
+    width: 100%;
+    height: clamp(8.5rem, 17vw, 11.5rem);
+    display: block;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Motion cleanup: keep state changes visible without decorative movement. */
+.animate-fadeSlide,
+.dashboard-marquee-track {
+    animation: none !important;
+}
+
+.dashboard-marquee {
+    overflow: visible !important;
+}
+
+.dashboard-marquee-track {
+    width: auto !important;
+    flex-wrap: wrap !important;
+    transform: none !important;
+    translate: none !important;
+    will-change: auto !important;
+}
+
+.dashboard-content .transition,
+.dashboard-content .transition-all,
+.dashboard-content .duration-200,
+.dashboard-content .duration-300 {
+    transition-duration: 0s !important;
+}
+
+.dashboard-shell,
+.alumni-sidebar,
+.admin-sidebar,
+body.portal-shell-loading .dashboard-shell {
+    transition-duration: 0s !important;
+}
+
+.dashboard-content .hover\:-translate-y-0\.5:hover,
+.dashboard-content .hover\:-translate-y-1:hover,
+.dashboard-content .group:hover .group-hover\:-translate-y-0\.5,
+.dashboard-content .group:hover .group-hover\:scale-105,
+.dashboard-content .group:hover .group-hover\:translate-x-0,
+.dashboard-content .group:hover .md\:group-hover\:translate-x-0,
+.dashboard-content .md\:translate-x-2,
+.portal-stat-card:hover,
+.portal-stat-card:hover .portal-stat-card__icon,
+.admin-portal .dashboard-content a.bg-blue-600.text-white:hover,
+.admin-portal .dashboard-content button.bg-blue-600.text-white:hover,
+.admin-portal .dashboard-content a.bg-gray-100:hover,
+.admin-portal .dashboard-content button.bg-gray-100:hover,
+.admin-portal .dashboard-content a.bg-white.text-gray-700:hover,
+.admin-portal .dashboard-content button.bg-white.text-gray-700:hover,
+.admin-portal .dashboard-content a.inline-flex.items-center.gap-1.rounded-md:hover,
+.admin-portal .dashboard-content button.inline-flex.items-center.gap-1.rounded-md:hover,
+.alumni-portal .dashboard-content input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=range]):not([type=file]):focus,
+.alumni-portal .dashboard-content select:focus,
+.alumni-portal .dashboard-content textarea:focus,
+.alumni-preview-item:hover .alumni-preview-item__indicator,
+.alumni-preview-item:focus-visible .alumni-preview-item__indicator,
+.alumni-dashboard-filters__reset:hover,
+.alumni-filter-submit:hover,
+.portal-clickable-item:hover .notification-feed-item__indicator,
+.portal-clickable-item:focus-visible .notification-feed-item__indicator {
+    --tw-translate-x: 0 !important;
+    --tw-translate-y: 0 !important;
+    --tw-scale-x: 1 !important;
+    --tw-scale-y: 1 !important;
+    transform: none !important;
+    translate: none !important;
+    scale: none !important;
+}
+
+.alumni-portal .alumni-sidebar,
+.admin-portal .admin-sidebar {
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+}
+
+.alumni-portal .alumni-sidebar {
+    --sidebar-scroll-track: rgba(11, 59, 31, 0.13);
+    --sidebar-scroll-track-line: rgba(11, 59, 31, 0.16);
+    --sidebar-scroll-thumb-start: rgba(20, 87, 38, 0.88);
+    --sidebar-scroll-thumb-end: rgba(11, 59, 31, 0.96);
+    --sidebar-scroll-thumb-hover: #0b3b1f;
+    --sidebar-scroll-thumb-border: #dceee2;
+    scrollbar-color: rgba(20, 87, 38, 0.78) rgba(11, 59, 31, 0.12);
+}
+
+.admin-portal .admin-sidebar {
+    --sidebar-scroll-track: rgba(255, 255, 255, 0.1);
+    --sidebar-scroll-track-line: rgba(244, 230, 189, 0.18);
+    --sidebar-scroll-thumb-start: rgba(244, 230, 189, 0.95);
+    --sidebar-scroll-thumb-end: rgba(200, 154, 45, 0.92);
+    --sidebar-scroll-thumb-hover: #f4e6bd;
+    --sidebar-scroll-thumb-border: #082915;
+    scrollbar-color: rgba(244, 230, 189, 0.74) rgba(255, 255, 255, 0.1);
+}
+
+.alumni-portal .alumni-sidebar::-webkit-scrollbar,
+.admin-portal .admin-sidebar::-webkit-scrollbar {
+    width: 0.72rem;
+}
+
+.alumni-portal .alumni-sidebar::-webkit-scrollbar-track,
+.admin-portal .admin-sidebar::-webkit-scrollbar-track {
+    margin-block: 0.9rem;
+    border-radius: 999px;
+    background: var(--sidebar-scroll-track);
+    box-shadow: inset 0 0 0 1px var(--sidebar-scroll-track-line);
+}
+
+.alumni-portal .alumni-sidebar::-webkit-scrollbar-thumb,
+.admin-portal .admin-sidebar::-webkit-scrollbar-thumb {
+    min-height: 3rem;
+    border: 0.18rem solid var(--sidebar-scroll-thumb-border);
+    border-radius: 999px;
+    background:
+        linear-gradient(180deg, var(--sidebar-scroll-thumb-start), var(--sidebar-scroll-thumb-end))
+        padding-box;
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.28);
+}
+
+.alumni-portal .alumni-sidebar::-webkit-scrollbar-thumb:hover,
+.admin-portal .admin-sidebar::-webkit-scrollbar-thumb:hover {
+    background: var(--sidebar-scroll-thumb-hover) padding-box;
+}
+
+.alumni-portal .alumni-sidebar::-webkit-scrollbar-corner,
+.admin-portal .admin-sidebar::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+body.sidebar-collapsed .alumni-sidebar::-webkit-scrollbar,
+body.sidebar-collapsed .admin-sidebar::-webkit-scrollbar {
+    width: 0.48rem;
+}
+
+/* Admin and Super Admin notification bell: same visual treatment as alumni. */
+.admin-portal .alumni-notification-dock {
+    position: fixed;
+    top: 1rem;
+    right: clamp(1rem, 2vw, 1.5rem);
+    z-index: 70;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.75rem;
+    pointer-events: none;
+}
+
+.admin-portal .alumni-notification-dock__bell {
+    pointer-events: auto;
+}
+
+.admin-portal .alumni-live-bell {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 4.25rem;
+    height: 4.25rem;
+    border: 1px solid rgba(200, 154, 45, 0.36);
+    border-radius: 1.38rem;
+    background:
+        radial-gradient(circle at 30% 18%, rgba(255, 255, 255, 0.98), transparent 42%),
+        linear-gradient(180deg, #fff, #e7f5ec);
+    color: #07180e;
+    text-decoration: none;
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, 0.9),
+        0 18px 36px rgba(7, 24, 14, 0.18),
+        0 0 0 7px rgba(20, 87, 38, 0.08);
+}
+
+.admin-portal .alumni-live-bell.has-unread {
+    animation: alumniBellAttention 1.9s ease-in-out infinite;
+}
+
+.admin-portal .alumni-live-bell:hover,
+.admin-portal .alumni-live-bell:focus-visible {
+    border-color: rgba(20, 87, 38, 0.22);
+    background: linear-gradient(180deg, #ffffff, #e6f2ea);
+    color: #0b3b1f;
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.9), 0 18px 32px rgba(7, 24, 14, 0.14);
+}
+
+.admin-portal .alumni-live-bell:focus-visible {
+    outline: 0;
+    box-shadow: 0 0 0 4px rgba(200, 154, 45, 0.24), 0 20px 40px rgba(7, 24, 14, 0.18);
+}
+
+.admin-portal .alumni-live-bell__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 1rem;
+    color: #07180e;
+    background: linear-gradient(135deg, rgba(200, 154, 45, 0.22), rgba(20, 87, 38, 0.12));
+}
+
+.admin-portal .alumni-live-bell__badge {
+    position: absolute;
+    top: -0.5rem;
+    right: -0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.68rem;
+    height: 1.68rem;
+    padding: 0 0.38rem;
+    border: 2px solid #fff;
+    border-radius: 999px;
+    background: #862633;
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 900;
+    line-height: 1;
+    box-shadow: 0 12px 24px rgba(134, 38, 51, 0.34);
+}
+
+.admin-portal .alumni-live-bell__badge.hidden,
+.admin-portal .alumni-live-bell__badge[hidden] {
+    display: none;
+}
+
+/* Shared job board pattern for alumni and admin records. */
+.admin-portal .admin-job-board {
+    --portal-card-accent: rgba(11, 59, 31, 0.28);
+    --portal-card-accent-solid: #0b3b1f;
+    --portal-card-tint: #f8fbf9;
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-portal .admin-job-board .alumni-job-board__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.25rem;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.1);
+    background: #fff !important;
+}
+
+.admin-portal .admin-job-board .alumni-job-board__kicker {
+    color: var(--portal-card-accent-solid);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    font-weight: 800;
+}
+
+.admin-portal .admin-job-board .alumni-job-board__title {
+    color: #0f172a;
+    margin-top: 0.4rem;
+    font-size: clamp(1.35rem, 2vw, 1.75rem);
+    font-weight: 850;
+    line-height: 1.12;
+    letter-spacing: 0;
+}
+
+.admin-portal .admin-job-board .alumni-job-board__copy {
+    color: #475569;
+    max-width: 54rem;
+    margin-top: 0.4rem;
+    font-size: 0.86rem;
+    line-height: 1.5;
+}
+
+.admin-portal .admin-job-board .alumni-job-board__count {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    min-height: 2.65rem;
+    padding: 0.65rem 0.95rem;
+    border: 1px solid rgba(15, 138, 75, 0.24);
+    border-radius: 999px;
+    color: #047857;
+    background: #ecfdf5;
+    font-size: 0.88rem;
+    font-weight: 800;
+}
+
+.admin-portal .admin-job-rows {
+    display: grid;
+    gap: 0.85rem;
+    padding: 1rem;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(247, 250, 248, 0.9));
+}
+
+.admin-portal .admin-job-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1.25rem;
+    min-width: 0;
+    padding: 0.9rem 1rem !important;
+}
+
+.admin-portal .admin-job-board .alumni-job-row__main {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    min-width: 0;
+}
+
+.admin-portal .admin-job-board .alumni-job-row__marker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    border-radius: 0.5rem !important;
+    font-size: 1.25rem;
+}
+
+.admin-portal .admin-job-board .alumni-job-row__content {
+    min-width: 0;
+}
+
+.admin-portal .admin-job-board .alumni-job-row__title {
+    color: #06150d;
+    font-size: 1.05rem;
+    font-weight: 850;
+    line-height: 1.25;
+}
+
+.admin-portal .admin-job-board .alumni-job-row__company {
+    color: #047857;
+    margin-top: 0.22rem;
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.admin-portal .admin-job-board .alumni-job-row__description {
+    color: #475569;
+    max-width: 58rem;
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+    line-height: 1.65;
+}
+
+.admin-portal .admin-job-board .alumni-job-row__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.85rem;
+}
+
+.admin-portal .admin-job-board .alumni-job-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2rem;
+    padding: 0.42rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.admin-portal .admin-job-board .admin-job-chip--active {
+    color: #047857 !important;
+    background: #ecfdf5 !important;
+    border-color: rgba(4, 120, 87, 0.18) !important;
+}
+
+.admin-portal .admin-job-board .admin-job-chip--inactive {
+    color: #475569 !important;
+    background: #f8fafc !important;
+    border-color: rgba(100, 116, 139, 0.18) !important;
+}
+
+.admin-portal .admin-job-board .admin-job-chip--archived {
+    color: #8c5a00 !important;
+    background: #fff7e6 !important;
+    border-color: rgba(200, 154, 45, 0.24) !important;
+}
+
+.admin-portal .admin-job-row__aside {
+    display: grid;
+    justify-items: end;
+    gap: 0.75rem;
+    min-width: 13.5rem;
+}
+
+.admin-portal .admin-job-board .alumni-job-row__meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.45rem;
+    color: #64748b;
+    font-size: 0.76rem;
+    font-weight: 800;
+    text-align: right;
+}
+
+.admin-portal .admin-job-board .alumni-job-row__meta span + span::before {
+    content: "";
+    display: inline-flex;
+    width: 0.28rem;
+    height: 0.28rem;
+    margin-right: 0.45rem;
+    border-radius: 999px;
+    background: rgba(100, 116, 139, 0.5);
+    vertical-align: middle;
+}
+
+.admin-portal .admin-job-row__controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.55rem;
+}
+
+.admin-portal .admin-job-board .alumni-job-row__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.6rem;
+    padding: 0.68rem 1rem;
+    border-radius: 0.5rem;
+    color: #fff;
+    background: linear-gradient(135deg, #0b3b1f, #145726);
+    font-size: 0.85rem;
+    font-weight: 850;
+    box-shadow: 0 12px 24px rgba(11, 59, 31, 0.14);
+}
+
+.admin-portal .admin-job-row__manage {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.admin-portal .admin-job-row__icon-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 0.5rem;
+    border: 1px solid transparent;
+    font-weight: 800;
+}
+
+.admin-portal .admin-job-row__icon-action--edit {
+    color: #047857;
+    border-color: rgba(4, 120, 87, 0.2);
+    background: #ecfdf5;
+}
+
+.admin-portal .admin-job-row__icon-action--delete {
+    color: #be123c;
+    border-color: rgba(225, 29, 72, 0.2);
+    background: #fff1f2;
+}
+
+@media (max-width: 1023px) {
+    .admin-portal .admin-job-row {
+        grid-template-columns: 1fr;
+        align-items: flex-start;
+    }
+
+    .admin-portal .admin-job-row__aside {
+        width: 100%;
+        min-width: 0;
+        justify-items: start;
+    }
+
+    .admin-portal .admin-job-board .alumni-job-row__meta {
+        justify-content: flex-start;
+        text-align: left;
+    }
+
+    .admin-portal .admin-job-row__controls {
+        justify-content: flex-start;
+        width: 100%;
+    }
+}
+
+@media (max-width: 640px) {
+    .admin-portal .admin-job-board .alumni-job-board__header {
+        flex-direction: column;
+    }
+
+    .admin-portal .admin-job-board .alumni-job-board__count,
+    .admin-portal .admin-job-board .alumni-job-row__action {
+        width: 100%;
+    }
+
+    .admin-portal .admin-job-board .alumni-job-row__main {
+        flex-direction: column;
+    }
+
+    .admin-portal .admin-job-row__manage {
+        width: 100%;
+    }
+
+    .admin-portal .admin-job-row__icon-action {
+        flex: 1 1 0;
+    }
+}
+
+.portal-stat-card,
+.portal-stat-card__layout,
+.portal-stat-card__content {
+    min-width: 0;
+}
+
+.portal-stat-card__layout {
+    align-items: center;
+}
+
+.portal-stat-card__content {
+    flex: 1 1 auto;
+}
+
+.portal-stat-card__kicker {
+    max-width: 100%;
+    overflow: visible;
+    white-space: normal;
+    overflow-wrap: normal;
+    line-height: 1.35;
+}
+
+@media (min-width: 1536px) and (max-width: 1899px) {
+    .portal-stat-card {
+        padding: 1.35rem 1.4rem;
+    }
+
+    .portal-stat-card__kicker {
+        font-size: 0.78rem;
+        letter-spacing: 0.17em;
+    }
+}
+
+/* Final mobile override: keep portal shells usable in in-app browsers. */
+@media (max-width: 1023px) {
+    html,
+    body.portal-page,
+    body.alumni-portal,
+    body.admin-portal {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .alumni-portal .dashboard-shell,
+    .admin-portal .dashboard-shell,
+    body.alumni-portal.sidebar-collapsed .dashboard-shell,
+    body.admin-portal.sidebar-collapsed .dashboard-shell,
+    body.alumni-portal.sidebar-hover-open .dashboard-shell,
+    body.admin-portal.sidebar-hover-open .dashboard-shell {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .alumni-portal .dashboard-content,
+    .admin-portal .dashboard-content,
+    .alumni-portal .page-section,
+    .admin-portal .page-section,
+    .alumni-portal .surface-card,
+    .admin-portal .surface-card {
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .alumni-portal .alumni-sidebar,
+    .admin-portal .admin-sidebar {
+        width: calc(100vw - 1.25rem) !important;
+        max-width: 21rem !important;
+        transform: translateX(-108%) !important;
+        transition: none !important;
+    }
+
+    body.alumni-portal.mobile-sidebar-open .alumni-sidebar,
+    body.admin-portal.mobile-sidebar-open .admin-sidebar {
+        transform: translateX(0) !important;
+    }
+
+    .alumni-portal .dashboard-shell > header,
+    .alumni-portal .dashboard-shell > main,
+    .alumni-portal .dashboard-shell > footer,
+    .admin-portal .dashboard-shell > header,
+    .admin-portal .dashboard-shell > main,
+    .admin-portal .dashboard-shell > footer {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .admin-portal .alumni-topbar,
+    .alumni-portal .alumni-topbar {
+        max-width: 100%;
+    }
+
+    .admin-portal .alumni-topbar__lead,
+    .alumni-portal .alumni-topbar__lead {
+        align-items: flex-start;
+    }
+
+    .admin-portal .alumni-topbar__title,
+    .alumni-portal .alumni-topbar__title {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        font-size: clamp(1.75rem, 10vw, 2.35rem);
+        line-height: 1;
+    }
+}
+
+/* Compatibility fallback for mobile in-app browsers such as Messenger. */
+@media (max-width: 1023px) {
+    html,
+    body.portal-page,
+    body.alumni-portal,
+    body.admin-portal {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .alumni-portal .dashboard-shell,
+    .admin-portal .dashboard-shell,
+    body.alumni-portal.sidebar-collapsed .dashboard-shell,
+    body.admin-portal.sidebar-collapsed .dashboard-shell,
+    body.alumni-portal.sidebar-hover-open .dashboard-shell,
+    body.admin-portal.sidebar-hover-open .dashboard-shell {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .alumni-portal .dashboard-content,
+    .admin-portal .dashboard-content,
+    .alumni-portal .page-section,
+    .admin-portal .page-section,
+    .alumni-portal .surface-card,
+    .admin-portal .surface-card {
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .alumni-portal .alumni-sidebar,
+    .admin-portal .admin-sidebar {
+        width: calc(100vw - 1.25rem) !important;
+        max-width: 21rem !important;
+        transform: translateX(-108%) !important;
+        transition: none !important;
+    }
+
+    body.alumni-portal.mobile-sidebar-open .alumni-sidebar,
+    body.admin-portal.mobile-sidebar-open .admin-sidebar {
+        transform: translateX(0) !important;
+    }
+
+    .alumni-portal .dashboard-shell > header,
+    .alumni-portal .dashboard-shell > main,
+    .alumni-portal .dashboard-shell > footer,
+    .admin-portal .dashboard-shell > header,
+    .admin-portal .dashboard-shell > main,
+    .admin-portal .dashboard-shell > footer {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .admin-portal .alumni-topbar,
+    .alumni-portal .alumni-topbar {
+        max-width: 100%;
+    }
+
+    .admin-portal .alumni-topbar__lead,
+    .alumni-portal .alumni-topbar__lead {
+        align-items: flex-start;
+    }
+
+    .admin-portal .alumni-topbar__title,
+    .alumni-portal .alumni-topbar__title {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        font-size: clamp(1.75rem, 10vw, 2.35rem);
+        line-height: 1;
+    }
+}
+
+.alumni-portal .dashboard-content select,
+.admin-portal .dashboard-content select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: #fff !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+    background-position: right 0.95rem center !important;
+    background-repeat: no-repeat !important;
+    background-size: 1.25rem 1.25rem !important;
+    padding-right: 3rem !important;
+}
+
+.alumni-portal .dashboard-content select:hover,
+.alumni-portal .dashboard-content select:focus,
+.admin-portal .dashboard-content select:hover,
+.admin-portal .dashboard-content select:focus {
+    background-color: #fff !important;
+}
+
+.alumni-portal .dashboard-content .tracer-select-wrap__icon,
+.alumni-portal .dashboard-content .portal-select-wrap__icon,
+.alumni-portal .dashboard-content .alumni-filter-select__icon,
+.admin-portal .dashboard-content .tracer-select-wrap__icon,
+.admin-portal .dashboard-content .portal-select-wrap__icon,
+.admin-portal .dashboard-content .alumni-filter-select__icon {
+    display: none !important;
+}
+
+.portal-message-preview {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.97), rgba(237, 246, 240, 0.95));
+    border: 1px solid rgba(11, 59, 31, 0.07);
+    border-radius: 1rem;
+    padding: 0.8rem 0.95rem;
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.85), 0 8px 18px rgba(15, 23, 42, 0.03);
+}
+
+.portal-message-preview--active {
+    background: linear-gradient(135deg, rgba(249, 255, 251, 1), rgba(231, 247, 237, 0.98));
+    border-color: rgba(30, 122, 52, 0.13);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.92), 0 10px 22px rgba(30, 122, 52, 0.06);
+}
+
+.portal-record-avatar {
+    color: #ffffff !important;
+    background:
+        radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.26), transparent 34%),
+        linear-gradient(135deg, #0b3b1f 0%, #0f8a4b 58%, #145726 100%) !important;
+    border-color: rgba(11, 59, 31, 0.18) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        0 12px 24px rgba(7, 24, 14, 0.18) !important;
+}
+
+.admin-portal .portal-message-preview {
+    background: linear-gradient(135deg, rgba(255, 253, 247, 0.98), rgba(238, 246, 240, 0.95));
+    border-color: rgba(11, 59, 31, 0.08);
+}
+
+.alumni-portal .portal-message-preview {
+    background: linear-gradient(135deg, rgba(255, 254, 249, 0.98), rgba(237, 247, 240, 0.95));
+    border-color: rgba(11, 59, 31, 0.08);
+}
+
+.portal-message-preview p {
+    margin: 0;
+}
+
+.tracer-form-shell {
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.tracer-form-shell--editing {
+    background:
+        radial-gradient(circle at 100% 0, rgba(245, 158, 11, 0.1), transparent 28%),
+        linear-gradient(rgba(255, 253, 248, 0.97), rgba(255, 255, 255, 0.98) 26%, rgba(248, 250, 252, 0.96));
+    border-color: rgba(245, 158, 11, 0.28);
+    box-shadow:
+        0 22px 48px rgba(15, 23, 42, 0.07),
+        0 0 0 1px rgba(245, 158, 11, 0.08);
+}
+
+.tracer-form-shell--editing::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 0.3rem;
+    pointer-events: none;
+    background: linear-gradient(90deg, #f59e0b, #34d399, #60a5fa);
+}
+
+.tracer-form-shell--focus {
+    box-shadow:
+        0 22px 48px rgba(15, 23, 42, 0.07),
+        0 0 0 4px rgba(52, 211, 153, 0.14);
+}
+
+[data-tracer-field-anchor] {
+    scroll-margin-top: 6rem;
+    border-radius: 1rem;
+}
+
+[data-scroll-jump-destination] {
+    scroll-margin-top: 6rem;
+    border-radius: 1rem;
+}
+
+.tracer-field-jump-focus {
+    box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.16);
+}
+
+.tracer-helper-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    margin-top: 0.5rem;
+    color: #64748b;
+    font-size: 0.8rem;
+    line-height: 1.45;
+}
+
+.tracer-helper-note i {
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+    color: #047857;
+    font-size: 1rem;
+}
+
+.scroll-jump-focus {
+    box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.16);
+}
+
+.flash-message.flash-message--warning {
+    border-color: rgba(245, 158, 11, 0.28);
+    box-shadow: 0 14px 34px rgba(245, 158, 11, 0.12);
+}
+
+.flash-message.flash-message--warning .flash-message__icon {
+    color: #b45309;
+    background: rgba(245, 158, 11, 0.14);
+}
+
+.flash-stack[data-flash-stack] {
+    display: grid;
+    width: 100%;
+    gap: 0.75rem;
+    justify-items: stretch;
+    margin-bottom: 1.75rem;
+}
+
+.portal-flash-overlay {
+    pointer-events: none;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    width: min(calc(100vw - 1.5rem), 27rem);
+    max-height: calc(100vh - 1.5rem);
+}
+
+.portal-flash-overlay .flash-stack[data-flash-stack] {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.portal-flash-overlay .flash-message {
+    pointer-events: auto;
+    width: 100%;
+    max-width: 100%;
+}
+
+.flash-stack .flash-message {
+    --flash-accent: #145726;
+    --flash-accent-strong: #0b3b1f;
+    --flash-accent-muted: #86c79a;
+    --flash-accent-soft: rgba(20, 87, 38, 0.12);
+    position: relative;
+    overflow: hidden;
+    align-items: stretch;
+    gap: 1rem;
+    padding: 0 0.95rem 0 0;
+    border: 1px solid rgba(11, 59, 31, 0.14);
+    border-radius: 1.35rem;
+    background:
+        radial-gradient(circle at 100% 0, rgba(200, 154, 45, 0.12), transparent 34%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(251, 248, 241, 0.95) 58%, rgba(244, 249, 245, 0.96));
+    box-shadow: 0 18px 36px rgba(7, 24, 14, 0.12);
+    transition:
+        opacity 0.18s ease,
+        transform 0.18s ease;
+}
+
+.flash-stack .flash-message--success {
+    --flash-accent: #1e7a34;
+    --flash-accent-strong: #0b5b1f;
+    --flash-accent-muted: #8fd19d;
+    --flash-accent-soft: rgba(30, 122, 52, 0.14);
+}
+
+.flash-stack .flash-message--warning {
+    --flash-accent: #c57c13;
+    --flash-accent-strong: #9a5b00;
+    --flash-accent-muted: #f1bc69;
+    --flash-accent-soft: rgba(245, 158, 11, 0.16);
+}
+
+.flash-stack .flash-message--info {
+    --flash-accent: #2563eb;
+    --flash-accent-strong: #1d4ed8;
+    --flash-accent-muted: #93c5fd;
+    --flash-accent-soft: rgba(59, 130, 246, 0.14);
+}
+
+.flash-stack .flash-message--error {
+    --flash-accent: #c2410c;
+    --flash-accent-strong: #9a3412;
+    --flash-accent-muted: #f19a78;
+    --flash-accent-soft: rgba(239, 68, 68, 0.14);
+}
+
+.flash-stack .flash-message--logout {
+    --flash-accent: #dc2626;
+    --flash-accent-strong: #991b1b;
+    --flash-accent-muted: #fca5a5;
+    --flash-accent-soft: rgba(220, 38, 38, 0.14);
+}
+
+.flash-stack .flash-message__accent {
+    flex: 0 0 0.4rem;
+    align-self: stretch;
+    border-radius: 0 999px 999px 0;
+    background: linear-gradient(180deg, var(--flash-accent), var(--flash-accent-muted));
+    box-shadow: 0 0 0 1px var(--flash-accent-soft);
+}
+
+.flash-stack .flash-message__icon {
+    width: 3rem;
+    height: 3rem;
+    margin-top: 1rem;
+    border-radius: 1rem;
+    color: var(--flash-accent-strong);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), var(--flash-accent-soft));
+    box-shadow:
+        inset 0 0 0 1px var(--flash-accent-soft),
+        0 12px 24px rgba(7, 24, 14, 0.08);
+}
+
+.flash-stack .flash-message--success .flash-message__icon,
+.flash-stack .flash-message--info .flash-message__icon,
+.flash-stack .flash-message--warning .flash-message__icon,
+.flash-stack .flash-message--error .flash-message__icon {
+    color: var(--flash-accent-strong);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), var(--flash-accent-soft));
+}
+
+.flash-stack .flash-message__content {
+    min-width: 0;
+    flex: 1;
+    padding: 1rem 0;
+}
+
+.flash-stack .flash-message__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.flash-stack .flash-message__label {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.38rem 0.72rem;
+    border-radius: 999px;
+    background: var(--flash-accent-soft);
+    color: var(--flash-accent-strong);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.38);
+}
+
+.flash-stack .flash-message__title {
+    margin-top: 0.65rem;
+    color: #132319;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.flash-stack .flash-message__body {
+    margin-top: 0.32rem;
+    max-width: 62ch;
+    color: #496156;
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+.flash-stack .flash-message__close {
+    width: 2.35rem;
+    height: 2.35rem;
+    margin-top: 0.9rem;
+    border-radius: 0.9rem;
+    color: #5b6c63;
+    background: rgba(255, 255, 255, 0.74);
+    box-shadow:
+        inset 0 0 0 1px rgba(11, 59, 31, 0.08),
+        0 10px 18px rgba(7, 24, 14, 0.06);
+    transition:
+        background-color 0.2s,
+        color 0.2s,
+        box-shadow 0.2s;
+}
+
+.flash-stack .flash-message__close:hover {
+    color: var(--flash-accent-strong);
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow:
+        inset 0 0 0 1px var(--flash-accent-soft),
+        0 14px 24px rgba(7, 24, 14, 0.08);
+}
+
+.alumni-portal .flash-stack .flash-message {
+    background:
+        radial-gradient(circle at 100% 0, rgba(200, 154, 45, 0.14), transparent 34%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(251, 248, 241, 0.97) 54%, rgba(241, 247, 243, 0.98));
+    border-color: rgba(11, 59, 31, 0.12);
+    box-shadow:
+        0 20px 42px rgba(7, 24, 14, 0.14),
+        0 0 0 1px rgba(255, 255, 255, 0.62);
+}
+
+.alumni-portal .flash-stack .flash-message--success {
+    box-shadow:
+        0 20px 42px rgba(7, 24, 14, 0.14),
+        0 0 0 1px rgba(30, 122, 52, 0.1);
+}
+
+.alumni-portal .flash-stack .flash-message--warning {
+    box-shadow:
+        0 20px 42px rgba(7, 24, 14, 0.14),
+        0 0 0 1px rgba(245, 158, 11, 0.1);
+}
+
+.alumni-portal .flash-stack .flash-message--error {
+    box-shadow:
+        0 20px 42px rgba(7, 24, 14, 0.14),
+        0 0 0 1px rgba(239, 68, 68, 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tracer-form-shell {
+        transition: none;
+    }
+
+    .flash-stack .flash-message__close {
+        transition: none;
+    }
+}
+
+:root {
+    --portal-font-sans: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --portal-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    --portal-font-family: var(--portal-font-sans);
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea {
+    font-family: var(--portal-font-family);
+}
+
+.font-sans {
+    font-family: var(--portal-font-family) !important;
+}
+
+.font-mono,
+code,
+kbd,
+pre,
+samp {
+    font-family: var(--portal-font-mono) !important;
+}
+
+body.portal-page.admin-portal,
+body.portal-page.alumni-portal,
+body.admin-portal,
+body.alumni-portal {
+    font-family: var(--portal-font-family) !important;
+}
+
+.admin-portal .section-heading,
+.alumni-portal .section-heading {
+    font-family: var(--portal-font-family) !important;
+}
+
+@media (max-width: 767px) {
+    .portal-flash-overlay {
+        width: calc(100vw - 1.5rem);
+    }
+
+    .flash-stack .flash-message {
+        gap: 0.85rem;
+        padding-right: 0.8rem;
+    }
+
+    .flash-stack .flash-message__icon {
+        width: 2.75rem;
+        height: 2.75rem;
+        margin-top: 0.95rem;
+    }
+
+    .flash-stack .flash-message__title {
+        font-size: 0.95rem;
+    }
+
+    .flash-stack .flash-message__body {
+        font-size: 0.88rem;
+    }
+}
+select{appearance:none;cursor:pointer;background-color:#fff;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-position:right .65rem center;background-repeat:no-repeat;padding-right:2.25rem!important}[data-tooltip]{position:relative}[data-tooltip]:after{content:attr(data-tooltip);white-space:normal;color:#f9fafb;opacity:0;pointer-events:none;z-index:50;background:#111827;border:1px solid #f9fafb;border-radius:0;width:max-content;max-width:190px;padding:6px 8px;font-size:11px;line-height:1.15;transition:opacity .15s;position:absolute;top:auto;bottom:calc(100% + 4px);left:50%;transform:translate(-50%);box-shadow:0 6px 18px #1118272e}[data-tooltip]:before{content:none}[data-tooltip]:hover:after,[data-tooltip]:hover:before{opacity:1;transition-delay:1s}.tooltip-below[data-tooltip]:after{top:calc(100% + 4px);bottom:auto}.portal-page{background:radial-gradient(circle at 100% 0,#1e7a3414,#0000 28%),radial-gradient(circle at 0 100%,#0b3b1f0d,#0000 24%),linear-gradient(#f6fbf8 0%,#fff 20%,#f9fcfa 100%)}.dashboard-shell{transition:margin-left .28s}body.portal-shell-loading .alumni-sidebar,body.portal-shell-loading .dashboard-shell{pointer-events:none}body.portal-shell-loading .dashboard-shell{opacity:.72;transition:opacity .18s}.dashboard-content{width:100%;max-width:1500px}.page-section{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);background:linear-gradient(#fffffff7,#f8fcf9f0);border:1px solid #0b3b1f14;position:relative;overflow:hidden;box-shadow:0 18px 44px #0f172a0f}.page-section:before{content:"";pointer-events:none;background:linear-gradient(135deg,#1e7a340f,#fff0);width:100%;height:96px;position:absolute;inset:0 auto auto 0}.section-kicker{letter-spacing:.22em;text-transform:uppercase;font-size:10px;font-weight:700}.section-heading{color:#0f172a;letter-spacing:-.03em;font-size:1.75rem;font-weight:800;line-height:1.05}.section-subcopy{color:#475569;font-size:.95rem;line-height:1.6}.surface-card{background:linear-gradient(#fffffffa,#f8fafcf5);border:1px solid #94a3b82e;border-radius:1.5rem;box-shadow:0 14px 34px #0f172a0d}.portal-stat-grid{gap:1.5rem;display:grid}.portal-stat-card{--portal-stat-border:#3b82f638;--portal-stat-hover-border:#3b82f66b;--portal-stat-topbar:linear-gradient(90deg, #3b82f6fa, #93c5fde6, #3b82f62e);--portal-stat-fill:linear-gradient(135deg, #3b82f6, #1d4ed8);--portal-stat-kicker:#2563eb;border:1px solid var(--portal-stat-border);background:linear-gradient(#fffffff5,#f8faf8f0);border-radius:1.6rem;padding:1.4rem 1.5rem;transition:transform .22s,border-color .22s,box-shadow .22s;position:relative;overflow:hidden;box-shadow:0 18px 40px #0f172a0f}.portal-stat-card:before{content:"";background:var(--portal-stat-topbar);height:.28rem;position:absolute;inset:0 0 auto}.portal-stat-card:hover{border-color:var(--portal-stat-hover-border);transform:translateY(-4px);box-shadow:0 22px 44px #0f172a17}.portal-stat-card--popover{overflow:visible}.portal-stat-card__layout{align-items:center;gap:1rem;display:flex}.portal-stat-card__icon{background:var(--portal-stat-fill);color:#fff;border-radius:1.2rem;flex-shrink:0;justify-content:center;align-items:center;width:3.7rem;height:3.7rem;transition:transform .22s,box-shadow .22s;display:inline-flex;box-shadow:0 14px 26px #0f172a24}.portal-stat-card:hover .portal-stat-card__icon{transform:scale(1.04);box-shadow:0 18px 30px #0f172a2e}.portal-stat-card__content{min-width:0}.portal-stat-card__kicker{color:var(--portal-stat-kicker);letter-spacing:.18em;text-transform:uppercase;font-size:.84rem;font-weight:700}.portal-stat-card__value{color:#0f172a;margin-top:.38rem;font-size:2.35rem;font-weight:900;line-height:1}.portal-stat-card__value--compact{font-size:1.95rem;line-height:1.08}.portal-stat-card__meta{color:#5f6f67;margin-top:.65rem;font-size:.88rem;line-height:1.5}.portal-stat-card--blue{--portal-stat-border:#3b82f63d;--portal-stat-hover-border:#3b82f66b;--portal-stat-topbar:linear-gradient(90deg, #3b82f6fa, #93c5fde6, #3b82f62e);--portal-stat-fill:linear-gradient(135deg, #3b82f6, #1d4ed8);--portal-stat-kicker:#2563eb}.portal-stat-card--green{--portal-stat-border:#1e7a343d;--portal-stat-hover-border:#1e7a346b;--portal-stat-topbar:linear-gradient(90deg, #1e7a34fa, #86eface6, #1e7a342e);--portal-stat-fill:linear-gradient(135deg, #1e7a34, #0b5b1f);--portal-stat-kicker:#1e7a34}.portal-stat-card--purple{--portal-stat-border:#8b5cf63d;--portal-stat-hover-border:#8b5cf66b;--portal-stat-topbar:linear-gradient(90deg, #8b5cf6fa, #ddd6feeb, #8b5cf62e);--portal-stat-fill:linear-gradient(135deg, #8b5cf6, #6d28d9);--portal-stat-kicker:#7c3aed}.portal-stat-card--orange{--portal-stat-border:#f973163d;--portal-stat-hover-border:#f973166b;--portal-stat-topbar:linear-gradient(90deg, #f97316fa, #fdba74eb, #f973162e);--portal-stat-fill:linear-gradient(135deg, #f97316, #ea580c);--portal-stat-kicker:#ea580c}.portal-stat-card--gold{--portal-stat-border:#b07a003d;--portal-stat-hover-border:#b07a006b;--portal-stat-topbar:linear-gradient(90deg, #b07a00fa, #f2b705e0, #b07a002e);--portal-stat-fill:linear-gradient(135deg, #f2b705, #d79b00);--portal-stat-kicker:#9a6800}.portal-stat-card--emerald{--portal-stat-border:#0b3b1f3d;--portal-stat-hover-border:#0b3b1f6b;--portal-stat-topbar:linear-gradient(90deg, #0b3b1ffa, #19693ae6, #0b3b1f2e);--portal-stat-fill:linear-gradient(135deg, #0b3b1f, #072714);--portal-stat-kicker:#0b3b1f}@media (width<=767px){.portal-stat-card{padding:1.2rem 1.15rem}.portal-stat-card__layout{align-items:flex-start}.portal-stat-card__icon{border-radius:1.05rem;width:3.35rem;height:3.35rem}.portal-stat-card__value{font-size:2rem}.portal-stat-card__value--compact{font-size:1.7rem}}.hero-chip{color:#335345;background:#ffffffd1;border:1px solid #0b3b1f1f;border-radius:9999px;box-shadow:inset 0 1px #fffc}.dashboard-hero-grid{align-items:center;gap:1.25rem;display:grid}.dashboard-hero-copy{align-items:flex-start;gap:1rem;display:flex}.dashboard-hero-icon{color:#fff;background:linear-gradient(135deg,#0f8a4b,#0b3b1f);border-radius:1rem;flex-shrink:0;justify-content:center;align-items:center;width:3.5rem;height:3.5rem;display:inline-flex;box-shadow:0 16px 28px #0b3b1f29}.dashboard-hero-tags{flex-wrap:wrap;justify-content:flex-start;align-items:center;gap:.75rem;display:flex}.dashboard-marquee{overflow:hidden}.dashboard-marquee-track{will-change:transform;width:max-content;animation:22s linear infinite dashboardMarquee;display:flex}.dashboard-marquee:hover .dashboard-marquee-track{animation-play-state:paused}.admin-sidebar,.alumni-sidebar{isolation:isolate;background-color:#dceee2;width:16rem;transition:width .28s,padding .28s;position:fixed;top:0;left:0}.admin-sidebar:before,.alumni-sidebar:before{content:"";opacity:.95;pointer-events:none;z-index:0;background-image:linear-gradient(#dceee2ad,#dceee2c7),url("../../public/images/cmu-sidebar.png");background-position:50% 86%;background-repeat:no-repeat;background-size:auto,15rem;position:absolute;inset:0}.admin-sidebar-content,.alumni-sidebar-content{z-index:1;position:relative}.cmu-brand-logo{background-image:url("../../public/images/cmu-sidebar.png");background-position:50%;background-repeat:no-repeat;background-size:contain}body.sidebar-collapsed .admin-sidebar,body.sidebar-collapsed .alumni-sidebar{width:5.5rem;padding-left:.75rem;padding-right:.75rem}body.sidebar-collapsed .dashboard-shell{margin-left:5.5rem}body.sidebar-collapsed .sidebar-label,body.sidebar-collapsed .sidebar-profile-copy,body.sidebar-collapsed .sidebar-profile-heading,body.sidebar-collapsed .sidebar-brand-copy,body.sidebar-collapsed .sidebar-collapse-hide{display:none}body.sidebar-collapsed .sidebar-brand{justify-content:center}body.sidebar-collapsed .admin-sidebar-content>div,body.sidebar-collapsed .admin-sidebar-content>nav,body.sidebar-collapsed .alumni-sidebar-content>div,body.sidebar-collapsed .alumni-sidebar-content>nav{padding-left:.5rem;padding-right:.5rem}body.sidebar-collapsed .sidebar-nav-link,body.sidebar-collapsed .sidebar-profile-link,body.sidebar-collapsed .sidebar-logout-button{justify-content:center;padding-left:.5rem;padding-right:.5rem}body.sidebar-collapsed .sidebar-nav-link i,body.sidebar-collapsed .sidebar-profile-link i,body.sidebar-collapsed .sidebar-logout-button i{margin:0}body.sidebar-collapsed .sidebar-profile-link{gap:0;min-height:3rem}body.sidebar-collapsed .sidebar-profile-link>div:first-child{width:2.75rem;height:2.75rem}body.sidebar-collapsed .sidebar-profile-link>i:last-child{display:none}body.sidebar-collapsed .sidebarToggle,body.sidebar-collapsed #sidebarToggle{margin:0 auto}body.sidebar-collapsed .sidebar-nav-list{align-items:center}body.sidebar-collapsed [data-tooltip]:after{max-width:160px}.animate-fadeSlide{animation:.35s fadeSlide}@keyframes fadeSlide{0%{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}@keyframes dashboardMarquee{0%{transform:translate(0)}to{transform:translate(-50%)}}@media (width>=1024px){.dashboard-hero-grid{grid-template-columns:minmax(0,1.5fr) auto}.dashboard-hero-tags{place-content:center flex-end;max-width:22rem}}@media (width<=1024px){.section-heading{font-size:1.5rem}}.flash-stack{margin-bottom:1.5rem}.flash-message{-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);background:#fffffff5;border:1px solid #94a3b82e;border-radius:1rem;align-items:flex-start;gap:.875rem;padding:1rem 1.125rem;display:flex;box-shadow:0 14px 34px #0f172a14}.flash-message--success{border-color:#22c55e38;box-shadow:0 14px 34px #22c55e14}.flash-message--error{border-color:#ef444433;box-shadow:0 14px 34px #ef444414}.flash-message__icon{border-radius:9999px;flex-shrink:0;justify-content:center;align-items:center;width:2.5rem;height:2.5rem;font-size:1.25rem;display:inline-flex}.flash-message--success .flash-message__icon{color:#15803d;background:#22c55e1f}.flash-message--error .flash-message__icon{color:#b91c1c;background:#ef44441f}.flash-message__title{color:#0f172a;font-size:.95rem;font-weight:700;line-height:1.2}.flash-message__body{color:#475569;margin-top:.2rem;font-size:.9rem;line-height:1.5}.flash-message__close{color:#64748b;border-radius:9999px;flex-shrink:0;justify-content:center;align-items:center;width:2rem;height:2rem;transition:background-color .2s,color .2s;display:inline-flex}.flash-message__close:hover{color:#0f172a;background:#94a3b824}.empty-state-card{text-align:center;background:linear-gradient(#fffffff5,#f8fafcf0);border:1px dashed #94a3b857;border-radius:1.5rem;padding:1.75rem}.empty-state-card__icon{color:#0f766e;background:linear-gradient(135deg,#10b9811f,#3b82f614);border-radius:1.25rem;justify-content:center;align-items:center;width:4rem;height:4rem;font-size:1.75rem;display:inline-flex}.empty-state-card__title{color:#0f172a;margin-top:1rem;font-size:1rem;font-weight:700}.empty-state-card__body{color:#64748b;margin-top:.5rem;font-size:.9rem;line-height:1.55}.strength-meter{margin-top:.75rem}.strength-meter__track{background:#e2e8f0;border-radius:9999px;height:.5rem;overflow:hidden}.strength-meter__fill{border-radius:9999px;width:0%;height:100%;transition:width .2s,background-color .2s}.strength-meter__meta{justify-content:space-between;align-items:center;gap:.75rem;margin-top:.45rem;font-size:.78rem;display:flex}.strength-meter__label{color:#0f172a;font-weight:700}.strength-meter__hint{color:#64748b}body.portal-page.admin-portal{--admin-ink:#132319;--admin-ink-soft:#547160;--admin-emerald:#0b3b1f;--admin-emerald-mid:#145726;--admin-mist:#eff5f0;--admin-paper:#fbf9f3;--admin-line:#0b3b1f1f;--admin-shadow:0 20px 48px #07180e14;--alumni-ink:#132319;--alumni-ink-soft:#486256;--alumni-emerald:#0b3b1f;--alumni-emerald-deep:#072714;--alumni-emerald-mid:#145726;--alumni-mist:#eef4ef;--alumni-paper:#fbf8f1;--alumni-gold:#c89a2d;--alumni-gold-soft:#f4e6bd;--alumni-line:#0b3b1f1f;--alumni-shadow:0 24px 55px #07180e1a;color:var(--alumni-ink);background:radial-gradient(circle at 0 0,#c89a2d29,#0000 28%),radial-gradient(circle at 100% 10%,#1457262e,#0000 30%),radial-gradient(circle at 14% 100%,#0b3b1f14,#0000 28%),linear-gradient(#edf4ef 0%,#f7f3ea 44%,#f2f7f2 100%);font-family:Plus Jakarta Sans,Inter,sans-serif}.admin-portal .dashboard-content{max-width:1520px}.admin-portal .section-heading{color:var(--admin-ink)}.admin-portal .section-subcopy{color:#556b61}.admin-portal .surface-card,.admin-portal .dashboard-content .bg-white.rounded-lg.shadow-sm.border.border-gray-200,.admin-portal .dashboard-content .bg-white.rounded-xl.shadow-sm.border.border-gray-200{border-color:var(--admin-line);box-shadow:var(--admin-shadow);background:linear-gradient(#fffffffa,#f4f8f5f5)}.admin-portal .dashboard-content .border-blue-100.bg-gradient-to-r.from-blue-50.to-cyan-50,.admin-portal .dashboard-content .border-green-100.bg-gradient-to-r.from-green-50.to-emerald-50{box-shadow:var(--admin-shadow);background:radial-gradient(circle at 100% 0,#c89a2d1f,#0000 36%),linear-gradient(#fffffffa,#f3f8f4f0);border-color:#0b3b1f1f;border-radius:1.5rem;position:relative;overflow:hidden}.admin-portal .dashboard-content .border-blue-100.bg-gradient-to-r.from-blue-50.to-cyan-50:before,.admin-portal .dashboard-content .border-green-100.bg-gradient-to-r.from-green-50.to-emerald-50:before{content:"";pointer-events:none;background:linear-gradient(135deg,#14572614,#fff0);width:100%;height:5.5rem;position:absolute;inset:0 auto auto 0}.admin-portal .dashboard-content input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=range]):not([type=file]),.admin-portal .dashboard-content select,.admin-portal .dashboard-content textarea{min-height:3rem;color:var(--admin-ink);background-color:#fff;border-color:#0b3b1f24;border-radius:.95rem;transition:border-color .18s,box-shadow .18s,background-color .18s;box-shadow:inset 0 1px #ffffffeb,0 2px 6px #07180e08}.admin-portal .dashboard-content select{background-position:right .95rem center;padding-right:3rem!important}.admin-portal .dashboard-content textarea{min-height:7.5rem}.admin-portal .dashboard-content input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=range]):not([type=file]):hover,.admin-portal .dashboard-content select:hover,.admin-portal .dashboard-content textarea:hover{background-color:#fff;border-color:#1457263d}.admin-portal .dashboard-content input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=range]):not([type=file]):focus,.admin-portal .dashboard-content select:focus,.admin-portal .dashboard-content textarea:focus{border-color:#14572666;outline:none;box-shadow:0 0 0 4px #1e7a341f,0 12px 28px #07180e14}.admin-portal .dashboard-content input::-moz-placeholder{color:#8aa093}.admin-portal .dashboard-content textarea::-moz-placeholder{color:#8aa093}.admin-portal .dashboard-content input::placeholder,.admin-portal .dashboard-content textarea::placeholder{color:#8aa093}.admin-portal .dashboard-content label{color:var(--admin-ink);font-weight:700}.admin-portal .dashboard-content input[type=checkbox],.admin-portal .dashboard-content input[type=radio]{accent-color:var(--admin-emerald-mid)}.admin-portal .dashboard-content a.bg-blue-600.text-white,.admin-portal .dashboard-content button.bg-blue-600.text-white{color:#fff;background:linear-gradient(135deg,#0f5a29,#1e7a34);border:1px solid #0b3b1f1a;border-radius:1rem;font-weight:700;transition:transform .2s,box-shadow .2s,filter .2s,background .2s;box-shadow:0 14px 30px #0b3b1f2e}.admin-portal .dashboard-content a.bg-blue-600.text-white:hover,.admin-portal .dashboard-content button.bg-blue-600.text-white:hover{filter:saturate(1.03);background:linear-gradient(135deg,#0b4b22,#145726);transform:translateY(-1px);box-shadow:0 18px 34px #0b3b1f38}.admin-portal .dashboard-content a.bg-gray-100,.admin-portal .dashboard-content button.bg-gray-100,.admin-portal .dashboard-content a.bg-white.text-gray-700,.admin-portal .dashboard-content button.bg-white.text-gray-700{color:var(--admin-emerald);background:#ffffffeb;border:1px solid #0b3b1f1f;border-radius:1rem;font-weight:600;transition:transform .2s,box-shadow .2s,background-color .2s,border-color .2s;box-shadow:0 10px 20px #07180e0d}.admin-portal .dashboard-content a.bg-gray-100:hover,.admin-portal .dashboard-content button.bg-gray-100:hover,.admin-portal .dashboard-content a.bg-white.text-gray-700:hover,.admin-portal .dashboard-content button.bg-white.text-gray-700:hover{background:#eff5f0f5;border-color:#14572638;transform:translateY(-1px);box-shadow:0 14px 28px #07180e14}.admin-portal .dashboard-content a.inline-flex.items-center.gap-1.rounded-md,.admin-portal .dashboard-content button.inline-flex.items-center.gap-1.rounded-md{border-radius:999px;transition:transform .2s,box-shadow .2s,background-color .2s;box-shadow:0 8px 18px #0f172a0f}.admin-portal .dashboard-content a.inline-flex.items-center.gap-1.rounded-md:hover,.admin-portal .dashboard-content button.inline-flex.items-center.gap-1.rounded-md:hover{transform:translateY(-1px);box-shadow:0 12px 22px #0f172a14}.admin-portal .dashboard-content thead.bg-gray-50,.admin-portal .dashboard-content .bg-gray-50{background:linear-gradient(#f6f9f6fa,#ebf3edf0)}.admin-portal .dashboard-content thead th{color:#61776b;letter-spacing:.16em;font-size:.72rem;font-weight:700}.admin-portal .dashboard-content tbody.bg-white{background:0 0}.admin-portal .dashboard-content tbody tr{background:#ffffffc2;transition:background-color .18s,transform .18s}.admin-portal .dashboard-content tbody tr:hover{background:#f1f6f2f5}.admin-portal .dashboard-content td,.admin-portal .dashboard-content p.text-gray-600,.admin-portal .dashboard-content p.text-gray-500,.admin-portal .dashboard-content span.text-gray-500{color:#566c62}.admin-portal #analyticsExportBtn,.admin-portal button[aria-label="Open export options"]{color:#fff;background:linear-gradient(135deg,#0f5a29,#145726)}.admin-portal #analyticsExportBtn:hover,.admin-portal button[aria-label="Open export options"]:hover{background:linear-gradient(135deg,#0b4b22,#10481f)}.admin-portal #analyticsExportMenu{border-color:var(--admin-line);border-radius:1.15rem;box-shadow:0 22px 46px #07180e29}.admin-portal #analyticsExportMenu button:hover{background:#0b3b1f0a}body.portal-page.alumni-portal{--alumni-ink:#132319;--alumni-ink-soft:#486256;--alumni-emerald:#0b3b1f;--alumni-emerald-deep:#072714;--alumni-emerald-mid:#145726;--alumni-mist:#eef4ef;--alumni-paper:#fbf8f1;--alumni-gold:#c89a2d;--alumni-gold-soft:#f4e6bd;--alumni-line:#0b3b1f1f;--alumni-shadow:0 24px 55px #07180e1a;color:var(--alumni-ink);background:radial-gradient(circle at 0 0,#c89a2d29,#0000 28%),radial-gradient(circle at 100% 10%,#1457262e,#0000 30%),radial-gradient(circle at 14% 100%,#0b3b1f14,#0000 28%),linear-gradient(#edf4ef 0%,#f7f3ea 44%,#f2f7f2 100%);font-family:Plus Jakarta Sans,sans-serif}.alumni-portal [data-tooltip]:after{color:#f7f9f7;background:#072714f5;border:1px solid #ffffff29;border-radius:.95rem;box-shadow:0 18px 40px #07180e42}.alumni-portal .dashboard-shell{margin-left:18rem;margin-right:1rem;transition:margin-left .18s;position:relative}body.alumni-portal.sidebar-collapsed .dashboard-shell,body.alumni-portal.sidebar-hover-open .dashboard-shell{margin-left:6rem}.alumni-portal .dashboard-content{max-width:1520px}.alumni-portal .alumni-sidebar{will-change:width;background:radial-gradient(circle at 100% 0,#c89a2d2e,#0000 32%),linear-gradient(#061e12fa 0%,#0a2e1cfa 54%,#0e4528f5 100%);border-right:1px solid #c89a2d2e;width:18rem;transition:width .18s,padding .18s,box-shadow .18s;box-shadow:0 24px 60px #05120b52}.alumni-portal .alumni-sidebar:before{opacity:1;background-image:linear-gradient(#061d11d6,#0a2818bd),radial-gradient(circle at 0 0,#c89a2d29,#0000 32%),url("../../public/images/cmu-sidebar.png");background-position:50%,0 0,50% 88%;background-size:auto,auto,15rem}.alumni-portal .alumni-sidebar:after{content:"";opacity:.28;pointer-events:none;z-index:0;background:linear-gradient(#ffffff14,#0000),repeating-linear-gradient(90deg,#ffffff0d 0 1px,#0000 1px 24px);border-radius:1.75rem;height:12rem;position:absolute;inset:auto 1rem 1rem}body.alumni-portal.sidebar-collapsed .alumni-sidebar{width:6rem;padding-left:.75rem;padding-right:.75rem}body.alumni-portal.sidebar-hover-open .alumni-sidebar{z-index:45}body.alumni-portal.sidebar-collapsed .alumni-sidebar:after{display:none}.alumni-sidebar-overlay{z-index:35;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;pointer-events:none;background:#05120b8a;transition:opacity .24s;position:fixed;inset:0}body.alumni-portal.mobile-sidebar-open{overflow:hidden}body.alumni-portal.mobile-sidebar-open .alumni-sidebar-overlay{opacity:1;pointer-events:auto}.alumni-sidebar-panel{z-index:1;position:relative}.alumni-brand-mark{background-color:#ffffffeb;border:1px solid #ffffff2e;border-radius:1.25rem;flex-shrink:0;justify-content:center;align-items:center;width:3.5rem;height:3.5rem;padding:.35rem;display:inline-flex;overflow:hidden;box-shadow:0 14px 26px #0000002e}.alumni-brand-mark__image,.alumni-footer-card__logo-image{-o-object-fit:contain;object-fit:contain;width:100%;height:100%;display:block}.alumni-brand-kicker,.sidebar-panel-label,.alumni-membership-card__kicker,.alumni-topbar__eyebrow,.alumni-footer-card__eyebrow{letter-spacing:.24em;text-transform:uppercase;font-size:.68rem;font-weight:700}.alumni-brand-kicker{color:#f4e6bdcc}.alumni-brand-title,.alumni-topbar__title,.alumni-portal .section-heading{letter-spacing:-.03em;font-family:Cormorant Garamond,serif}.alumni-brand-title{color:#fff;font-size:2rem;font-weight:700;line-height:1}.alumni-brand-subtitle{color:#ffffffb8;margin-top:.35rem;font-size:.82rem;line-height:1.45}.alumni-sidebar-toggle,.alumni-mobile-toggle{color:#fff;background:#ffffff14;border:1px solid #ffffff24;border-radius:1rem;justify-content:center;align-items:center;width:2.75rem;height:2.75rem;transition:transform .2s,background-color .2s,border-color .2s;display:inline-flex}.alumni-sidebar-toggle:hover,.alumni-mobile-toggle:hover{background:#ffffff24;border-color:#ffffff38;transform:translateY(-1px)}.alumni-membership-card{z-index:1;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);background:linear-gradient(#ffffff17,#ffffff0d),radial-gradient(circle at 100% 0,#c89a2d1f,#0000 36%);border:1px solid #ffffff14;border-radius:1.45rem;padding:1.1rem;position:relative;overflow:hidden;box-shadow:inset 0 1px #ffffff0d}.alumni-membership-card__avatar{background:linear-gradient(135deg, var(--alumni-gold), #a67711);color:#132319;border-radius:1rem;flex-shrink:0;justify-content:center;align-items:center;width:3.2rem;height:3.2rem;font-size:.95rem;font-weight:800;display:inline-flex;box-shadow:0 12px 24px #0003}.alumni-membership-card__copy{min-width:0}.alumni-membership-card__kicker{color:#f4e6bdd1}.alumni-membership-card__name{color:#fff;margin-top:.35rem;font-size:1.2rem;font-weight:700;line-height:1.2}.alumni-membership-card__subtitle{color:#ffffffb3;margin-top:.28rem;font-size:.84rem;line-height:1.45}.alumni-membership-card__details{border-top:1px solid #ffffff14;margin-top:.9rem;padding-top:.85rem}.alumni-membership-card__meta{color:#ffffffad;font-size:.78rem;line-height:1.5}.alumni-membership-card__meta+.alumni-membership-card__meta{margin-top:.18rem}.alumni-mini-stat{background:#ffffff0f;border:1px solid #ffffff14;border-radius:1rem;padding:.8rem .9rem}.alumni-mini-stat__label,.alumni-brief-row__label{color:#f4e6bdb8;letter-spacing:.16em;text-transform:uppercase;font-size:.67rem;font-weight:700}.alumni-mini-stat__value{color:#fff;margin-top:.4rem;font-size:.92rem;font-weight:600;display:block}.alumni-chip{letter-spacing:.08em;text-transform:uppercase;border-radius:999px;justify-content:center;align-items:center;gap:.35rem;max-width:100%;padding:.45rem .8rem;font-size:.72rem;font-weight:700;display:inline-flex}.alumni-chip--light{color:#f7e7b3;background:#f4e6bd29;border:1px solid #f4e6bd2e}.alumni-chip--soft{color:#ffffffb3;text-overflow:ellipsis;white-space:nowrap;text-transform:none;letter-spacing:0;background:#ffffff14;border:1px solid #ffffff14;max-width:100%;overflow:hidden}.alumni-card-action,.alumni-secondary-link,.alumni-logout-button{border-radius:1rem;justify-content:center;align-items:center;gap:.55rem;padding:.8rem 1rem;font-size:.9rem;font-weight:600;transition:transform .2s,background-color .2s,border-color .2s,color .2s;display:inline-flex}.alumni-card-action{color:#fff;background:#ffffff14;border:1px solid #ffffff14}.alumni-card-action:hover{background:#ffffff24;transform:translateY(-1px)}.sidebar-panel-copy{color:#ffffff9e;margin-top:.35rem;font-size:.82rem;line-height:1.5}.sidebar-panel-label{color:#f4e6bdd1}.alumni-nav-group{flex-direction:column;gap:.55rem;display:flex}.alumni-sidebar-link{color:#fff;background:#ffffff0a;border:1px solid #ffffff0f;border-radius:1rem;align-items:center;gap:.85rem;padding:.8rem .9rem;transition:transform .2s,border-color .2s,background-color .2s,box-shadow .2s;display:flex}.alumni-sidebar-link:hover{background:#ffffff14;border-color:#f4e6bd33;transform:translate(2px);box-shadow:0 14px 24px #05120b29}.alumni-sidebar-link.is-active{background:linear-gradient(135deg,#f4e6bd2e,#ffffff14);border-color:#f4e6bd47;box-shadow:0 18px 30px #05120b2e}.alumni-sidebar-link__icon{color:#f7f9f7;background:#ffffff1f;border-radius:1rem;flex-shrink:0;justify-content:center;align-items:center;width:2.7rem;height:2.7rem;display:inline-flex}.alumni-sidebar-link.is-active .alumni-sidebar-link__icon{background:linear-gradient(135deg, var(--alumni-gold), #a67711);color:var(--alumni-ink)}.alumni-sidebar-link__label{color:#fff;font-size:.9rem;font-weight:700;display:block}.alumni-sidebar-link__meta{color:#ffffff9e;margin-top:.16rem;font-size:.75rem;display:block}.alumni-sidebar-link__badge,.alumni-pill-badge{min-width:1.85rem;color:var(--alumni-emerald);background:#fff;border-radius:999px;justify-content:center;align-items:center;padding:.28rem .55rem;font-size:.72rem;font-weight:800;display:inline-flex}.alumni-brief-row{background:#ffffff0f;border-radius:1rem;align-items:flex-start;gap:.75rem;padding:.9rem;display:flex}.alumni-brief-row__value{color:#fff;word-break:break-word;margin-top:.2rem;font-size:.86rem;line-height:1.45}.alumni-update-card{background:#ffffff0d;border:1px solid #ffffff14;border-radius:1.2rem;align-items:flex-start;gap:.8rem;padding:.95rem;transition:transform .2s,background-color .2s,border-color .2s;display:flex}.alumni-update-card:hover{background:#ffffff14;transform:translateY(-1px)}.alumni-update-card.is-unread{background:linear-gradient(135deg,#f4e6bd1f,#ffffff0d);border-color:#f4e6bd3d}.alumni-update-card__icon{color:#fff;background:#ffffff1f;border-radius:.95rem;flex-shrink:0;justify-content:center;align-items:center;width:2.5rem;height:2.5rem;display:inline-flex}.alumni-update-card__badge{color:#f7e7b3;letter-spacing:.12em;text-transform:uppercase;background:#f4e6bd33;border-radius:999px;align-items:center;padding:.2rem .45rem;font-size:.62rem;font-weight:800;display:inline-flex}.alumni-secondary-link{color:#fff;background:#ffffff14;border:1px solid #ffffff14;width:100%}.alumni-secondary-link:hover,.alumni-logout-button:hover{background:#ffffff24;transform:translateY(-1px)}.alumni-logout-button{color:#f7d8d8;background:#ffffff0f;border:1px solid #ffffff14}.alumni-topbar{background:linear-gradient(#fffffff5,#faf7eff0);border:1px solid #ffffffb8;border-radius:1.6rem;padding:1.35rem 1.5rem;position:relative;overflow:hidden;box-shadow:0 18px 40px #07180e14}.alumni-topbar:before{content:none}.alumni-topbar__title{color:var(--alumni-emerald-deep);font-size:clamp(1.9rem,2.3vw,2.45rem);font-weight:700;line-height:1}.alumni-topbar__eyebrow{color:#8c6b17}.alumni-topbar__subtitle{color:var(--alumni-ink-soft);margin-top:.55rem;font-size:.96rem;line-height:1.6}.alumni-topbar__actions{flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:.65rem;display:flex}.alumni-topbar-chip,.alumni-topbar-notice{color:var(--alumni-emerald);background:#ffffffe0;border:1px solid #0b3b1f1a;border-radius:.95rem;align-items:center;gap:.55rem;padding:.78rem .95rem;font-size:.83rem;font-weight:700;display:inline-flex}.alumni-topbar-notice{box-shadow:0 10px 18px #0b3b1f0f}.alumni-topbar-notice__dot{background:#dc2626;border-radius:999px;width:.7rem;height:.7rem;position:absolute;top:-.15rem;right:-.15rem;box-shadow:0 0 0 3px #dc262624}.alumni-topbar-notice__count{background:#0b3b1f14;border-radius:999px;justify-content:center;align-items:center;min-width:1.5rem;padding:.15rem .4rem;font-size:.72rem;font-weight:800;display:inline-flex}.alumni-topbar-cta,.alumni-button-primary,.alumni-button-secondary,.alumni-button-danger,.alumni-button-muted{border-radius:.95rem;justify-content:center;align-items:center;gap:.6rem;padding:.82rem 1.1rem;font-size:.9rem;font-weight:700;transition:transform .2s,box-shadow .2s,background-color .2s,border-color .2s,color .2s;display:inline-flex}.alumni-topbar-cta,.alumni-button-primary{background:linear-gradient(135deg, var(--alumni-emerald), var(--alumni-emerald-mid));color:#fff;box-shadow:0 12px 24px #0b3b1f24}.alumni-topbar-cta:hover,.alumni-button-primary:hover,.alumni-button-secondary:hover,.alumni-button-danger:hover,.alumni-button-muted:hover{transform:translateY(-1px)}.alumni-button-secondary{color:var(--alumni-emerald);background:#fff;border:1px solid #0b3b1f1f}.alumni-button-muted{color:#475569;background:#ffffffb3;border:1px solid #94a3b83d}.alumni-button-danger{color:#fff;background:linear-gradient(135deg,#dc2626,#b91c1c);border:1px solid #dc262624;box-shadow:0 16px 28px #b91c1c29}.alumni-inline-nav{z-index:1;flex-wrap:wrap;gap:.7rem;margin-top:1.25rem;display:flex;position:relative}.alumni-inline-nav__link{color:#335345;background:#ffffffa6;border:1px solid #0b3b1f14;border-radius:999px;align-items:center;gap:.55rem;padding:.72rem .95rem;font-size:.83rem;font-weight:700;transition:transform .2s,background-color .2s,border-color .2s,color .2s;display:inline-flex}.alumni-inline-nav__link:hover{background:#fff;border-color:#0b3b1f29;transform:translateY(-1px)}.alumni-inline-nav__link.is-active{background:linear-gradient(135deg, var(--alumni-emerald), var(--alumni-emerald-mid));color:#fff;border-color:#0b3b1f2e;box-shadow:0 14px 22px #0b3b1f24}.alumni-inline-nav__badge{background:#fff3;border-radius:999px;justify-content:center;align-items:center;min-width:1.4rem;padding:.18rem .4rem;font-size:.68rem;font-weight:800;display:inline-flex}body.alumni-portal.sidebar-collapsed .alumni-membership-card{background:#ffffff0a;border-radius:1.25rem;padding:.75rem .5rem}body.alumni-portal.sidebar-collapsed .alumni-membership-card .flex{justify-content:center}body.alumni-portal.sidebar-collapsed .alumni-membership-card__copy,body.alumni-portal.sidebar-collapsed .alumni-membership-card__details{display:none}body.alumni-portal.sidebar-collapsed .alumni-membership-card__avatar{width:2.9rem;height:2.9rem;margin:0 auto}body.alumni-portal.sidebar-collapsed .alumni-nav-group{gap:.75rem}body.alumni-portal.sidebar-collapsed .alumni-sidebar-link{box-shadow:none;background:0 0;border-radius:1.1rem;justify-content:center;padding:.55rem}body.alumni-portal.sidebar-collapsed .alumni-sidebar-link:hover{background:#ffffff14;transform:none}body.alumni-portal.sidebar-collapsed .alumni-sidebar-link.is-active{background:#ffffff14;border-color:#f4e6bd2e}body.alumni-portal.sidebar-collapsed .alumni-sidebar-link__icon{width:2.8rem;height:2.8rem;margin:0}body.alumni-portal.sidebar-collapsed .alumni-sidebar-link__badge{display:none}.alumni-portal .page-section{background:radial-gradient(circle at 100% 0,#c89a2d2e,#0000 28%),linear-gradient(135deg,#072714fa,#0f4a2bf0);border:1px solid #c89a2d2e;box-shadow:0 28px 60px #06150d2e}.alumni-portal .page-section:before{opacity:.45;background:linear-gradient(135deg,#ffffff14,#0000 30%),repeating-linear-gradient(90deg,#ffffff0a 0 1px,#0000 1px 34px);height:100%}.alumni-portal .page-section:after{content:"";pointer-events:none;background:radial-gradient(circle,#f4e6bd2e,#0000 68%);border-radius:999px;width:16rem;height:16rem;position:absolute;inset:auto -6% -55% auto}.alumni-portal .section-kicker{color:#f7e7b3e0!important}.alumni-portal .section-heading{color:#fff;font-size:clamp(2rem,2.8vw,3rem);font-weight:700;line-height:.94}.alumni-portal .section-subcopy{color:#f2f7f3c7;font-size:1rem}.alumni-portal .dashboard-hero-icon{background:linear-gradient(135deg, var(--alumni-gold), #a67711);color:var(--alumni-ink);box-shadow:0 18px 32px #00000038}.alumni-portal .hero-chip{color:#f7f9f7eb;background:#ffffff1a;border-color:#ffffff1f;box-shadow:inset 0 1px #ffffff14}.alumni-portal .surface-card,.alumni-summary-card,.alumni-session-card,.alumni-danger-card,.alumni-callout,.alumni-metric-card{box-shadow:var(--alumni-shadow);background:linear-gradient(#fffffff2,#fbf8f1eb);border:1px solid #ffffffa3;border-radius:1.6rem}.alumni-preview-card{padding:1.2rem}.alumni-preview-header{flex-wrap:wrap;align-items:flex-start;gap:.5rem;display:flex}.alumni-preview-header__eyebrow{color:#64748b;letter-spacing:.14em;text-transform:uppercase;font-size:.72rem;font-weight:700}.alumni-preview-item{color:inherit;cursor:pointer;background:linear-gradient(#fffffff5,#f7faf8eb);border:1px solid #0b3b1f14;border-radius:1rem;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:.9rem;padding:.9rem 1rem;text-decoration:none;transition:transform .2s,border-color .2s,box-shadow .2s;display:grid}.alumni-preview-item:hover,.alumni-preview-item:focus-visible{border-color:#0b3b1f29;transform:translateY(-1px);box-shadow:0 16px 28px #0f172a0f}.alumni-preview-item:focus-visible{outline-offset:2px;outline:2px solid #10b98133}.alumni-preview-item__main{align-items:flex-start;gap:.8rem;min-width:0;display:flex}.alumni-preview-item__icon{width:2.5rem;height:2.5rem;color:var(--alumni-emerald);background:#0b3b1f14;border-radius:.85rem;flex-shrink:0;justify-content:center;align-items:center;display:inline-flex}.alumni-preview-item--jobs .alumni-preview-item__icon{color:#1d4ed8;background:#2563eb14}.alumni-preview-item--announcements .alumni-preview-item__icon{color:#047857;background:#10b9811a}.alumni-preview-item__title{color:#0f172a;font-size:1rem;font-weight:700;line-height:1.35}.alumni-preview-item__subtitle{color:#475569;margin-top:.1rem;font-size:.92rem;line-height:1.4}.alumni-preview-item__meta-line{color:#64748b;margin-top:.3rem;font-size:.84rem;line-height:1.5}.alumni-preview-item__indicator{width:2.35rem;height:2.35rem;color:var(--alumni-emerald-deep);background:#0b3b1f0f;border-radius:999px;justify-content:center;align-self:center;align-items:center;transition:transform .2s,background-color .2s,box-shadow .2s;display:inline-flex;box-shadow:inset 0 0 0 1px #0b3b1f14}.alumni-preview-item:hover .alumni-preview-item__indicator,.alumni-preview-item:focus-visible .alumni-preview-item__indicator{background:#0b3b1f1a;transform:translate(2px);box-shadow:inset 0 0 0 1px #0b3b1f1f}.alumni-preview-empty{text-align:center;background:#f7faf8cc;border:1px dashed #0b3b1f24;border-radius:1.2rem;padding:2rem 1.25rem}.alumni-dashboard-filters{border-color:#f4e6bd24}.alumni-dashboard-filters__kicker{color:#f4e6bdd6;letter-spacing:.2em;text-transform:uppercase;font-size:.76rem;font-weight:700}.alumni-dashboard-filters__title{color:#f8fafc;letter-spacing:-.03em;margin-top:.4rem;font-size:clamp(1.7rem,2vw,2.1rem);font-weight:800;line-height:1.12}.alumni-dashboard-filters__copy{color:#ffffffc2;max-width:46rem;margin-top:.75rem;font-size:.97rem;line-height:1.65}.alumni-dashboard-filters__feedback{color:#6ee7b7eb;margin-top:.55rem;font-size:.84rem;font-weight:600}.alumni-dashboard-filters__reset{color:#ffffffe0;letter-spacing:.06em;text-transform:uppercase;background:#ffffff14;border:1px solid #ffffff1f;border-radius:999px;align-self:flex-start;align-items:center;gap:.45rem;padding:.7rem 1rem;font-size:.82rem;font-weight:700;transition:background-color .2s,border-color .2s,transform .2s;display:inline-flex}.alumni-dashboard-filters__reset:hover{background:#ffffff24;border-color:#f4e6bd47;transform:translateY(-1px)}.alumni-filter-field{display:block}.alumni-filter-field__label{color:#f4e6bdeb;letter-spacing:.02em;margin-bottom:.6rem;font-size:.88rem;font-weight:700;display:block}.alumni-filter-select-wrap{display:block;position:relative}.alumni-filter-select{appearance:none;color:#0f172a;background:#fffffff5;border:1px solid #ffffff29;border-radius:1rem;width:100%;min-height:3.25rem;padding:.8rem 3.2rem .8rem 1rem;font-size:1rem;font-weight:600;line-height:1.4;transition:border-color .2s,box-shadow .2s,background-color .2s;box-shadow:0 12px 24px #05120b1f}.alumni-filter-select:hover{background:#fff;border-color:#f4e6bd7a}.alumni-filter-select:focus{border-color:#10b98194;outline:none;box-shadow:0 0 0 4px #10b9812e,0 14px 28px #05120b29}.alumni-filter-select__icon{width:2rem;height:2rem;color:var(--alumni-emerald-deep);pointer-events:none;background:#0b3b1f14;border-radius:999px;justify-content:center;align-items:center;display:inline-flex;position:absolute;top:50%;right:.9rem;transform:translateY(-50%)}.alumni-filter-submit{color:#fff;background:linear-gradient(135deg,#119b6d,#2bb673);border-radius:1rem;justify-content:center;align-items:center;gap:.55rem;width:100%;min-height:3.25rem;padding:.8rem 1rem;font-size:.98rem;font-weight:700;transition:transform .2s,box-shadow .2s,filter .2s;display:inline-flex;box-shadow:0 14px 28px #05120b2e}.alumni-filter-submit:hover{filter:saturate(1.04);transform:translateY(-1px);box-shadow:0 18px 34px #05120b38}.alumni-filter-submit:disabled{cursor:wait;opacity:.8}.tracer-select-wrap,.portal-select-wrap{border-radius:1rem;width:100%;min-width:0;display:block;position:relative;overflow:hidden}.tracer-select,.portal-select{text-overflow:ellipsis;white-space:nowrap;background-image:none;width:100%;min-width:0;max-width:100%;display:block;overflow:hidden;padding-right:4rem!important}.tracer-select-wrap__icon,.portal-select-wrap__icon{width:2.85rem;color:var(--alumni-emerald-deep);pointer-events:none;background:linear-gradient(#f7faf8fa,#f1f5f2f5);border-left:1px solid #0f172a14;border-radius:0 .95rem .95rem 0;justify-content:center;align-items:center;display:inline-flex;position:absolute;top:1px;bottom:1px;right:1px;transform:none}.tracer-select-wrap:focus-within .tracer-select-wrap__icon,.portal-select-wrap:focus-within .portal-select-wrap__icon{background:linear-gradient(#f0fdf8fa,#e7f6eef5);border-left-color:#14572624}.alumni-summary-grid{gap:1rem;display:grid}.alumni-summary-card{padding:1.1rem 1.2rem}.alumni-summary-card__label{color:#6b7f74;letter-spacing:.18em;text-transform:uppercase;font-size:.72rem;font-weight:700;display:block}.alumni-summary-card__value{color:var(--alumni-emerald-deep);margin-top:.5rem;font-size:1.8rem;font-weight:800;line-height:1;display:block}.alumni-summary-card__note{color:#64748b;margin-top:.45rem;font-size:.84rem;line-height:1.5}.alumni-panel-header{flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:1rem;display:flex}.alumni-panel-title{color:var(--alumni-emerald-deep);font-size:1.2rem;font-weight:700;line-height:1.2}.alumni-panel-copy{color:#64748b;margin-top:.4rem;font-size:.92rem;line-height:1.6}.alumni-pill{color:var(--alumni-emerald);background:#0b3b1f0f;border-radius:999px;align-items:center;gap:.45rem;padding:.45rem .85rem;font-size:.76rem;font-weight:700;display:inline-flex}.alumni-pill--gold{color:#8c6b17;background:#c89a2d24}.alumni-pill--danger{color:#b91c1c;background:#dc26261a}.alumni-callout{padding:1.1rem 1.2rem}.alumni-callout--soft{background:radial-gradient(circle at 100% 0,#c89a2d24,#0000 34%),linear-gradient(#fffffff2,#f7faf8f0)}.alumni-portal .flash-message{background:linear-gradient(#fffffff5,#fbf8f1f2);border-color:#ffffffb8}.alumni-portal .empty-state-card{background:radial-gradient(circle at 100% 0,#c89a2d1f,#0000 34%),linear-gradient(#fffffff5,#fbf8f1f0);border-color:#0b3b1f1f}.alumni-portal .dashboard-content input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=range]):not([type=file]),.alumni-portal .dashboard-content select,.alumni-portal .dashboard-content textarea{color:#1f2937;background:#fff;border:1px solid #0f172a24;border-radius:1rem;transition:border-color .2s,box-shadow .2s,transform .2s,background-color .2s;box-shadow:inset 0 1px #ffffffeb,0 1px 2px #0f172a0a}.alumni-portal .dashboard-content input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=range]):not([type=file]):hover,.alumni-portal .dashboard-content select:hover,.alumni-portal .dashboard-content textarea:hover{border-color:#0f172a33;box-shadow:inset 0 1px #fffffff5,0 8px 18px #0f172a0d}.alumni-portal .dashboard-content input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=range]):not([type=file]):focus,.alumni-portal .dashboard-content select:focus,.alumni-portal .dashboard-content textarea:focus{background:#fff;border-color:#14572661;transform:translateY(-1px);box-shadow:0 0 0 4px #1457261f,0 14px 26px #14572614}.alumni-portal .dashboard-content textarea{min-height:7.5rem}.alumni-portal .dashboard-content label{color:#274032}.alumni-portal .dashboard-content table{border-collapse:separate;border-spacing:0}.alumni-portal .dashboard-content thead th{color:#385244}.alumni-portal .dashboard-content tbody tr{transition:background-color .2s,transform .2s}.alumni-portal .dashboard-content tbody tr:hover{background:#e9f4eeb8}.alumni-portal .dashboard-content nav[role=navigation] a,.alumni-portal .dashboard-content nav[role=navigation] span{border-radius:.9rem!important}.alumni-session-card,.alumni-metric-card,.alumni-danger-card{padding:1.15rem 1.2rem}.alumni-session-card__meta{color:#64748b;margin-top:.2rem;font-size:.82rem}.alumni-danger-card{background:radial-gradient(circle at 100% 0,#dc26261f,#0000 30%),linear-gradient(#fffffff5,#fef2f2f0);border-color:#dc262629}.alumni-settings-grid{gap:1.5rem;display:grid}.alumni-form-grid{gap:1rem;display:grid}.alumni-form-grid--two{grid-template-columns:repeat(1,minmax(0,1fr))}.alumni-form-field{flex-direction:column;gap:.45rem;display:flex}.alumni-form-field__hint{color:#64748b;font-size:.8rem;line-height:1.5}.alumni-checklist-item{border-radius:1rem;justify-content:space-between;align-items:center;gap:.75rem;padding:.9rem 1rem;display:flex}.alumni-checklist-item.is-complete{background:#ecfdf5cc;border:1px solid #22c55e29}.alumni-checklist-item.is-pending{background:#fffbebe6;border:1px solid #f59e0b29}.alumni-progress-track{background:#0b3b1f14;border-radius:999px;height:.85rem;overflow:hidden}.alumni-progress-fill{background:linear-gradient(90deg, var(--alumni-gold), var(--alumni-emerald-mid));border-radius:999px;height:100%}.alumni-submit-row{flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;display:flex}.alumni-portal .strength-meter__track{background:#0b3b1f14}.alumni-footer-card{background:radial-gradient(circle at 100% 0,#c89a2d29,#0000 26%),linear-gradient(135deg,#082915f5,#104729e6);border:1px solid #ffffff9e;border-radius:1.7rem;padding:1.35rem 1.5rem;box-shadow:0 22px 48px #06150d2e}.alumni-footer-card__logo{background-color:#ffffffeb;border-radius:1rem;flex-shrink:0;justify-content:center;align-items:center;width:3.1rem;height:3.1rem;padding:.32rem;display:inline-flex;overflow:hidden}.alumni-footer-card__eyebrow{color:#f4e6bdd1}.alumni-footer-card__title{color:#fff;margin-top:.32rem;font-size:1rem;font-weight:700}.alumni-footer-card__copy{color:#ffffffb8;max-width:30rem;font-size:.9rem;line-height:1.6}.admin-portal .dashboard-shell{margin-left:18rem;margin-right:1rem;transition:margin-left .18s;position:relative}body.admin-portal.sidebar-collapsed .dashboard-shell,body.admin-portal.sidebar-hover-open .dashboard-shell{margin-left:6rem}.admin-portal .admin-sidebar{will-change:width;background:radial-gradient(circle at 100% 0,#c89a2d2e,#0000 32%),linear-gradient(#061e12fa 0%,#0a2e1cfa 54%,#0e4528f5 100%);border-right:1px solid #c89a2d2e;width:18rem;transition:width .18s,padding .18s,box-shadow .18s;box-shadow:0 24px 60px #05120b52}.admin-portal .admin-sidebar:before{opacity:1;background-image:linear-gradient(#061d11d6,#0a2818bd),radial-gradient(circle at 0 0,#c89a2d29,#0000 32%),url("../../public/images/cmu-sidebar.png");background-position:50%,0 0,50% 88%;background-size:auto,auto,15rem}.admin-portal .admin-sidebar:after{content:"";opacity:.28;pointer-events:none;z-index:0;background:linear-gradient(#ffffff14,#0000),repeating-linear-gradient(90deg,#ffffff0d 0 1px,#0000 1px 24px);border-radius:1.75rem;height:12rem;position:absolute;inset:auto 1rem 1rem}body.admin-portal.sidebar-collapsed .admin-sidebar{width:6rem;padding-left:.75rem;padding-right:.75rem}body.admin-portal.sidebar-hover-open .admin-sidebar{z-index:45}body.admin-portal.sidebar-collapsed .admin-sidebar:after{display:none}body.admin-portal.mobile-sidebar-open{overflow:hidden}body.admin-portal.mobile-sidebar-open .alumni-sidebar-overlay{opacity:1;pointer-events:auto}body.admin-portal.sidebar-collapsed .alumni-membership-card{background:#ffffff0a;border-radius:1.25rem;padding:.75rem .5rem}body.admin-portal.sidebar-collapsed .alumni-membership-card .flex{justify-content:center}body.admin-portal.sidebar-collapsed .alumni-membership-card__copy,body.admin-portal.sidebar-collapsed .alumni-membership-card__details{display:none}body.admin-portal.sidebar-collapsed .alumni-membership-card__avatar{width:2.9rem;height:2.9rem;margin:0 auto}body.admin-portal.sidebar-collapsed .alumni-nav-group{gap:.75rem}body.admin-portal.sidebar-collapsed .alumni-sidebar-link{box-shadow:none;background:0 0;border-radius:1.1rem;justify-content:center;padding:.55rem}body.admin-portal.sidebar-collapsed .alumni-sidebar-link:hover{background:#ffffff14;transform:none}body.admin-portal.sidebar-collapsed .alumni-sidebar-link.is-active{background:#ffffff14;border-color:#f4e6bd2e}body.admin-portal.sidebar-collapsed .alumni-sidebar-link__icon{width:2.8rem;height:2.8rem;margin:0}body.admin-portal.sidebar-collapsed .alumni-sidebar-link__badge{display:none}.admin-portal .page-section{background:radial-gradient(circle at 100% 0,#c89a2d2e,#0000 28%),linear-gradient(135deg,#072714fa,#0f4a2bf0);border:1px solid #c89a2d2e;box-shadow:0 28px 60px #06150d2e}.admin-portal .page-section:before{opacity:.45;background:linear-gradient(135deg,#ffffff14,#0000 30%),repeating-linear-gradient(90deg,#ffffff0a 0 1px,#0000 1px 34px);height:100%}.admin-portal .page-section:after{content:"";pointer-events:none;background:radial-gradient(circle,#f4e6bd2e,#0000 68%);border-radius:999px;width:16rem;height:16rem;position:absolute;inset:auto -6% -55% auto}.admin-portal .section-kicker{color:#f7e7b3e0!important}.admin-portal .section-heading{color:#fff;font-family:Cormorant Garamond,serif;font-size:clamp(2rem,2.8vw,3rem);font-weight:700;line-height:.94}.admin-portal .section-subcopy{color:#f2f7f3c7;font-size:1rem}.admin-portal .dashboard-hero-icon{background:linear-gradient(135deg, var(--alumni-gold), #a67711);color:var(--alumni-ink);box-shadow:0 18px 32px #00000038}.admin-portal .hero-chip{color:#f7f9f7eb;background:#ffffff1a;border-color:#ffffff1f;box-shadow:inset 0 1px #ffffff14}.admin-portal .surface-card,.admin-portal .dashboard-content .bg-white.rounded-lg.shadow-sm.border.border-gray-200,.admin-portal .dashboard-content .bg-white.rounded-xl.shadow-sm.border.border-gray-200{box-shadow:var(--alumni-shadow);background:linear-gradient(#fffffff2,#fbf8f1eb);border:1px solid #ffffffa3;border-radius:1.6rem}@media (width>=768px){.alumni-form-grid--two,.alumni-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (width<=1023px){.alumni-portal .dashboard-shell,.admin-portal .dashboard-shell{margin-left:0;margin-right:0}body.alumni-portal.sidebar-collapsed .dashboard-shell,body.admin-portal.sidebar-collapsed .dashboard-shell{margin-left:0}.alumni-portal .alumni-sidebar,.admin-portal .admin-sidebar{width:min(21rem,100vw - 1.25rem);transition:transform .28s;transform:translate(-108%)}body.alumni-portal.mobile-sidebar-open .alumni-sidebar,body.admin-portal.mobile-sidebar-open .admin-sidebar{transform:translate(0)}.alumni-portal .dashboard-shell>header,.alumni-portal .dashboard-shell>main,.alumni-portal .dashboard-shell>footer,.admin-portal .dashboard-shell>header,.admin-portal .dashboard-shell>main,.admin-portal .dashboard-shell>footer{padding-left:1rem;padding-right:1rem}.alumni-inline-nav{flex-wrap:nowrap;padding-bottom:.25rem;overflow-x:auto}.alumni-inline-nav::-webkit-scrollbar{height:.45rem}.alumni-inline-nav::-webkit-scrollbar-thumb{background:#0b3b1f29;border-radius:999px}}@media (width<=767px){.alumni-portal .page-section,.alumni-portal .surface-card,.alumni-summary-card,.alumni-session-card,.alumni-danger-card,.alumni-footer-card,.admin-portal .page-section,.admin-portal .surface-card,.admin-portal .alumni-footer-card{border-radius:1.35rem}.alumni-topbar{padding:1.15rem}.alumni-topbar__actions{width:100%}.alumni-topbar-chip,.alumni-topbar-notice,.alumni-topbar-cta{justify-content:center;width:100%}.alumni-submit-row{flex-direction:column;align-items:stretch}.alumni-preview-item{grid-template-columns:1fr}.alumni-preview-item__indicator{justify-self:end}}.portal-table-header{justify-content:space-between;align-items:flex-start;gap:1rem;display:flex}.portal-table-hint{color:#64748b;margin-top:.35rem;font-size:.84rem;line-height:1.45}.portal-clickable-row{cursor:pointer}.portal-clickable-row>td{transition:background-color .18s}.portal-clickable-row:hover>td{background:#0b3b1f0a}.portal-clickable-row:focus-visible{outline-offset:-2px;outline:2px solid #10b98138}.portal-clickable-row:focus-visible>td{background:#0b3b1f12}.portal-row-actions{z-index:1;position:relative}.portal-clickable-item{cursor:pointer}.portal-clickable-item:focus-visible{outline-offset:-2px;outline:2px solid #10b98138}.notification-feed-item__indicator{color:#0b3b1f;background:#ffffffeb;border:1px solid #0b3b1f1f;border-radius:.9rem;justify-content:center;align-items:center;width:2.5rem;height:2.5rem;transition:transform .2s,background-color .2s,border-color .2s;display:inline-flex;box-shadow:0 8px 18px #0f172a0f}.portal-clickable-item:hover .notification-feed-item__indicator,.portal-clickable-item:focus-visible .notification-feed-item__indicator{background:#fff;border-color:#0b3b1f33;transform:translate(2px)}@property --tw-translate-x{syntax:"*";inherits:false;initial-value:0}@property --tw-translate-y{syntax:"*";inherits:false;initial-value:0}@property --tw-translate-z{syntax:"*";inherits:false;initial-value:0}@property --tw-rotate-x{syntax:"*";inherits:false}@property --tw-rotate-y{syntax:"*";inherits:false}@property --tw-rotate-z{syntax:"*";inherits:false}@property --tw-skew-x{syntax:"*";inherits:false}@property --tw-skew-y{syntax:"*";inherits:false}@property --tw-divide-y-reverse{syntax:"*";inherits:false;initial-value:0}@property --tw-border-style{syntax:"*";inherits:false;initial-value:solid}@property --tw-gradient-position{syntax:"*";inherits:false}@property --tw-gradient-from{syntax:"<color>";inherits:false;initial-value:#0000}@property --tw-gradient-via{syntax:"<color>";inherits:false;initial-value:#0000}@property --tw-gradient-to{syntax:"<color>";inherits:false;initial-value:#0000}@property --tw-gradient-stops{syntax:"*";inherits:false}@property --tw-gradient-via-stops{syntax:"*";inherits:false}@property --tw-gradient-from-position{syntax:"<length-percentage>";inherits:false;initial-value:0%}@property --tw-gradient-via-position{syntax:"<length-percentage>";inherits:false;initial-value:50%}@property --tw-gradient-to-position{syntax:"<length-percentage>";inherits:false;initial-value:100%}@property --tw-leading{syntax:"*";inherits:false}@property --tw-tracking{syntax:"*";inherits:false}@property --tw-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-shadow-color{syntax:"*";inherits:false}@property --tw-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-inset-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-inset-shadow-color{syntax:"*";inherits:false}@property --tw-inset-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-ring-color{syntax:"*";inherits:false}@property --tw-ring-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-inset-ring-color{syntax:"*";inherits:false}@property --tw-inset-ring-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-ring-inset{syntax:"*";inherits:false}@property --tw-ring-offset-width{syntax:"<length>";inherits:false;initial-value:0}@property --tw-ring-offset-color{syntax:"*";inherits:false;initial-value:#fff}@property --tw-ring-offset-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-outline-style{syntax:"*";inherits:false;initial-value:solid}@property --tw-blur{syntax:"*";inherits:false}@property --tw-brightness{syntax:"*";inherits:false}@property --tw-contrast{syntax:"*";inherits:false}@property --tw-grayscale{syntax:"*";inherits:false}@property --tw-hue-rotate{syntax:"*";inherits:false}@property --tw-invert{syntax:"*";inherits:false}@property --tw-opacity{syntax:"*";inherits:false}@property --tw-saturate{syntax:"*";inherits:false}@property --tw-sepia{syntax:"*";inherits:false}@property --tw-drop-shadow{syntax:"*";inherits:false}@property --tw-drop-shadow-color{syntax:"*";inherits:false}@property --tw-drop-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-drop-shadow-size{syntax:"*";inherits:false}@property --tw-backdrop-blur{syntax:"*";inherits:false}@property --tw-backdrop-brightness{syntax:"*";inherits:false}@property --tw-backdrop-contrast{syntax:"*";inherits:false}@property --tw-backdrop-grayscale{syntax:"*";inherits:false}@property --tw-backdrop-hue-rotate{syntax:"*";inherits:false}@property --tw-backdrop-invert{syntax:"*";inherits:false}@property --tw-backdrop-opacity{syntax:"*";inherits:false}@property --tw-backdrop-saturate{syntax:"*";inherits:false}@property --tw-backdrop-sepia{syntax:"*";inherits:false}@property --tw-duration{syntax:"*";inherits:false}@property --tw-scale-x{syntax:"*";inherits:false;initial-value:1}@property --tw-scale-y{syntax:"*";inherits:false;initial-value:1}@property --tw-scale-z{syntax:"*";inherits:false;initial-value:1}
+
+
+
+[data-tooltip]::after {
+    transition:
+        opacity 0.18s ease 2s,
+        visibility 0s linear 2s,
+        transform 0.18s ease 2s !important;
+}
+
+[data-tooltip]::before {
+    transition:
+        opacity 0.18s ease 2s,
+        visibility 0s linear 2s !important;
+}
+
+[data-tooltip]:hover::after,
+[data-tooltip]:hover::before,
+[data-tooltip]:focus-visible::after,
+[data-tooltip]:focus-visible::before {
+    transition-delay: 2s !important;
+}
+
+/* Final compact card override. Keep this after legacy/generated portal styles. */
+.admin-portal .dashboard-content,
+.alumni-portal .dashboard-content {
+    max-width: 1360px;
+}
+
+.admin-portal .dashboard-content .grid.gap-6,
+.alumni-portal .dashboard-content .grid.gap-6,
+.admin-portal .dashboard-content .portal-stat-grid,
+.alumni-portal .dashboard-content .portal-stat-grid {
+    gap: 1rem !important;
+}
+
+.admin-portal .alumni-topbar,
+.alumni-portal .alumni-topbar,
+.admin-record-hero,
+.page-section,
+.surface-card,
+.portal-stat-card,
+.analytics-chart-card,
+.empty-state-card,
+.settings-surface,
+.settings-tool-card,
+.settings-overview-card,
+.notification-feed-item,
+.portal-clickable-item,
+.alumni-summary-card,
+.alumni-session-card,
+.alumni-metric-card,
+.alumni-danger-card,
+.alumni-callout,
+.alumni-footer-card,
+.alumni-overview-stat,
+.alumni-overview-panel,
+.alumni-overview-highlight,
+.alumni-overview-identity-card,
+.alumni-overview-detail,
+.alumni-overview-checklist-item,
+.alumni-overview-notification,
+.alumni-job-opportunities-section,
+.alumni-jobs-summary,
+.alumni-job-board,
+.alumni-job-opening-card,
+.alumni-notification-preview,
+.alumni-preview-empty,
+.alumni-membership-card,
+.admin-portal .dashboard-content .bg-white.rounded-lg.shadow-sm.border.border-gray-200,
+.admin-portal .dashboard-content .bg-white.rounded-xl.shadow-sm.border.border-gray-200,
+.alumni-portal .dashboard-content .bg-white.rounded-lg.shadow-sm.border.border-gray-200,
+.alumni-portal .dashboard-content .bg-white.rounded-xl.shadow-sm.border.border-gray-200 {
+    border-color: rgba(15, 23, 42, 0.12) !important;
+    border-radius: 0.5rem !important;
+    background: #fff !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.admin-portal .dashboard-content :is(.rounded-xl, .rounded-2xl, .rounded-3xl)[class*="border"][class*="bg-"],
+.admin-portal .dashboard-content :is(.rounded-xl, .rounded-2xl, .rounded-3xl)[class*="shadow"],
+.admin-portal .dashboard-content [class*="rounded-["][class*="border"][class*="bg-"],
+.admin-portal .dashboard-content [class*="rounded-["][class*="shadow"],
+.alumni-portal .dashboard-content :is(.rounded-xl, .rounded-2xl, .rounded-3xl)[class*="border"][class*="bg-"],
+.alumni-portal .dashboard-content :is(.rounded-xl, .rounded-2xl, .rounded-3xl)[class*="shadow"],
+.alumni-portal .dashboard-content [class*="rounded-["][class*="border"][class*="bg-"],
+.alumni-portal .dashboard-content [class*="rounded-["][class*="shadow"] {
+    border-radius: 0.5rem !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important;
+}
+
+.admin-record-hero,
+.page-section,
+.surface-card,
+.analytics-chart-card,
+.empty-state-card,
+.settings-surface,
+.settings-tool-card,
+.settings-overview-card,
+.alumni-summary-card,
+.alumni-session-card,
+.alumni-metric-card,
+.alumni-danger-card,
+.alumni-callout,
+.alumni-footer-card,
+.alumni-overview-panel,
+.alumni-overview-highlight,
+.alumni-overview-identity-card,
+.admin-portal .dashboard-content .bg-white.rounded-lg.shadow-sm.border.border-gray-200,
+.admin-portal .dashboard-content .bg-white.rounded-xl.shadow-sm.border.border-gray-200,
+.alumni-portal .dashboard-content .bg-white.rounded-lg.shadow-sm.border.border-gray-200,
+.alumni-portal .dashboard-content .bg-white.rounded-xl.shadow-sm.border.border-gray-200 {
+    padding: 1rem !important;
+}
+
+.admin-portal .alumni-topbar,
+.alumni-portal .alumni-topbar,
+.portal-stat-card,
+.alumni-overview-stat,
+.alumni-jobs-summary {
+    padding: 1rem !important;
+}
+
+.alumni-job-board__header,
+.alumni-job-opening-card {
+    padding: 0.9rem 1rem !important;
+}
+
+.portal-stat-card,
+.alumni-overview-stat {
+    min-height: auto !important;
+}
+
+.portal-stat-card__icon,
+.empty-state-card__icon,
+.dashboard-hero-icon,
+.settings-tool-icon,
+.notification-feed-item__indicator,
+.alumni-jobs-summary__metric-icon,
+.alumni-notification-preview__icon,
+.alumni-overview-stat__icon {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    border-radius: 0.5rem !important;
+    background: #eef5f0 !important;
+    color: #0b3b1f !important;
+    box-shadow: none !important;
+}
+
+.portal-stat-card__value,
+.alumni-overview-stat__value,
+.alumni-summary-card__value,
+.alumni-jobs-summary__metric-value {
+    font-size: 1.55rem !important;
+    letter-spacing: 0 !important;
+}
+
+.portal-stat-card__value--compact {
+    font-size: 1.35rem !important;
+}
+
+.portal-stat-card__kicker,
+.alumni-summary-card__label,
+.alumni-jobs-summary__kicker,
+.alumni-job-board__kicker {
+    letter-spacing: 0.1em !important;
+    font-size: 0.7rem !important;
+}
+
+.admin-portal .alumni-topbar__title,
+.alumni-portal .alumni-topbar__title {
+    font-size: clamp(1.45rem, 2vw, 2.1rem) !important;
+    line-height: 1.12 !important;
+    letter-spacing: 0 !important;
+}
+
+.admin-portal .dashboard-content :is([class*="bg-gradient-to-"])[class*="border"],
+.alumni-portal .dashboard-content :is([class*="bg-gradient-to-"])[class*="border"],
+.alumni-overview-panel__mast,
+.alumni-overview-panel--employment .alumni-overview-panel__mast,
+.alumni-overview-identity-card,
+.alumni-job-board__header {
+    background-image: none !important;
+    background: #fff !important;
+    color: #0f172a !important;
+}
+
+.admin-portal .alumni-topbar::before,
+.admin-portal .alumni-topbar::after,
+.alumni-portal .alumni-topbar::before,
+.alumni-portal .alumni-topbar::after,
+.admin-record-hero::before,
+.admin-record-hero::after,
+.page-section::before,
+.page-section::after,
+.portal-stat-card::before,
+.portal-stat-card::after,
+.alumni-overview::before,
+.alumni-overview::after,
+.alumni-overview-stat::before,
+.alumni-overview-stat::after,
+.alumni-overview-panel::before,
+.alumni-overview-panel::after,
+.alumni-overview-panel__mast::before,
+.alumni-overview-panel__mast::after,
+.alumni-overview-highlight::after,
+.alumni-overview-identity-card::before,
+.alumni-overview-identity-card::after,
+.alumni-overview-notification::before,
+.alumni-job-opportunities-section::before,
+.alumni-jobs-summary::before,
+.alumni-job-board::before {
+    content: none !important;
+    display: none !important;
+}
+
+.portal-message-preview,
+.tracer-form-shell,
+.alumni-preview-item,
+.alumni-dashboard-filters,
+.alumni-checklist-item,
+.alumni-job-row {
+    border-color: rgba(15, 23, 42, 0.12) !important;
+    border-radius: 0.5rem !important;
+    background: #fff !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.alumni-job-row {
+    padding: 0.9rem 1rem !important;
+}
+
+.alumni-job-row::before {
+    content: none !important;
+    display: none !important;
+}
+
+.alumni-job-row__marker,
+.alumni-preview-item__indicator {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    border-radius: 0.5rem !important;
+    background: #eef5f0 !important;
+    color: #0b3b1f !important;
+    box-shadow: none !important;
+}
+
+.admin-portal .dashboard-content .section-heading,
+.alumni-portal .dashboard-content .section-heading {
+    color: #0f172a !important;
+    font-family: var(--portal-font-family) !important;
+    font-size: clamp(1.35rem, 2vw, 1.85rem) !important;
+    line-height: 1.12 !important;
+    letter-spacing: 0 !important;
+}
+
+.admin-portal .dashboard-content .section-kicker,
+.alumni-portal .dashboard-content .section-kicker,
+.alumni-dashboard-filters__kicker,
+.alumni-filter-field__label {
+    color: #64748b !important;
+}
+
+.admin-portal .dashboard-content .section-subcopy,
+.alumni-portal .dashboard-content .section-subcopy,
+.alumni-dashboard-filters__copy {
+    color: #475569 !important;
+}
+
+.alumni-dashboard-filters__title {
+    color: #0f172a !important;
+    font-size: clamp(1.25rem, 2vw, 1.6rem) !important;
+    letter-spacing: 0 !important;
+}
+
+.alumni-dashboard-filters__reset,
+.admin-portal .page-section .hero-chip,
+.alumni-portal .page-section .hero-chip {
+    color: #0b3b1f !important;
+    border-color: rgba(15, 23, 42, 0.12) !important;
+    border-radius: 999px !important;
+    background: #eef5f0 !important;
+    box-shadow: none !important;
+}
+
+.alumni-overview-panel__mast :is([class*="text-white"], .text-white),
+.alumni-overview-identity-card :is([class*="text-white"], .text-white) {
+    color: #475569 !important;
+    text-shadow: none !important;
+}
+
+.alumni-overview-panel__mast h2,
+.alumni-overview-identity-card h2,
+.alumni-overview-panel__mast p,
+.alumni-overview-identity-card p {
+    color: #0f172a !important;
+    text-shadow: none !important;
+}
+
+.alumni-overview-identity-chip {
+    color: #475569 !important;
+    border-color: rgba(15, 23, 42, 0.12) !important;
+    border-radius: 999px !important;
+    background: #f8fafc !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* Subtle card styling pass: compact, with just enough visual hierarchy. */
+.portal-stat-card,
+.alumni-overview-stat,
+.surface-card,
+.page-section,
+.analytics-chart-card,
+.settings-surface,
+.settings-tool-card,
+.settings-overview-card,
+.alumni-overview-panel,
+.alumni-overview-highlight,
+.alumni-overview-identity-card,
+.alumni-overview-detail,
+.alumni-overview-checklist-item,
+.alumni-overview-notification,
+.alumni-jobs-summary,
+.alumni-job-board,
+.alumni-job-opening-card,
+.portal-message-preview,
+.tracer-form-shell,
+.alumni-preview-item,
+.alumni-dashboard-filters,
+.alumni-checklist-item,
+.alumni-job-row,
+.admin-record-hero,
+.alumni-membership-card {
+    --portal-card-accent: rgba(11, 59, 31, 0.28);
+    --portal-card-accent-solid: #0b3b1f;
+    --portal-card-tint: #f8fbf9;
+    border-color: rgba(15, 23, 42, 0.11) !important;
+    border-radius: 0.5rem !important;
+    background: linear-gradient(180deg, #fff 0%, var(--portal-card-tint) 100%) !important;
+    box-shadow:
+        inset 3px 0 0 var(--portal-card-accent),
+        0 3px 10px rgba(15, 23, 42, 0.06) !important;
+}
+
+.portal-stat-card--blue,
+.alumni-overview-stat--notifications {
+    --portal-card-accent: rgba(37, 99, 235, 0.32);
+    --portal-card-accent-solid: #1d4ed8;
+    --portal-card-tint: #f8fbff;
+}
+
+.portal-stat-card--green,
+.portal-stat-card--emerald,
+.alumni-overview-stat--profile {
+    --portal-card-accent: rgba(20, 87, 38, 0.34);
+    --portal-card-accent-solid: #145726;
+    --portal-card-tint: #f8fcf9;
+}
+
+.portal-stat-card--gold,
+.portal-stat-card--orange,
+.alumni-overview-stat--tracer {
+    --portal-card-accent: rgba(176, 122, 0, 0.34);
+    --portal-card-accent-solid: #9a6800;
+    --portal-card-tint: #fffdf5;
+}
+
+.portal-stat-card--purple {
+    --portal-card-accent: rgba(109, 40, 217, 0.28);
+    --portal-card-accent-solid: #6d28d9;
+    --portal-card-tint: #fbf9ff;
+}
+
+.alumni-overview-stat--jobs,
+.alumni-danger-card {
+    --portal-card-accent: rgba(134, 38, 51, 0.34);
+    --portal-card-accent-solid: #862633;
+    --portal-card-tint: #fff8f8;
+}
+
+.portal-stat-card__icon,
+.alumni-overview-stat__icon,
+.empty-state-card__icon,
+.dashboard-hero-icon,
+.settings-tool-icon,
+.notification-feed-item__indicator,
+.alumni-jobs-summary__metric-icon,
+.alumni-notification-preview__icon,
+.alumni-job-row__marker,
+.alumni-preview-item__indicator {
+    border: 1px solid color-mix(in srgb, var(--portal-card-accent-solid) 16%, transparent) !important;
+    background: color-mix(in srgb, var(--portal-card-accent-solid) 10%, #fff) !important;
+    color: var(--portal-card-accent-solid) !important;
+}
+
+.portal-stat-card__kicker,
+.alumni-overview-stat__eyebrow,
+.alumni-summary-card__label,
+.alumni-jobs-summary__kicker,
+.alumni-job-board__kicker {
+    color: var(--portal-card-accent-solid) !important;
+}
+
+.portal-stat-card__value,
+.alumni-overview-stat__value {
+    color: #0f172a !important;
+    text-shadow: none !important;
+}
+
+.alumni-overview-stat__progress {
+    height: 0.38rem !important;
+    border-radius: 999px !important;
+    background: #eef2f7 !important;
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.04) !important;
+}
+
+.alumni-overview-stat__progress-fill {
+    border-radius: 999px !important;
+    background: var(--portal-card-accent-solid) !important;
+}
+
+.alumni-overview-stat__meta,
+.alumni-overview-stat__pill,
+.alumni-jobs-summary__metric,
+.alumni-job-chip,
+.hero-chip {
+    border-color: color-mix(in srgb, var(--portal-card-accent-solid, #0b3b1f) 14%, transparent) !important;
+    background: color-mix(in srgb, var(--portal-card-accent-solid, #0b3b1f) 8%, #fff) !important;
+    color: var(--portal-card-accent-solid, #0b3b1f) !important;
+    box-shadow: none !important;
+}
+
+.alumni-membership-card {
+    --portal-card-accent: rgba(200, 154, 45, 0.42);
+    --portal-card-accent-solid: #9a6800;
+    --portal-card-tint: #fffdf7;
+    min-height: auto !important;
+    padding: 0.95rem !important;
+}
+
+.alumni-membership-card__avatar {
+    width: 2.8rem !important;
+    height: 2.8rem !important;
+    border-radius: 0.5rem !important;
+    background: #f5e7bd !important;
+    color: #132319 !important;
+    box-shadow: none !important;
+}
+
+.alumni-membership-card__kicker {
+    color: #9a6800 !important;
+    letter-spacing: 0.14em !important;
+}
+
+.alumni-membership-card__name {
+    color: #132319 !important;
+    font-size: 1rem !important;
+}
+
+.alumni-membership-card__subtitle,
+.alumni-membership-card__meta {
+    color: #475569 !important;
+}
+
+.alumni-membership-card__details {
+    border-top-color: rgba(15, 23, 42, 0.1) !important;
+    margin-top: 0.7rem !important;
+    padding-top: 0.65rem !important;
+}
+
+/* Sidebar profile card color: softer than white, still readable on dark green. */
+.alumni-portal .alumni-membership-card,
+.admin-portal .admin-membership-card {
+    --portal-card-accent: rgba(200, 154, 45, 0.48);
+    --portal-card-accent-solid: #8c5f00;
+    --portal-card-tint: #f7f3e8;
+    border-color: rgba(244, 230, 189, 0.62) !important;
+    background:
+        linear-gradient(180deg, #fffaf0 0%, #f4efe0 100%) !important;
+    box-shadow:
+        inset 3px 0 0 rgba(200, 154, 45, 0.62),
+        0 10px 22px rgba(0, 0, 0, 0.16) !important;
+}
+
+.alumni-portal .alumni-membership-card__avatar,
+.admin-portal .admin-membership-card .alumni-membership-card__avatar {
+    border: 1px solid rgba(140, 95, 0, 0.2) !important;
+    background: #d6a51d !important;
+    color: #102414 !important;
+}
+
+.alumni-portal .alumni-membership-card__kicker,
+.admin-portal .admin-membership-card .alumni-membership-card__kicker {
+    color: #8c5f00 !important;
+}
+
+.alumni-portal .alumni-membership-card__name,
+.admin-portal .admin-membership-card .alumni-membership-card__name {
+    color: #12231a !important;
+}
+
+.alumni-portal .alumni-membership-card__subtitle,
+.alumni-portal .alumni-membership-card__meta,
+.admin-portal .admin-membership-card .alumni-membership-card__subtitle,
+.admin-portal .admin-membership-card .alumni-membership-card__meta {
+    color: #2f4638 !important;
+}
+
+/* CMU system palette for sidebar identity and footer brand cards. */
+.alumni-portal .alumni-membership-card,
+.admin-portal .admin-membership-card {
+    --portal-card-accent: rgba(200, 154, 45, 0.72);
+    --portal-card-accent-solid: #c89a2d;
+    --portal-card-tint: #0b3b1f;
+    border-color: rgba(244, 230, 189, 0.28) !important;
+    background:
+        linear-gradient(180deg, rgba(19, 71, 40, 0.98) 0%, rgba(8, 41, 21, 0.98) 100%) !important;
+    box-shadow:
+        inset 3px 0 0 rgba(200, 154, 45, 0.82),
+        0 10px 22px rgba(0, 0, 0, 0.18) !important;
+}
+
+.alumni-portal .alumni-membership-card__avatar,
+.admin-portal .admin-membership-card .alumni-membership-card__avatar {
+    border-color: rgba(244, 230, 189, 0.32) !important;
+    background: #c89a2d !important;
+    color: #07180e !important;
+}
+
+.alumni-portal .alumni-membership-card__kicker,
+.admin-portal .admin-membership-card .alumni-membership-card__kicker {
+    color: #f4e6bd !important;
+}
+
+.alumni-portal .alumni-membership-card__name,
+.admin-portal .admin-membership-card .alumni-membership-card__name {
+    color: #fffaf0 !important;
+}
+
+.alumni-portal .alumni-membership-card__subtitle,
+.alumni-portal .alumni-membership-card__meta,
+.admin-portal .admin-membership-card .alumni-membership-card__subtitle,
+.admin-portal .admin-membership-card .alumni-membership-card__meta {
+    color: #dceee2 !important;
+}
+
+.alumni-portal .alumni-membership-card__details,
+.admin-portal .admin-membership-card .alumni-membership-card__details {
+    border-top-color: rgba(244, 230, 189, 0.2) !important;
+}
+
+.alumni-portal .alumni-footer-card,
+.admin-portal .alumni-footer-card {
+    border-color: rgba(244, 230, 189, 0.32) !important;
+    background:
+        linear-gradient(135deg, #082915 0%, #0b3b1f 48%, #145726 100%) !important;
+    box-shadow:
+        inset 3px 0 0 rgba(200, 154, 45, 0.72),
+        0 10px 24px rgba(7, 24, 14, 0.18) !important;
+}
+
+.alumni-footer-card__eyebrow {
+    color: #f4e6bd !important;
+}
+
+.alumni-footer-card__title {
+    color: #fffaf0 !important;
+}
+
+.alumni-footer-card__copy {
+    color: rgba(220, 238, 226, 0.9) !important;
+}
+
+/* Readability pass for light alumni overview panels. */
+.alumni-portal .alumni-overview-panel__mast {
+    border-bottom-color: rgba(15, 23, 42, 0.12) !important;
+    background: linear-gradient(180deg, #ffffff 0%, #f6fbf8 100%) !important;
+}
+
+.alumni-portal .alumni-overview-panel__mast :is(p, span, h1, h2, h3, .text-white, [class*="text-white"]) {
+    color: #132319 !important;
+    text-shadow: none !important;
+}
+
+.alumni-portal .alumni-overview-panel__mast p {
+    color: #486256 !important;
+}
+
+.alumni-portal .alumni-overview-panel__mast p:first-child,
+.alumni-portal .alumni-overview-detail p:first-child,
+.alumni-portal .alumni-overview-highlight p:first-child {
+    color: #0b3b1f !important;
+}
+
+.alumni-portal .alumni-overview-panel__mast h2,
+.alumni-portal .alumni-overview-panel__mast h3 {
+    color: #07180e !important;
+}
+
+.alumni-portal .alumni-overview-detail {
+    background: #ffffff !important;
+    border-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+.alumni-portal .alumni-overview-detail p,
+.alumni-portal .alumni-overview-highlight p {
+    color: #132319 !important;
+}
+
+.alumni-portal .alumni-overview-detail p:first-child {
+    letter-spacing: 0.14em !important;
+    font-weight: 800 !important;
+}
+
+.alumni-portal .alumni-overview-highlight h3 {
+    color: #07180e !important;
+}
+
+.alumni-portal .alumni-overview-highlight p:not(:first-child) {
+    color: #274032 !important;
+}
+
+/* Strong contrast fixes for overview text that used faded white utility colors. */
+.alumni-portal .alumni-overview-panel--employment .alumni-overview-panel__mast,
+.alumni-portal .alumni-overview-panel--checklist .alumni-overview-panel__mast,
+.alumni-portal .alumni-overview-panel--notifications .alumni-overview-panel__mast,
+.alumni-portal .alumni-overview-panel--account .alumni-overview-panel__mast {
+    background: #ffffff !important;
+}
+
+.alumni-portal .alumni-overview-panel--employment .alumni-overview-panel__mast .text-white\/65,
+.alumni-portal .alumni-overview-panel--employment .alumni-overview-panel__mast .text-white\/78,
+.alumni-portal .alumni-overview-panel--employment .alumni-overview-panel__mast [class*="text-white"],
+.alumni-portal .alumni-overview-panel--employment .alumni-overview-panel__mast p,
+.alumni-portal .alumni-overview-panel--employment .alumni-overview-panel__mast span {
+    opacity: 1 !important;
+    color: #385244 !important;
+    -webkit-text-fill-color: #385244 !important;
+}
+
+.alumni-portal .alumni-overview-panel--employment .alumni-overview-panel__mast p:first-of-type {
+    color: #0b3b1f !important;
+    -webkit-text-fill-color: #0b3b1f !important;
+}
+
+.alumni-portal .alumni-overview-panel--employment .alumni-overview-panel__mast h2,
+.alumni-portal .alumni-overview-panel--employment .alumni-overview-panel__mast h3 {
+    opacity: 1 !important;
+    color: #07180e !important;
+    -webkit-text-fill-color: #07180e !important;
+}
+
+.alumni-portal .alumni-overview-detail p:first-of-type,
+.alumni-portal .alumni-overview-highlight p:first-of-type {
+    opacity: 1 !important;
+    color: #0b3b1f !important;
+    -webkit-text-fill-color: #0b3b1f !important;
+}
+
+.alumni-portal .alumni-overview-detail p:not(:first-of-type),
+.alumni-portal .alumni-overview-highlight p:not(:first-of-type) {
+    opacity: 1 !important;
+    color: #132319 !important;
+    -webkit-text-fill-color: #132319 !important;
+}
+
+/* Dashboard overview spacing: compact panel rhythm without crowding. */
+.alumni-portal .alumni-overview {
+    gap: 1rem !important;
+}
+
+.alumni-portal .alumni-overview > .grid,
+.alumni-portal .alumni-overview .grid.gap-6 {
+    gap: 1rem !important;
+}
+
+.alumni-portal .alumni-overview .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 1rem !important;
+}
+
+.alumni-portal .alumni-overview-panel {
+    padding: 0 !important;
+}
+
+.alumni-portal .alumni-overview-panel__mast {
+    padding: 1rem 1.35rem 0.85rem !important;
+}
+
+.alumni-portal .alumni-overview-panel__mast h2 {
+    margin-top: 0.35rem !important;
+}
+
+.alumni-portal .alumni-overview-panel__mast p {
+    margin-top: 0.25rem !important;
+}
+
+.alumni-portal .alumni-overview-panel > .p-6,
+.alumni-portal .alumni-overview-panel > .p-5 {
+    padding: 1rem 1.35rem 1.2rem !important;
+}
+
+.alumni-portal .alumni-overview-highlight {
+    padding: 1rem !important;
+}
+
+.alumni-portal .alumni-overview-highlight .gap-4 {
+    gap: 0.75rem !important;
+}
+
+.alumni-portal .alumni-overview-highlight h3 {
+    margin-top: 0.35rem !important;
+}
+
+.alumni-portal .alumni-overview-highlight p {
+    margin-top: 0.25rem !important;
+}
+
+.alumni-portal .alumni-overview-panel--employment .grid.gap-4 {
+    gap: 0.85rem !important;
+}
+
+.alumni-portal .alumni-overview-panel--employment .mt-5 {
+    margin-top: 0.9rem !important;
+}
+
+.alumni-portal .alumni-overview-panel--employment .mt-4 {
+    margin-top: 0.75rem !important;
+}
+
+.alumni-portal .alumni-overview-panel--employment .mt-2 {
+    margin-top: 0.35rem !important;
+}
+
+.alumni-portal .alumni-overview-detail {
+    padding: 0.85rem 1rem !important;
+}
+
+.alumni-portal .alumni-overview-detail p + p {
+    margin-top: 0.35rem !important;
+}
+
+.alumni-portal .alumni-overview-panel--checklist .h-3 {
+    height: 0.5rem !important;
+}
+
+.alumni-portal .alumni-overview-panel--checklist .mt-5 {
+    margin-top: 0.9rem !important;
+}
+
+.alumni-portal .alumni-overview-panel--checklist .space-y-2 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 0.55rem !important;
+}
+
+.alumni-portal .alumni-overview-checklist-item {
+    gap: 0.75rem !important;
+    padding: 0.7rem 0.85rem !important;
+}
+
+.alumni-portal .alumni-overview-checklist-item .h-9 {
+    width: 2rem !important;
+    height: 2rem !important;
+    border-radius: 0.5rem !important;
+}
+
+/* Flash toast motion: slide in from the right, then settle into place. */
+.flash-stack[data-flash-stack] .flash-message {
+    animation: flashSlideRightToLeft 0.85s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+    transition:
+        opacity 0.42s ease,
+        transform 0.42s ease !important;
+    will-change: transform, opacity;
+}
+
+.flash-stack[data-flash-stack] > .flash-message:nth-child(2) {
+    animation-delay: 0.1s !important;
+}
+
+.flash-stack[data-flash-stack] > .flash-message:nth-child(3) {
+    animation-delay: 0.2s !important;
+}
+
+@keyframes flashSlideRightToLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(calc(100% + 1.5rem));
+    }
+
+    82% {
+        opacity: 1;
+        transform: translateX(-0.25rem);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .flash-stack[data-flash-stack] .flash-message {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* CMU logo palette alignment: dark green #00491e, green #02681e, gold #ffc600. */
+:root {
+    --cmu-logo-dark-green: #00491e !important;
+    --cmu-logo-green: #02681e !important;
+    --cmu-logo-gold: #ffc600 !important;
+    --cmu-logo-dark-green-rgb: 0, 73, 30 !important;
+    --cmu-logo-green-rgb: 2, 104, 30 !important;
+    --cmu-logo-gold-rgb: 255, 198, 0 !important;
+    --alumni-emerald: var(--cmu-logo-dark-green) !important;
+    --alumni-emerald-deep: var(--cmu-logo-dark-green) !important;
+    --alumni-emerald-mid: var(--cmu-logo-green) !important;
+    --alumni-gold: var(--cmu-logo-gold) !important;
+    --alumni-gold-soft: rgba(var(--cmu-logo-gold-rgb), 0.24) !important;
+    --admin-emerald: var(--cmu-logo-dark-green) !important;
+    --admin-emerald-mid: var(--cmu-logo-green) !important;
+    --login-forest: var(--cmu-logo-green) !important;
+    --login-deep: var(--cmu-logo-dark-green) !important;
+    --login-gold: var(--cmu-logo-gold) !important;
+    --reg-green-900: var(--cmu-logo-dark-green) !important;
+    --reg-green-700: var(--cmu-logo-green) !important;
+    --reg-gold: var(--cmu-logo-gold) !important;
+    --settings-forest: var(--cmu-logo-dark-green) !important;
+    --settings-forest-bright: var(--cmu-logo-green) !important;
+    --settings-gold: var(--cmu-logo-gold) !important;
+    --settings-gold-soft: rgba(var(--cmu-logo-gold-rgb), 0.22) !important;
+    --settings-rose: var(--cmu-logo-gold) !important;
+    --arlo-green: var(--cmu-logo-green) !important;
+    --arlo-green-dark: var(--cmu-logo-dark-green) !important;
+    --arlo-green-ink: var(--cmu-logo-dark-green) !important;
+    --arlo-gold: var(--cmu-logo-gold) !important;
+    --arlo-gold-dark: var(--cmu-logo-dark-green) !important;
+    --green-900: var(--cmu-logo-dark-green) !important;
+    --green-800: var(--cmu-logo-dark-green) !important;
+    --green-700: var(--cmu-logo-green) !important;
+    --gold: var(--cmu-logo-gold) !important;
+}
+
+body.portal-page,
+body.alumni-portal,
+body.admin-portal,
+.login-shell,
+.registration-shell,
+.page-shell {
+    accent-color: var(--cmu-logo-green);
+}
+
+body.portal-page,
+body.portal-page.admin-portal,
+body.portal-page.alumni-portal,
+body.admin-portal,
+body.alumni-portal {
+    --admin-emerald: var(--cmu-logo-dark-green) !important;
+    --admin-emerald-mid: var(--cmu-logo-green) !important;
+    --admin-line: rgba(var(--cmu-logo-dark-green-rgb), 0.16) !important;
+    --alumni-emerald: var(--cmu-logo-dark-green) !important;
+    --alumni-emerald-deep: var(--cmu-logo-dark-green) !important;
+    --alumni-emerald-mid: var(--cmu-logo-green) !important;
+    --alumni-gold: var(--cmu-logo-gold) !important;
+    --alumni-gold-soft: rgba(var(--cmu-logo-gold-rgb), 0.24) !important;
+    --alumni-line: rgba(var(--cmu-logo-dark-green-rgb), 0.16) !important;
+    color: #102317;
+    background:
+        radial-gradient(circle at 0 0, rgba(var(--cmu-logo-gold-rgb), 0.16), transparent 28%),
+        radial-gradient(circle at 100% 8%, rgba(var(--cmu-logo-green-rgb), 0.14), transparent 30%),
+        linear-gradient(180deg, #eef7f0 0%, #ffffff 46%, #f4f8f1 100%) !important;
+}
+
+.alumni-jobs-page,
+.settings-page,
+.admin-analytics-page {
+    --jobs-green: var(--cmu-logo-dark-green) !important;
+    --jobs-green-mid: var(--cmu-logo-green) !important;
+    --jobs-gold: var(--cmu-logo-gold) !important;
+    --settings-forest: var(--cmu-logo-dark-green) !important;
+    --settings-forest-bright: var(--cmu-logo-green) !important;
+    --settings-gold: var(--cmu-logo-gold) !important;
+    --settings-gold-soft: rgba(var(--cmu-logo-gold-rgb), 0.22) !important;
+    --settings-rose: var(--cmu-logo-gold) !important;
+    --arlo-green: var(--cmu-logo-green) !important;
+    --arlo-green-dark: var(--cmu-logo-dark-green) !important;
+    --arlo-green-ink: var(--cmu-logo-dark-green) !important;
+    --arlo-gold: var(--cmu-logo-gold) !important;
+    --arlo-gold-dark: var(--cmu-logo-dark-green) !important;
+}
+
+.bg-emerald-50,
+.bg-green-50,
+.bg-teal-50,
+.bg-lime-50,
+.bg-emerald-50\/40,
+.bg-emerald-50\/60,
+.bg-emerald-50\/70,
+.bg-emerald-50\/75,
+.bg-emerald-50\/80,
+.bg-green-50\/70,
+.bg-green-50\/80 {
+    background-color: rgba(var(--cmu-logo-green-rgb), 0.08) !important;
+}
+
+.bg-emerald-100,
+.bg-green-100,
+.bg-teal-100,
+.bg-lime-100,
+.bg-emerald-100\/50,
+.bg-green-100\/50 {
+    background-color: rgba(var(--cmu-logo-green-rgb), 0.14) !important;
+}
+
+.bg-emerald-500,
+.bg-emerald-600,
+.bg-emerald-700,
+.bg-emerald-800,
+.bg-green-500,
+.bg-green-600,
+.bg-green-700,
+.bg-green-800,
+.bg-teal-500,
+.bg-teal-600,
+.bg-lime-500,
+.bg-lime-600,
+.bg-\[\#862633\],
+[class*="bg-[#862633]"] {
+    background-color: var(--cmu-logo-green) !important;
+    background-image: none !important;
+    color: #fff !important;
+}
+
+.hover\:bg-emerald-50:hover,
+.hover\:bg-green-50:hover,
+.hover\:bg-teal-50:hover {
+    background-color: rgba(var(--cmu-logo-green-rgb), 0.12) !important;
+}
+
+.hover\:bg-emerald-100:hover,
+.hover\:bg-green-100:hover,
+.hover\:bg-teal-100:hover,
+.hover\:bg-lime-100:hover {
+    background-color: rgba(var(--cmu-logo-green-rgb), 0.18) !important;
+}
+
+.hover\:bg-emerald-700:hover,
+.hover\:bg-emerald-800:hover,
+.hover\:bg-green-700:hover,
+.hover\:bg-green-800:hover,
+.hover\:bg-teal-700:hover,
+.hover\:bg-lime-700:hover,
+.hover\:bg-\[\#701f2a\]:hover,
+[class*="hover:bg-[#701f2a]"]:hover {
+    background-color: var(--cmu-logo-dark-green) !important;
+    background-image: none !important;
+}
+
+.text-emerald-500,
+.text-emerald-600,
+.text-emerald-700,
+.text-emerald-800,
+.text-emerald-900,
+.text-emerald-950,
+.text-green-500,
+.text-green-600,
+.text-green-700,
+.text-green-800,
+.text-green-900,
+.text-green-950,
+.text-teal-600,
+.text-teal-700,
+.text-lime-600,
+.text-lime-700,
+.hover\:text-emerald-700:hover,
+.hover\:text-emerald-800:hover,
+.hover\:text-emerald-900:hover,
+.hover\:text-green-700:hover,
+.hover\:text-green-800:hover,
+.hover\:text-teal-700:hover {
+    color: var(--cmu-logo-dark-green) !important;
+}
+
+.border-emerald-100,
+.border-emerald-200,
+.border-emerald-300,
+.border-emerald-400,
+.border-emerald-950\/10,
+.border-green-100,
+.border-green-200,
+.border-green-300,
+.border-teal-100,
+.border-teal-200,
+.border-lime-100,
+.border-lime-200 {
+    border-color: rgba(var(--cmu-logo-green-rgb), 0.24) !important;
+}
+
+.ring-emerald-100,
+.ring-emerald-200,
+.ring-green-100,
+.ring-green-200,
+.ring-teal-100,
+.ring-lime-100 {
+    --tw-ring-color: rgba(var(--cmu-logo-green-rgb), 0.22) !important;
+}
+
+.focus\:border-emerald-400:focus,
+.focus\:border-emerald-500:focus,
+.focus\:border-emerald-600:focus,
+.focus\:border-green-500:focus,
+.focus\:border-green-600:focus,
+.focus\:border-teal-500:focus {
+    border-color: var(--cmu-logo-green) !important;
+}
+
+.focus\:ring-emerald-100:focus,
+.focus\:ring-emerald-200:focus,
+.focus\:ring-emerald-300:focus,
+.focus\:ring-emerald-500:focus,
+.focus\:ring-green-100:focus,
+.focus\:ring-green-200:focus,
+.focus\:ring-green-500:focus,
+.focus\:ring-teal-100:focus {
+    --tw-ring-color: rgba(var(--cmu-logo-green-rgb), 0.22) !important;
+}
+
+.from-emerald-50,
+.from-green-50,
+.from-teal-50,
+.from-lime-50 {
+    --tw-gradient-from: rgba(var(--cmu-logo-green-rgb), 0.1) var(--tw-gradient-from-position) !important;
+    --tw-gradient-to: rgba(var(--cmu-logo-green-rgb), 0) var(--tw-gradient-to-position) !important;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.via-emerald-50,
+.via-green-50,
+.via-teal-50,
+.via-lime-50 {
+    --tw-gradient-via: rgba(var(--cmu-logo-green-rgb), 0.08) var(--tw-gradient-via-position) !important;
+}
+
+.to-emerald-50,
+.to-green-50,
+.to-teal-50,
+.to-lime-50 {
+    --tw-gradient-to: rgba(var(--cmu-logo-green-rgb), 0.1) var(--tw-gradient-to-position) !important;
+}
+
+.from-emerald-500,
+.from-emerald-600,
+.from-green-500,
+.from-green-600,
+.from-teal-500,
+.from-lime-500 {
+    --tw-gradient-from: var(--cmu-logo-dark-green) var(--tw-gradient-from-position) !important;
+    --tw-gradient-to: rgba(var(--cmu-logo-dark-green-rgb), 0) var(--tw-gradient-to-position) !important;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.via-emerald-500,
+.via-green-500,
+.via-teal-500,
+.via-lime-500 {
+    --tw-gradient-via: var(--cmu-logo-green) var(--tw-gradient-via-position) !important;
+}
+
+.to-emerald-500,
+.to-emerald-600,
+.to-green-500,
+.to-green-600,
+.to-teal-500,
+.to-lime-500 {
+    --tw-gradient-to: var(--cmu-logo-green) var(--tw-gradient-to-position) !important;
+}
+
+.bg-amber-50,
+.bg-yellow-50,
+.bg-orange-50,
+.bg-amber-50\/50,
+.bg-amber-50\/70,
+.bg-amber-50\/75,
+.bg-amber-50\/90,
+.bg-yellow-50\/70,
+.bg-orange-50\/45 {
+    background-color: rgba(var(--cmu-logo-gold-rgb), 0.14) !important;
+}
+
+.bg-amber-100,
+.bg-yellow-100,
+.bg-orange-100 {
+    background-color: rgba(var(--cmu-logo-gold-rgb), 0.24) !important;
+}
+
+.bg-amber-500,
+.bg-amber-600,
+.bg-yellow-500,
+.bg-yellow-600,
+.bg-orange-500,
+.bg-orange-600 {
+    background-color: var(--cmu-logo-gold) !important;
+    background-image: none !important;
+    color: var(--cmu-logo-dark-green) !important;
+}
+
+.hover\:bg-amber-50:hover,
+.hover\:bg-yellow-50:hover,
+.hover\:bg-orange-50:hover {
+    background-color: rgba(var(--cmu-logo-gold-rgb), 0.18) !important;
+}
+
+.hover\:bg-amber-100:hover,
+.hover\:bg-yellow-100:hover,
+.hover\:bg-orange-100:hover {
+    background-color: rgba(var(--cmu-logo-gold-rgb), 0.28) !important;
+}
+
+.hover\:bg-amber-700:hover,
+.hover\:bg-yellow-700:hover,
+.hover\:bg-orange-700:hover {
+    background-color: #e6b300 !important;
+    color: var(--cmu-logo-dark-green) !important;
+}
+
+.text-amber-600,
+.text-amber-700,
+.text-amber-800,
+.text-amber-900,
+.text-amber-950,
+.text-yellow-600,
+.text-yellow-700,
+.text-yellow-800,
+.text-orange-600,
+.text-orange-700,
+.text-orange-800 {
+    color: var(--cmu-logo-dark-green) !important;
+}
+
+.border-amber-100,
+.border-amber-200,
+.border-amber-300,
+.border-yellow-100,
+.border-yellow-200,
+.border-orange-100,
+.border-orange-200 {
+    border-color: rgba(var(--cmu-logo-gold-rgb), 0.36) !important;
+}
+
+.ring-amber-100,
+.ring-amber-200,
+.ring-yellow-100,
+.ring-yellow-200,
+.ring-orange-100 {
+    --tw-ring-color: rgba(var(--cmu-logo-gold-rgb), 0.28) !important;
+}
+
+.from-amber-50,
+.from-yellow-50,
+.from-orange-50 {
+    --tw-gradient-from: rgba(var(--cmu-logo-gold-rgb), 0.16) var(--tw-gradient-from-position) !important;
+    --tw-gradient-to: rgba(var(--cmu-logo-gold-rgb), 0) var(--tw-gradient-to-position) !important;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.via-amber-50,
+.via-yellow-50,
+.via-orange-50 {
+    --tw-gradient-via: rgba(var(--cmu-logo-gold-rgb), 0.12) var(--tw-gradient-via-position) !important;
+}
+
+.to-amber-50,
+.to-yellow-50,
+.to-orange-50,
+.to-orange-100 {
+    --tw-gradient-to: rgba(var(--cmu-logo-gold-rgb), 0.16) var(--tw-gradient-to-position) !important;
+}
+
+.from-amber-500,
+.from-yellow-500,
+.from-orange-500 {
+    --tw-gradient-from: var(--cmu-logo-gold) var(--tw-gradient-from-position) !important;
+    --tw-gradient-to: rgba(var(--cmu-logo-gold-rgb), 0) var(--tw-gradient-to-position) !important;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.to-amber-500,
+.to-yellow-500,
+.to-orange-500 {
+    --tw-gradient-to: var(--cmu-logo-gold) var(--tw-gradient-to-position) !important;
+}
+
+.admin-portal .admin-sidebar,
+.alumni-portal .alumni-sidebar {
+    --sidebar-scroll-track: rgba(255, 255, 255, 0.1) !important;
+    --sidebar-scroll-track-line: rgba(var(--cmu-logo-gold-rgb), 0.22) !important;
+    --sidebar-scroll-thumb-start: rgba(var(--cmu-logo-gold-rgb), 0.96) !important;
+    --sidebar-scroll-thumb-end: rgba(230, 179, 0, 0.94) !important;
+    --sidebar-scroll-thumb-hover: var(--cmu-logo-gold) !important;
+    --sidebar-scroll-thumb-border: var(--cmu-logo-dark-green) !important;
+    background:
+        radial-gradient(circle at 100% 0, rgba(var(--cmu-logo-gold-rgb), 0.22), transparent 32%),
+        linear-gradient(180deg, var(--cmu-logo-dark-green) 0%, #013d19 56%, var(--cmu-logo-green) 100%) !important;
+    border-right: 1px solid rgba(var(--cmu-logo-gold-rgb), 0.32) !important;
+}
+
+.admin-portal .admin-sidebar::before,
+.alumni-portal .alumni-sidebar::before {
+    background-image:
+        linear-gradient(rgba(var(--cmu-logo-dark-green-rgb), 0.88), rgba(var(--cmu-logo-dark-green-rgb), 0.72)),
+        radial-gradient(circle at 0 0, rgba(var(--cmu-logo-gold-rgb), 0.2), transparent 32%),
+        url("../../public/images/cmu-sidebar.png") !important;
+}
+
+.alumni-brand-kicker,
+.sidebar-panel-label,
+.alumni-membership-card__kicker,
+.alumni-footer-card__eyebrow,
+.login-brand__kicker,
+.login-visual-card__kicker,
+.registration-eyebrow,
+.alumni-topbar__eyebrow,
+.admin-portal .alumni-topbar__eyebrow,
+.section-kicker {
+    color: var(--cmu-logo-gold) !important;
+}
+
+.alumni-brand-title,
+.alumni-brand-subtitle,
+.alumni-sidebar-link,
+.sidebar-logout-button,
+.alumni-logout-button,
+.alumni-sidebar-link__label,
+.alumni-sidebar-link__badge {
+    color: rgba(255, 255, 255, 0.88) !important;
+}
+
+.alumni-sidebar-link,
+.sidebar-logout-button,
+.alumni-logout-button {
+    border-color: rgba(var(--cmu-logo-gold-rgb), 0.16) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.alumni-sidebar-link:hover,
+.alumni-sidebar-link:focus-visible,
+.sidebar-logout-button:hover,
+.sidebar-logout-button:focus-visible,
+.alumni-logout-button:hover,
+.alumni-logout-button:focus-visible {
+    border-color: rgba(var(--cmu-logo-gold-rgb), 0.36) !important;
+    background: rgba(var(--cmu-logo-gold-rgb), 0.13) !important;
+    color: #fff !important;
+}
+
+.alumni-sidebar-link.is-active {
+    border-color: rgba(var(--cmu-logo-gold-rgb), 0.72) !important;
+    background: linear-gradient(135deg, rgba(var(--cmu-logo-gold-rgb), 0.22), rgba(255, 255, 255, 0.08)) !important;
+    color: #fff !important;
+    box-shadow: inset 3px 0 0 var(--cmu-logo-gold) !important;
+}
+
+.alumni-sidebar-link__icon,
+.sidebar-logout-button i,
+.alumni-logout-button i {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: var(--cmu-logo-gold) !important;
+}
+
+.alumni-brand-mark,
+.alumni-membership-card__avatar,
+.alumni-footer-card__logo,
+.login-brand__mark,
+.registration-brand-mark {
+    border-color: rgba(var(--cmu-logo-gold-rgb), 0.28) !important;
+    box-shadow: 0 12px 26px rgba(var(--cmu-logo-dark-green-rgb), 0.16) !important;
+}
+
+.alumni-membership-card,
+.admin-membership-card,
+.alumni-footer-card {
+    border-color: rgba(var(--cmu-logo-gold-rgb), 0.36) !important;
+    background:
+        linear-gradient(180deg, rgba(var(--cmu-logo-dark-green-rgb), 0.98), rgba(var(--cmu-logo-green-rgb), 0.94)) !important;
+    box-shadow:
+        inset 3px 0 0 var(--cmu-logo-gold),
+        0 10px 24px rgba(var(--cmu-logo-dark-green-rgb), 0.2) !important;
+}
+
+.alumni-membership-card__avatar {
+    border-color: rgba(var(--cmu-logo-gold-rgb), 0.42) !important;
+    background:
+        radial-gradient(circle at 32% 22%, rgba(var(--cmu-logo-gold-rgb), 0.18), transparent 36%),
+        linear-gradient(135deg, var(--cmu-logo-dark-green), var(--cmu-logo-green)) !important;
+    color: #ffffff !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(var(--cmu-logo-gold-rgb), 0.18),
+        0 12px 26px rgba(var(--cmu-logo-dark-green-rgb), 0.22) !important;
+}
+
+.alumni-membership-card__name,
+.alumni-footer-card__title {
+    color: #fff !important;
+}
+
+.alumni-membership-card__subtitle,
+.alumni-membership-card__meta,
+.alumni-footer-card__copy {
+    color: rgba(255, 255, 255, 0.78) !important;
+}
+
+.portal-stat-card--green,
+.portal-stat-card--emerald,
+.portal-stat-card--blue,
+.portal-stat-card--purple,
+.alumni-overview-stat--profile,
+.alumni-overview-stat--notifications {
+    --portal-stat-border: rgba(var(--cmu-logo-green-rgb), 0.24) !important;
+    --portal-stat-hover-border: rgba(var(--cmu-logo-green-rgb), 0.42) !important;
+    --portal-stat-topbar: linear-gradient(90deg, var(--cmu-logo-dark-green), var(--cmu-logo-green), rgba(var(--cmu-logo-green-rgb), 0.18)) !important;
+    --portal-stat-fill: linear-gradient(135deg, var(--cmu-logo-dark-green), var(--cmu-logo-green)) !important;
+    --portal-stat-kicker: var(--cmu-logo-dark-green) !important;
+    --portal-card-accent: rgba(var(--cmu-logo-green-rgb), 0.34) !important;
+    --portal-card-accent-solid: var(--cmu-logo-green) !important;
+    --portal-card-tint: #f8fcf9 !important;
+}
+
+.portal-stat-card--gold,
+.portal-stat-card--orange,
+.alumni-overview-stat--tracer,
+.alumni-overview-stat--jobs {
+    --portal-stat-border: rgba(var(--cmu-logo-gold-rgb), 0.38) !important;
+    --portal-stat-hover-border: rgba(var(--cmu-logo-gold-rgb), 0.58) !important;
+    --portal-stat-topbar: linear-gradient(90deg, var(--cmu-logo-dark-green), var(--cmu-logo-gold), rgba(var(--cmu-logo-gold-rgb), 0.2)) !important;
+    --portal-stat-fill: linear-gradient(135deg, var(--cmu-logo-gold), #e6b300) !important;
+    --portal-stat-kicker: var(--cmu-logo-dark-green) !important;
+    --portal-card-accent: rgba(var(--cmu-logo-gold-rgb), 0.42) !important;
+    --portal-card-accent-solid: var(--cmu-logo-dark-green) !important;
+    --portal-card-tint: #fffdf2 !important;
+}
+
+.portal-stat-card__icon,
+.dashboard-hero-icon,
+.empty-state-card__icon,
+.settings-tool-icon,
+.notification-feed-item__indicator,
+.alumni-overview-stat__icon,
+.alumni-jobs-summary__metric-icon,
+.alumni-notification-preview__icon,
+.alumni-job-row__marker,
+.alumni-preview-item__indicator {
+    border-color: rgba(var(--cmu-logo-green-rgb), 0.18) !important;
+    background: rgba(var(--cmu-logo-green-rgb), 0.1) !important;
+    color: var(--cmu-logo-dark-green) !important;
+}
+
+.admin-record-hero,
+.registration-card-header,
+.registration-step-chip.is-active,
+.registration-pill--solid,
+.submit-btn,
+.alumni-filter-submit,
+.alumni-job-row__action,
+.alumni-job-action--post,
+.alumni-job-submit-panel__button {
+    background: linear-gradient(135deg, var(--cmu-logo-dark-green), var(--cmu-logo-green)) !important;
+    border-color: rgba(var(--cmu-logo-dark-green-rgb), 0.22) !important;
+    color: #fff !important;
+    box-shadow: 0 16px 32px rgba(var(--cmu-logo-dark-green-rgb), 0.18) !important;
+}
+
+.page-section {
+    border-color: rgba(var(--cmu-logo-green-rgb), 0.18) !important;
+    background:
+        radial-gradient(circle at 100% 0, rgba(var(--cmu-logo-gold-rgb), 0.12), transparent 30%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 249, 0.96)) !important;
+    color: #12301f !important;
+    box-shadow: 0 18px 42px rgba(var(--cmu-logo-dark-green-rgb), 0.1) !important;
+}
+
+.page-section::before {
+    background: linear-gradient(135deg, rgba(var(--cmu-logo-green-rgb), 0.08), transparent 34%) !important;
+}
+
+.alumni-topbar-cta,
+.admin-portal .alumni-topbar-cta,
+.registration-eyebrow::before,
+.alumni-job-submit-step span,
+.alumni-live-bell__badge {
+    background: var(--cmu-logo-gold) !important;
+    color: var(--cmu-logo-dark-green) !important;
+    border-color: rgba(var(--cmu-logo-gold-rgb), 0.38) !important;
+}
+
+.alumni-job-submit-panel,
+.alumni-job-opportunities-section,
+.alumni-jobs-summary,
+.alumni-job-board,
+.alumni-overview-stat--tracer,
+.alumni-overview-stat--jobs,
+.alumni-overview-panel--checklist .alumni-overview-panel__mast,
+.alumni-overview-panel--notifications .alumni-overview-panel__mast {
+    border-color: rgba(var(--cmu-logo-gold-rgb), 0.32) !important;
+    background:
+        radial-gradient(circle at 100% 0, rgba(var(--cmu-logo-gold-rgb), 0.16), transparent 32%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 249, 0.96)) !important;
+}
+
+.alumni-job-opportunities-section::before,
+.alumni-jobs-summary::before,
+.alumni-job-board::before,
+.alumni-job-submit-panel::before,
+.alumni-overview-stat::before,
+.alumni-job-row::before {
+    background: linear-gradient(90deg, var(--cmu-logo-dark-green), var(--cmu-logo-green), var(--cmu-logo-gold)) !important;
+}
+
+.alumni-job-action--post,
+.alumni-job-submit-panel__button,
+[class*="bg-[#862633]"] {
+    background: var(--cmu-logo-gold) !important;
+    color: var(--cmu-logo-dark-green) !important;
+    border-color: rgba(var(--cmu-logo-gold-rgb), 0.4) !important;
+}
+
+.alumni-job-submit-panel__kicker,
+.alumni-job-submit-panel__badge,
+.alumni-job-submit-panel__badge,
+.alumni-job-action--view,
+.alumni-jobs-summary__kicker,
+.alumni-job-board__kicker,
+.alumni-notification-preview__meta {
+    color: var(--cmu-logo-dark-green) !important;
+}
+
+.login-status,
+.flash-stack .flash-message--success {
+    border-color: rgba(var(--cmu-logo-green-rgb), 0.24) !important;
+    background: rgba(var(--cmu-logo-green-rgb), 0.08) !important;
+    color: var(--cmu-logo-dark-green) !important;
+}
+
+.flash-stack .flash-message,
+.flash-stack .flash-message--success {
+    --flash-accent: var(--cmu-logo-green) !important;
+    --flash-accent-strong: var(--cmu-logo-dark-green) !important;
+    --flash-accent-muted: rgba(var(--cmu-logo-green-rgb), 0.42) !important;
+    --flash-accent-soft: rgba(var(--cmu-logo-green-rgb), 0.14) !important;
+}
+
+.flash-stack .flash-message--warning {
+    --flash-accent: var(--cmu-logo-gold) !important;
+    --flash-accent-strong: var(--cmu-logo-dark-green) !important;
+    --flash-accent-muted: rgba(var(--cmu-logo-gold-rgb), 0.5) !important;
+    --flash-accent-soft: rgba(var(--cmu-logo-gold-rgb), 0.16) !important;
+}
+
+/* Toast refinement: keep flash messages readable above dashboard surfaces. */
+.portal-flash-overlay {
+    width: min(calc(100vw - 1.5rem), 30rem) !important;
+}
+
+.portal-flash-overlay .flash-stack[data-flash-stack],
+.flash-stack[data-flash-stack] {
+    justify-items: end !important;
+}
+
+.flash-stack[data-flash-stack] .flash-message {
+    --flash-accent: var(--cmu-logo-green) !important;
+    --flash-accent-strong: var(--cmu-logo-dark-green) !important;
+    --flash-accent-muted: rgba(var(--cmu-logo-green-rgb), 0.42) !important;
+    --flash-accent-soft: rgba(var(--cmu-logo-green-rgb), 0.12) !important;
+    display: grid !important;
+    grid-template-columns: 0.28rem 2.85rem minmax(0, 1fr) 2.35rem !important;
+    align-items: start !important;
+    gap: 0.85rem !important;
+    width: min(100%, 30rem) !important;
+    max-width: 30rem !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(15, 23, 42, 0.1) !important;
+    border-radius: 1.25rem !important;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fcf9 100%) !important;
+    color: #132319 !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    box-shadow:
+        0 18px 38px rgba(15, 23, 42, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.92) !important;
+    animation: flashToastEnter 0.36s cubic-bezier(0.22, 1, 0.36, 1) both !important;
+}
+
+.flash-stack[data-flash-stack] .flash-message::before,
+.flash-stack[data-flash-stack] .flash-message::after {
+    content: none !important;
+    display: none !important;
+}
+
+.flash-stack[data-flash-stack] .flash-message--success {
+    border-color: rgba(var(--cmu-logo-green-rgb), 0.22) !important;
+}
+
+.flash-stack[data-flash-stack] .flash-message--logout,
+.flash-stack[data-flash-stack] .flash-message--error {
+    --flash-accent: #dc2626 !important;
+    --flash-accent-strong: #991b1b !important;
+    --flash-accent-muted: rgba(248, 113, 113, 0.58) !important;
+    --flash-accent-soft: rgba(220, 38, 38, 0.12) !important;
+    border-color: rgba(220, 38, 38, 0.24) !important;
+    background: linear-gradient(180deg, #ffffff 0%, #fff7f7 100%) !important;
+}
+
+.flash-stack[data-flash-stack] .flash-message--warning {
+    --flash-accent: var(--cmu-logo-gold) !important;
+    --flash-accent-strong: #8a5a00 !important;
+    --flash-accent-muted: rgba(var(--cmu-logo-gold-rgb), 0.5) !important;
+    --flash-accent-soft: rgba(var(--cmu-logo-gold-rgb), 0.14) !important;
+}
+
+.flash-stack[data-flash-stack] .flash-message__accent {
+    width: 100% !important;
+    height: auto !important;
+    align-self: stretch !important;
+    border-radius: 0 !important;
+    background: linear-gradient(180deg, var(--flash-accent), var(--flash-accent-muted)) !important;
+    box-shadow: none !important;
+}
+
+.flash-stack[data-flash-stack] .flash-message__icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 2.85rem !important;
+    height: 2.85rem !important;
+    margin: 1rem 0 1rem 0 !important;
+    border-radius: 0.95rem !important;
+    color: var(--flash-accent-strong) !important;
+    background: var(--flash-accent-soft) !important;
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06) !important;
+}
+
+.flash-stack[data-flash-stack] .flash-message__content {
+    min-width: 0 !important;
+    padding: 1rem 0 !important;
+}
+
+.flash-stack[data-flash-stack] .flash-message__label {
+    padding: 0.32rem 0.68rem !important;
+    border-radius: 999px !important;
+    background: var(--flash-accent-soft) !important;
+    color: var(--flash-accent-strong) !important;
+    font-size: 0.68rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.14em !important;
+}
+
+.flash-stack[data-flash-stack] .flash-message__title {
+    margin-top: 0.62rem !important;
+    color: #0f172a !important;
+    font-size: 1rem !important;
+    line-height: 1.2 !important;
+}
+
+.flash-stack[data-flash-stack] .flash-message__body {
+    max-width: 34ch !important;
+    margin-top: 0.3rem !important;
+    color: #34463c !important;
+    font-size: 0.92rem !important;
+    line-height: 1.55 !important;
+}
+
+.flash-stack[data-flash-stack] .flash-message__close {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 2.2rem !important;
+    height: 2.2rem !important;
+    margin: 0.9rem 0.85rem 0 0 !important;
+    border-radius: 0.85rem !important;
+    color: #425348 !important;
+    background: #ffffff !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(15, 23, 42, 0.08),
+        0 8px 18px rgba(15, 23, 42, 0.08) !important;
+}
+
+.flash-stack[data-flash-stack] .flash-message__close:hover {
+    color: var(--flash-accent-strong) !important;
+    background: var(--flash-accent-soft) !important;
+}
+
+@keyframes flashToastEnter {
     from {
-      opacity: 0;
-      transform: translateY(14px);
+        opacity: 0;
+        transform: translateX(calc(100% + 1rem));
     }
+
     to {
-      opacity: 1;
-      transform: translateY(0);
+        opacity: 1;
+        transform: translateX(0);
     }
-  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .flash-stack[data-flash-stack] .flash-message {
+        animation: none !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .flash-stack[data-flash-stack] .flash-message {
+        grid-template-columns: 0.24rem 2.5rem minmax(0, 1fr) 2.1rem !important;
+        gap: 0.7rem !important;
+        border-radius: 1.1rem !important;
+    }
+
+    .flash-stack[data-flash-stack] .flash-message__icon {
+        width: 2.5rem !important;
+        height: 2.5rem !important;
+    }
+
+    .flash-stack[data-flash-stack] .flash-message__title {
+        font-size: 0.95rem !important;
+    }
+
+    .flash-stack[data-flash-stack] .flash-message__body {
+        max-width: 28ch !important;
+        font-size: 0.86rem !important;
+    }
+}
+
+/* Clickable admin cards: make summary cards behave like clear shortcuts. */
+[data-portal-card-link] {
+    cursor: pointer;
+}
+
+[data-portal-card-link].portal-stat-card {
+    text-decoration: none !important;
+}
+
+[data-portal-card-link].portal-stat-card .portal-stat-card__meta:not(a)::after {
+    content: "  ->";
+    color: var(--portal-card-accent-solid, var(--cmu-logo-dark-green));
+    font-weight: 900;
+}
+
+[data-portal-card-link].portal-stat-card:hover,
+[data-portal-card-link].portal-stat-card:focus-visible {
+    border-color: rgba(var(--cmu-logo-green-rgb), 0.42) !important;
+    box-shadow:
+        0 14px 30px rgba(var(--cmu-logo-dark-green-rgb), 0.14),
+        inset 0 0 0 1px rgba(var(--cmu-logo-green-rgb), 0.12) !important;
+}
+
+[data-portal-card-link]:focus-visible {
+    outline: 3px solid rgba(var(--cmu-logo-gold-rgb), 0.42);
+    outline-offset: 3px;
+}
+
+/* Sidebar count badges: keep notification numbers readable on dark navigation. */
+.admin-portal .alumni-sidebar-link__badge,
+.alumni-portal .alumni-sidebar-link__badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 2.15rem !important;
+    height: 2rem !important;
+    padding: 0 0.55rem !important;
+    border: 1px solid rgba(var(--cmu-logo-gold-rgb), 0.58) !important;
+    border-radius: 999px !important;
+    background: linear-gradient(180deg, #ffd95f 0%, var(--cmu-logo-gold) 100%) !important;
+    color: var(--cmu-logo-dark-green) !important;
+    font-size: 0.72rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    text-shadow: none !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.46),
+        0 8px 18px rgba(5, 18, 11, 0.22) !important;
+}
+
+body.admin-portal.sidebar-collapsed .alumni-sidebar-link__badge,
+body.alumni-portal.sidebar-collapsed .alumni-sidebar-link__badge {
+    display: none !important;
 }

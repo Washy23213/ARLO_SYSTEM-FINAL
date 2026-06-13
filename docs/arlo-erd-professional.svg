@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1500" viewBox="0 0 2400 1500">
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#475569"/>
+    </marker>
+    <marker id="arrowUser" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#0369a1"/>
+    </marker>
+    <marker id="arrowAdmin" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#047857"/>
+    </marker>
+    <marker id="arrowLog" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#c2410c"/>
+    </marker>
+    <style>
+      text { font-family: "Segoe UI", Arial, sans-serif; }
+      .title { font-weight: 800; letter-spacing: 0; }
+      .subtitle { fill: #475569; }
+      .zone-title { font-size: 18px; font-weight: 800; fill: #475569; text-transform: uppercase; letter-spacing: 1px; }
+    </style>
+  </defs>
+
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <text x="1200" y="58" text-anchor="middle" class="title" font-size="34" fill="#0f172a">CMU ARLO Entity Relationship Diagram</text>
+  <text x="1200" y="90" text-anchor="middle" class="subtitle" font-size="18">Professional view showing separated USERS, ADMINS, and SUPER_ADMINS account tables</text>
+
+  <g>
+    
+    <rect x="90" y="94" width="24" height="16" rx="4" fill="#e0f2fe" stroke="#0369a1" stroke-width="2"/>
+    <text x="124" y="107" font-size="16" fill="#475569">Alumni-owned accounts and records</text>
+    
+    <rect x="460" y="94" width="24" height="16" rx="4" fill="#f8fafc" stroke="#334155" stroke-width="2"/>
+    <text x="494" y="107" font-size="16" fill="#475569">Operational records</text>
+    
+    <rect x="760" y="94" width="24" height="16" rx="4" fill="#ecfdf5" stroke="#047857" stroke-width="2"/>
+    <text x="794" y="107" font-size="16" fill="#475569">Admin and super admin account control</text>
+    
+    <rect x="1120" y="94" width="24" height="16" rx="4" fill="#fff7ed" stroke="#c2410c" stroke-width="2"/>
+    <text x="1154" y="107" font-size="16" fill="#475569">Audit trail</text>
+  </g>
+
+  <g class="edges">
+    
+    <path d="M 440 250 L 520 250" fill="none" stroke="#0369a1" stroke-width="2.2"  marker-end="url(#arrowUser)"/>
+    <g>
+      <rect x="448" y="217" width="64" height="50" rx="7" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="480" y="235" text-anchor="middle" font-size="15" font-weight="700" fill="#0369a1">1:M</text><text x="480" y="253" text-anchor="middle" font-size="15" font-weight="700" fill="#0369a1">has</text>
+    </g>
+    
+    <path d="M 260 420 L 260 530" fill="none" stroke="#0369a1" stroke-width="2.2"  marker-end="url(#arrowUser)"/>
+    <g>
+      <rect x="288" y="462" width="64" height="50" rx="7" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="320" y="480" text-anchor="middle" font-size="15" font-weight="700" fill="#0369a1">1:M</text><text x="320" y="498" text-anchor="middle" font-size="15" font-weight="700" fill="#0369a1">owns</text>
+    </g>
+    
+    <path d="M 80 310 L 38 310 L 38 930 L 80 930" fill="none" stroke="#0369a1" stroke-width="2.2"  marker-end="url(#arrowUser)"/>
+    <g>
+      <rect x="72" y="757" width="76" height="50" rx="7" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="110" y="775" text-anchor="middle" font-size="15" font-weight="700" fill="#0369a1">1:M</text><text x="110" y="793" text-anchor="middle" font-size="15" font-weight="700" fill="#0369a1">receives</text>
+    </g>
+    
+    <path d="M 440 335 L 480 335 L 480 620 L 520 620" fill="none" stroke="#0369a1" stroke-width="2.2"  marker-end="url(#arrowUser)"/>
+    <g>
+      <rect x="462" y="452" width="76" height="50" rx="7" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="500" y="470" text-anchor="middle" font-size="15" font-weight="700" fill="#0369a1">1:M</text><text x="500" y="488" text-anchor="middle" font-size="15" font-weight="700" fill="#0369a1">proposes</text>
+    </g>
+    
+    <path d="M 440 365 L 470 365 L 470 780 L 940 780 L 940 620 L 980 620" fill="none" stroke="#0369a1" stroke-width="2.2"  marker-end="url(#arrowUser)"/>
+    <g>
+      <rect x="675.5" y="747" width="69" height="50" rx="7" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="710" y="765" text-anchor="middle" font-size="15" font-weight="700" fill="#0369a1">1:M</text><text x="710" y="783" text-anchor="middle" font-size="15" font-weight="700" fill="#0369a1">applies</text>
+    </g>
+    
+    <path d="M 440 395 L 465 395 L 465 980 L 980 980" fill="none" stroke="#0369a1" stroke-width="2.2"  marker-end="url(#arrowUser)"/>
+    <g>
+      <rect x="675.5" y="947" width="69" height="50" rx="7" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="710" y="965" text-anchor="middle" font-size="15" font-weight="700" fill="#0369a1">1:M</text><text x="710" y="983" text-anchor="middle" font-size="15" font-weight="700" fill="#0369a1">submits</text>
+    </g>
+
+    
+    <path d="M 1460 275 L 1340 275 L 1340 125 L 260 125 L 260 150" fill="none" stroke="#047857" stroke-width="2.2"  marker-end="url(#arrowAdmin)"/>
+    <g>
+      <rect x="1171" y="147" width="118" height="50" rx="7" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="1230" y="165" text-anchor="middle" font-size="15" font-weight="700" fill="#047857">1:M</text><text x="1230" y="183" text-anchor="middle" font-size="15" font-weight="700" fill="#047857">edits accounts</text>
+    </g>
+    
+    <path d="M 1840 250 L 1960 250" fill="none" stroke="#047857" stroke-width="2.2"  marker-end="url(#arrowAdmin)"/>
+    <g>
+      <rect x="1851.5" y="217" width="97" height="50" rx="7" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="1900" y="235" text-anchor="middle" font-size="15" font-weight="700" fill="#047857">1:M</text><text x="1900" y="253" text-anchor="middle" font-size="15" font-weight="700" fill="#047857">CRUD admins</text>
+    </g>
+
+    
+    <path d="M 1960 290 L 1900 290 L 1900 430 L 920 430 L 920 620 L 900 620" fill="none" stroke="#047857" stroke-width="2.2"  marker-end="url(#arrowAdmin)"/>
+    <g>
+      <rect x="1355.5" y="397" width="69" height="50" rx="7" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="1390" y="415" text-anchor="middle" font-size="15" font-weight="700" fill="#047857">1:M</text><text x="1390" y="433" text-anchor="middle" font-size="15" font-weight="700" fill="#047857">reviews</text>
+    </g>
+    
+    <path d="M 1960 315 L 1915 315 L 1915 455 L 1380 455 L 1380 620 L 1360 620" fill="none" stroke="#047857" stroke-width="2.2"  marker-end="url(#arrowAdmin)"/>
+    <g>
+      <rect x="1555.5" y="422" width="69" height="50" rx="7" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="1590" y="440" text-anchor="middle" font-size="15" font-weight="700" fill="#047857">1:M</text><text x="1590" y="458" text-anchor="middle" font-size="15" font-weight="700" fill="#047857">reviews</text>
+    </g>
+    
+    <path d="M 1960 340 L 1900 340 L 1900 800 L 1380 800 L 1380 980 L 1360 980" fill="none" stroke="#047857" stroke-width="2.2"  marker-end="url(#arrowAdmin)"/>
+    <g>
+      <rect x="1555.5" y="767" width="69" height="50" rx="7" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="1590" y="785" text-anchor="middle" font-size="15" font-weight="700" fill="#047857">1:M</text><text x="1590" y="803" text-anchor="middle" font-size="15" font-weight="700" fill="#047857">handles</text>
+    </g>
+    
+    <path d="M 1960 360 L 1885 360 L 1885 620 L 1840 620" fill="none" stroke="#047857" stroke-width="2.2"  marker-end="url(#arrowAdmin)"/>
+    <g>
+      <rect x="1873.5" y="562" width="69" height="50" rx="7" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="1908" y="580" text-anchor="middle" font-size="15" font-weight="700" fill="#047857">1:M</text><text x="1908" y="598" text-anchor="middle" font-size="15" font-weight="700" fill="#047857">creates</text>
+    </g>
+    
+    <path d="M 1960 380 L 1870 380 L 1870 970 L 1840 970" fill="none" stroke="#047857" stroke-width="2.2"  marker-end="url(#arrowAdmin)"/>
+    <g>
+      <rect x="1866.5" y="887" width="83" height="50" rx="7" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="1908" y="905" text-anchor="middle" font-size="15" font-weight="700" fill="#047857">1:M</text><text x="1908" y="923" text-anchor="middle" font-size="15" font-weight="700" fill="#047857">publishes</text>
+    </g>
+    
+    <path d="M 1460 630 L 1360 630" fill="none" stroke="#334155" stroke-width="2.2"  marker-end="url(#arrow)"/>
+    <g>
+      <rect x="1372" y="592" width="76" height="50" rx="7" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="1410" y="610" text-anchor="middle" font-size="15" font-weight="700" fill="#334155">1:M</text><text x="1410" y="628" text-anchor="middle" font-size="15" font-weight="700" fill="#334155">receives</text>
+    </g>
+    
+    <path d="M 1650 384 L 1650 1160 L 1360 1280" fill="none" stroke="#c2410c" stroke-width="2.2" stroke-dasharray="8 7" marker-end="url(#arrowLog)"/>
+    <g>
+      <rect x="1493.5" y="1102" width="83" height="50" rx="7" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="1535" y="1120" text-anchor="middle" font-size="15" font-weight="700" fill="#c2410c">1:M</text><text x="1535" y="1138" text-anchor="middle" font-size="15" font-weight="700" fill="#c2410c">audit log</text>
+    </g>
+  </g>
+
+  
+    <g>
+      <rect x="985" y="1135" width="370" height="34" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+      <text x="1170" y="1157" text-anchor="middle" font-size="15" font-weight="700" fill="#c2410c">Audit refs: user_id, admin_id, super_admin_id</text>
+    </g>
+  
+    <g>
+      <rect x="1460" y="405" width="390" height="34" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+      <text x="1655" y="427" text-anchor="middle" font-size="15" font-weight="700" fill="#c2410c">Super admin is separate from admins</text>
+    </g>
+
+  
+    <g class="entity">
+      <rect x="80" y="150" width="360" height="270" rx="10" fill="#e0f2fe" stroke="#0369a1" stroke-width="3"/>
+      <rect x="80" y="150" width="360" height="54" rx="10" fill="#0369a1" opacity="0.12"/>
+      <line x1="80" y1="204" x2="440" y2="204" stroke="#0369a1" stroke-width="2"/>
+      <text x="260" y="185" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">USERS</text><line x1="150" y1="204" x2="150" y2="240" stroke="#0369a1" stroke-width="1" opacity="0.35"/><text x="114" y="228" text-anchor="middle" font-size="16" font-weight="700" fill="#0369a1">PK</text><text x="166" y="228" font-size="17" fill="#0f172a">id</text><line x1="80" y1="240" x2="440" y2="240" stroke="#0369a1" stroke-width="1" opacity="0.35"/><line x1="150" y1="240" x2="150" y2="276" stroke="#0369a1" stroke-width="1" opacity="0.35"/><text x="114" y="264" text-anchor="middle" font-size="16" font-weight="700" fill="#0369a1">UK</text><text x="166" y="264" font-size="17" fill="#0f172a">email</text><line x1="80" y1="276" x2="440" y2="276" stroke="#0369a1" stroke-width="1" opacity="0.35"/><line x1="150" y1="276" x2="150" y2="312" stroke="#0369a1" stroke-width="1" opacity="0.35"/><text x="114" y="300" text-anchor="middle" font-size="16" font-weight="700" fill="#0369a1"></text><text x="166" y="300" font-size="17" fill="#0f172a">firstname, lastname</text><line x1="80" y1="312" x2="440" y2="312" stroke="#0369a1" stroke-width="1" opacity="0.35"/><line x1="150" y1="312" x2="150" y2="348" stroke="#0369a1" stroke-width="1" opacity="0.35"/><text x="114" y="336" text-anchor="middle" font-size="16" font-weight="700" fill="#0369a1"></text><text x="166" y="336" font-size="17" fill="#0f172a">department, degree</text><line x1="80" y1="348" x2="440" y2="348" stroke="#0369a1" stroke-width="1" opacity="0.35"/><line x1="150" y1="348" x2="150" y2="384" stroke="#0369a1" stroke-width="1" opacity="0.35"/><text x="114" y="372" text-anchor="middle" font-size="16" font-weight="700" fill="#0369a1"></text><text x="166" y="372" font-size="17" fill="#0f172a">year_graduated</text><line x1="80" y1="384" x2="440" y2="384" stroke="#0369a1" stroke-width="1" opacity="0.35"/><line x1="150" y1="384" x2="150" y2="420" stroke="#0369a1" stroke-width="1" opacity="0.35"/><text x="114" y="408" text-anchor="middle" font-size="16" font-weight="700" fill="#0369a1"></text><text x="166" y="408" font-size="17" fill="#0f172a">profile and tracer summary</text></g>
+
+    <g class="entity">
+      <rect x="1960" y="150" width="360" height="234" rx="10" fill="#ecfdf5" stroke="#047857" stroke-width="3"/>
+      <rect x="1960" y="150" width="360" height="54" rx="10" fill="#047857" opacity="0.12"/>
+      <line x1="1960" y1="204" x2="2320" y2="204" stroke="#047857" stroke-width="2"/>
+      <text x="2140" y="185" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">ADMINS</text><line x1="2030" y1="204" x2="2030" y2="240" stroke="#047857" stroke-width="1" opacity="0.35"/><text x="1994" y="228" text-anchor="middle" font-size="16" font-weight="700" fill="#047857">PK</text><text x="2046" y="228" font-size="17" fill="#0f172a">id</text><line x1="1960" y1="240" x2="2320" y2="240" stroke="#047857" stroke-width="1" opacity="0.35"/><line x1="2030" y1="240" x2="2030" y2="276" stroke="#047857" stroke-width="1" opacity="0.35"/><text x="1994" y="264" text-anchor="middle" font-size="16" font-weight="700" fill="#047857">UK</text><text x="2046" y="264" font-size="17" fill="#0f172a">email</text><line x1="1960" y1="276" x2="2320" y2="276" stroke="#047857" stroke-width="1" opacity="0.35"/><line x1="2030" y1="276" x2="2030" y2="312" stroke="#047857" stroke-width="1" opacity="0.35"/><text x="1994" y="300" text-anchor="middle" font-size="16" font-weight="700" fill="#047857"></text><text x="2046" y="300" font-size="17" fill="#0f172a">firstname, lastname</text><line x1="1960" y1="312" x2="2320" y2="312" stroke="#047857" stroke-width="1" opacity="0.35"/><line x1="2030" y1="312" x2="2030" y2="348" stroke="#047857" stroke-width="1" opacity="0.35"/><text x="1994" y="336" text-anchor="middle" font-size="16" font-weight="700" fill="#047857"></text><text x="2046" y="336" font-size="17" fill="#0f172a">assigned admin role</text><line x1="1960" y1="348" x2="2320" y2="348" stroke="#047857" stroke-width="1" opacity="0.35"/><line x1="2030" y1="348" x2="2030" y2="384" stroke="#047857" stroke-width="1" opacity="0.35"/><text x="1994" y="372" text-anchor="middle" font-size="16" font-weight="700" fill="#047857"></text><text x="2046" y="372" font-size="17" fill="#0f172a">is_active</text></g>
+
+    <g class="entity">
+      <rect x="1460" y="150" width="380" height="234" rx="10" fill="#ecfdf5" stroke="#047857" stroke-width="3"/>
+      <rect x="1460" y="150" width="380" height="54" rx="10" fill="#047857" opacity="0.12"/>
+      <line x1="1460" y1="204" x2="1840" y2="204" stroke="#047857" stroke-width="2"/>
+      <text x="1650" y="185" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">SUPER_ADMINS</text><line x1="1530" y1="204" x2="1530" y2="240" stroke="#047857" stroke-width="1" opacity="0.35"/><text x="1494" y="228" text-anchor="middle" font-size="16" font-weight="700" fill="#047857">PK</text><text x="1546" y="228" font-size="17" fill="#0f172a">id</text><line x1="1460" y1="240" x2="1840" y2="240" stroke="#047857" stroke-width="1" opacity="0.35"/><line x1="1530" y1="240" x2="1530" y2="276" stroke="#047857" stroke-width="1" opacity="0.35"/><text x="1494" y="264" text-anchor="middle" font-size="16" font-weight="700" fill="#047857">UK</text><text x="1546" y="264" font-size="17" fill="#0f172a">email</text><line x1="1460" y1="276" x2="1840" y2="276" stroke="#047857" stroke-width="1" opacity="0.35"/><line x1="1530" y1="276" x2="1530" y2="312" stroke="#047857" stroke-width="1" opacity="0.35"/><text x="1494" y="300" text-anchor="middle" font-size="16" font-weight="700" fill="#047857"></text><text x="1546" y="300" font-size="17" fill="#0f172a">firstname, lastname</text><line x1="1460" y1="312" x2="1840" y2="312" stroke="#047857" stroke-width="1" opacity="0.35"/><line x1="1530" y1="312" x2="1530" y2="348" stroke="#047857" stroke-width="1" opacity="0.35"/><text x="1494" y="336" text-anchor="middle" font-size="16" font-weight="700" fill="#047857"></text><text x="1546" y="336" font-size="17" fill="#0f172a">account control authority</text><line x1="1460" y1="348" x2="1840" y2="348" stroke="#047857" stroke-width="1" opacity="0.35"/><line x1="1530" y1="348" x2="1530" y2="384" stroke="#047857" stroke-width="1" opacity="0.35"/><text x="1494" y="372" text-anchor="middle" font-size="16" font-weight="700" fill="#047857"></text><text x="1546" y="372" font-size="17" fill="#0f172a">email_verified_at</text></g>
+
+    <g class="entity">
+      <rect x="520" y="120" width="380" height="234" rx="10" fill="#f8fafc" stroke="#334155" stroke-width="3"/>
+      <rect x="520" y="120" width="380" height="54" rx="10" fill="#334155" opacity="0.12"/>
+      <line x1="520" y1="174" x2="900" y2="174" stroke="#334155" stroke-width="2"/>
+      <text x="710" y="155" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">TRACER_RECORDS</text><line x1="590" y1="174" x2="590" y2="210" stroke="#334155" stroke-width="1" opacity="0.35"/><text x="554" y="198" text-anchor="middle" font-size="16" font-weight="700" fill="#334155">PK</text><text x="606" y="198" font-size="17" fill="#0f172a">id</text><line x1="520" y1="210" x2="900" y2="210" stroke="#334155" stroke-width="1" opacity="0.35"/><line x1="590" y1="210" x2="590" y2="246" stroke="#334155" stroke-width="1" opacity="0.35"/><text x="554" y="234" text-anchor="middle" font-size="16" font-weight="700" fill="#334155">FK</text><text x="606" y="234" font-size="17" fill="#0f172a">user_id</text><line x1="520" y1="246" x2="900" y2="246" stroke="#334155" stroke-width="1" opacity="0.35"/><line x1="590" y1="246" x2="590" y2="282" stroke="#334155" stroke-width="1" opacity="0.35"/><text x="554" y="270" text-anchor="middle" font-size="16" font-weight="700" fill="#334155"></text><text x="606" y="270" font-size="17" fill="#0f172a">tracer_date</text><line x1="520" y1="282" x2="900" y2="282" stroke="#334155" stroke-width="1" opacity="0.35"/><line x1="590" y1="282" x2="590" y2="318" stroke="#334155" stroke-width="1" opacity="0.35"/><text x="554" y="306" text-anchor="middle" font-size="16" font-weight="700" fill="#334155"></text><text x="606" y="306" font-size="17" fill="#0f172a">employment status</text><line x1="520" y1="318" x2="900" y2="318" stroke="#334155" stroke-width="1" opacity="0.35"/><line x1="590" y1="318" x2="590" y2="354" stroke="#334155" stroke-width="1" opacity="0.35"/><text x="554" y="342" text-anchor="middle" font-size="16" font-weight="700" fill="#334155"></text><text x="606" y="342" font-size="17" fill="#0f172a">job satisfaction</text></g>
+
+    <g class="entity">
+      <rect x="520" y="500" width="380" height="234" rx="10" fill="#f8fafc" stroke="#334155" stroke-width="3"/>
+      <rect x="520" y="500" width="380" height="54" rx="10" fill="#334155" opacity="0.12"/>
+      <line x1="520" y1="554" x2="900" y2="554" stroke="#334155" stroke-width="2"/>
+      <text x="710" y="535" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">JOB_SUBMISSIONS</text><line x1="590" y1="554" x2="590" y2="590" stroke="#334155" stroke-width="1" opacity="0.35"/><text x="554" y="578" text-anchor="middle" font-size="16" font-weight="700" fill="#334155">PK</text><text x="606" y="578" font-size="17" fill="#0f172a">id</text><line x1="520" y1="590" x2="900" y2="590" stroke="#334155" stroke-width="1" opacity="0.35"/><line x1="590" y1="590" x2="590" y2="626" stroke="#334155" stroke-width="1" opacity="0.35"/><text x="554" y="614" text-anchor="middle" font-size="16" font-weight="700" fill="#334155">FK</text><text x="606" y="614" font-size="17" fill="#0f172a">user_id</text><line x1="520" y1="626" x2="900" y2="626" stroke="#334155" stroke-width="1" opacity="0.35"/><line x1="590" y1="626" x2="590" y2="662" stroke="#334155" stroke-width="1" opacity="0.35"/><text x="554" y="650" text-anchor="middle" font-size="16" font-weight="700" fill="#334155">FK</text><text x="606" y="650" font-size="17" fill="#0f172a">reviewed_by</text><line x1="520" y1="662" x2="900" y2="662" stroke="#334155" stroke-width="1" opacity="0.35"/><line x1="590" y1="662" x2="590" y2="698" stroke="#334155" stroke-width="1" opacity="0.35"/><text x="554" y="686" text-anchor="middle" font-size="16" font-weight="700" fill="#334155"></text><text x="606" y="686" font-size="17" fill="#0f172a">title, company</text><line x1="520" y1="698" x2="900" y2="698" stroke="#334155" stroke-width="1" opacity="0.35"/><line x1="590" y1="698" x2="590" y2="734" stroke="#334155" stroke-width="1" opacity="0.35"/><text x="554" y="722" text-anchor="middle" font-size="16" font-weight="700" fill="#334155"></text><text x="606" y="722" font-size="17" fill="#0f172a">status</text></g>
+
+    <g class="entity">
+      <rect x="980" y="500" width="380" height="234" rx="10" fill="#f8fafc" stroke="#334155" stroke-width="3"/>
+      <rect x="980" y="500" width="380" height="54" rx="10" fill="#334155" opacity="0.12"/>
+      <line x1="980" y1="554" x2="1360" y2="554" stroke="#334155" stroke-width="2"/>
+      <text x="1170" y="535" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">JOB_APPLICATIONS</text><line x1="1050" y1="554" x2="1050" y2="590" stroke="#334155" stroke-width="1" opacity="0.35"/><text x="1014" y="578" text-anchor="middle" font-size="16" font-weight="700" fill="#334155">PK</text><text x="1066" y="578" font-size="17" fill="#0f172a">id</text><line x1="980" y1="590" x2="1360" y2="590" stroke="#334155" stroke-width="1" opacity="0.35"/><line x1="1050" y1="590" x2="1050" y2="626" stroke="#334155" stroke-width="1" opacity="0.35"/><text x="1014" y="614" text-anchor="middle" font-size="16" font-weight="700" fill="#334155">FK</text><text x="1066" y="614" font-size="17" fill="#0f172a">job_id</text><line x1="980" y1="626" x2="1360" y2="626" stroke="#334155" stroke-width="1" opacity="0.35"/><line x1="1050" y1="626" x2="1050" y2="662" stroke="#334155" stroke-width="1" opacity="0.35"/><text x="1014" y="650" text-anchor="middle" font-size="16" font-weight="700" fill="#334155">FK</text><text x="1066" y="650" font-size="17" fill="#0f172a">user_id</text><line x1="980" y1="662" x2="1360" y2="662" stroke="#334155" stroke-width="1" opacity="0.35"/><line x1="1050" y1="662" x2="1050" y2="698" stroke="#334155" stroke-width="1" opacity="0.35"/><text x="1014" y="686" text-anchor="middle" font-size="16" font-weight="700" fill="#334155">FK</text><text x="1066" y="686" font-size="17" fill="#0f172a">reviewed_by</text><line x1="980" y1="698" x2="1360" y2="698" stroke="#334155" stroke-width="1" opacity="0.35"/><line x1="1050" y1="698" x2="1050" y2="734" stroke="#334155" stroke-width="1" opacity="0.35"/><text x="1014" y="722" text-anchor="middle" font-size="16" font-weight="700" fill="#334155"></text><text x="1066" y="722" font-size="17" fill="#0f172a">status</text></g>
+
+    <g class="entity">
+      <rect x="980" y="850" width="380" height="234" rx="10" fill="#f8fafc" stroke="#334155" stroke-width="3"/>
+      <rect x="980" y="850" width="380" height="54" rx="10" fill="#334155" opacity="0.12"/>
+      <line x1="980" y1="904" x2="1360" y2="904" stroke="#334155" stroke-width="2"/>
+      <text x="1170" y="885" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">FEEDBACK</text><line x1="1050" y1="904" x2="1050" y2="940" stroke="#334155" stroke-width="1" opacity="0.35"/><text x="1014" y="928" text-anchor="middle" font-size="16" font-weight="700" fill="#334155">PK</text><text x="1066" y="928" font-size="17" fill="#0f172a">id</text><line x1="980" y1="940" x2="1360" y2="940" stroke="#334155" stroke-width="1" opacity="0.35"/><line x1="1050" y1="940" x2="1050" y2="976" stroke="#334155" stroke-width="1" opacity="0.35"/><text x="1014" y="964" text-anchor="middle" font-size="16" font-weight="700" fill="#334155">FK</text><text x="1066" y="964" font-size="17" fill="#0f172a">user_id</text><line x1="980" y1="976" x2="1360" y2="976" stroke="#334155" stroke-width="1" opacity="0.35"/><line x1="1050" y1="976" x2="1050" y2="1012" stroke="#334155" stroke-width="1" opacity="0.35"/><text x="1014" y="1000" text-anchor="middle" font-size="16" font-weight="700" fill="#334155">FK</text><text x="1066" y="1000" font-size="17" fill="#0f172a">assigned_to</text><line x1="980" y1="1012" x2="1360" y2="1012" stroke="#334155" stroke-width="1" opacity="0.35"/><line x1="1050" y1="1012" x2="1050" y2="1048" stroke="#334155" stroke-width="1" opacity="0.35"/><text x="1014" y="1036" text-anchor="middle" font-size="16" font-weight="700" fill="#334155"></text><text x="1066" y="1036" font-size="17" fill="#0f172a">subject</text><line x1="980" y1="1048" x2="1360" y2="1048" stroke="#334155" stroke-width="1" opacity="0.35"/><line x1="1050" y1="1048" x2="1050" y2="1084" stroke="#334155" stroke-width="1" opacity="0.35"/><text x="1014" y="1072" text-anchor="middle" font-size="16" font-weight="700" fill="#334155"></text><text x="1066" y="1072" font-size="17" fill="#0f172a">status, priority</text></g>
+
+    <g class="entity">
+      <rect x="80" y="530" width="360" height="198" rx="10" fill="#e0f2fe" stroke="#0369a1" stroke-width="3"/>
+      <rect x="80" y="530" width="360" height="54" rx="10" fill="#0369a1" opacity="0.12"/>
+      <line x1="80" y1="584" x2="440" y2="584" stroke="#0369a1" stroke-width="2"/>
+      <text x="260" y="565" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">SESSIONS</text><line x1="150" y1="584" x2="150" y2="620" stroke="#0369a1" stroke-width="1" opacity="0.35"/><text x="114" y="608" text-anchor="middle" font-size="16" font-weight="700" fill="#0369a1">PK</text><text x="166" y="608" font-size="17" fill="#0f172a">id</text><line x1="80" y1="620" x2="440" y2="620" stroke="#0369a1" stroke-width="1" opacity="0.35"/><line x1="150" y1="620" x2="150" y2="656" stroke="#0369a1" stroke-width="1" opacity="0.35"/><text x="114" y="644" text-anchor="middle" font-size="16" font-weight="700" fill="#0369a1">FK</text><text x="166" y="644" font-size="17" fill="#0f172a">user_id</text><line x1="80" y1="656" x2="440" y2="656" stroke="#0369a1" stroke-width="1" opacity="0.35"/><line x1="150" y1="656" x2="150" y2="692" stroke="#0369a1" stroke-width="1" opacity="0.35"/><text x="114" y="680" text-anchor="middle" font-size="16" font-weight="700" fill="#0369a1"></text><text x="166" y="680" font-size="17" fill="#0f172a">ip_address</text><line x1="80" y1="692" x2="440" y2="692" stroke="#0369a1" stroke-width="1" opacity="0.35"/><line x1="150" y1="692" x2="150" y2="728" stroke="#0369a1" stroke-width="1" opacity="0.35"/><text x="114" y="716" text-anchor="middle" font-size="16" font-weight="700" fill="#0369a1"></text><text x="166" y="716" font-size="17" fill="#0f172a">last_activity</text></g>
+
+    <g class="entity">
+      <rect x="80" y="820" width="360" height="234" rx="10" fill="#e0f2fe" stroke="#0369a1" stroke-width="3"/>
+      <rect x="80" y="820" width="360" height="54" rx="10" fill="#0369a1" opacity="0.12"/>
+      <line x1="80" y1="874" x2="440" y2="874" stroke="#0369a1" stroke-width="2"/>
+      <text x="260" y="855" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">NOTIFICATIONS</text><line x1="150" y1="874" x2="150" y2="910" stroke="#0369a1" stroke-width="1" opacity="0.35"/><text x="114" y="898" text-anchor="middle" font-size="16" font-weight="700" fill="#0369a1">PK</text><text x="166" y="898" font-size="17" fill="#0f172a">id</text><line x1="80" y1="910" x2="440" y2="910" stroke="#0369a1" stroke-width="1" opacity="0.35"/><line x1="150" y1="910" x2="150" y2="946" stroke="#0369a1" stroke-width="1" opacity="0.35"/><text x="114" y="934" text-anchor="middle" font-size="16" font-weight="700" fill="#0369a1">FK</text><text x="166" y="934" font-size="17" fill="#0f172a">notifiable_id</text><line x1="80" y1="946" x2="440" y2="946" stroke="#0369a1" stroke-width="1" opacity="0.35"/><line x1="150" y1="946" x2="150" y2="982" stroke="#0369a1" stroke-width="1" opacity="0.35"/><text x="114" y="970" text-anchor="middle" font-size="16" font-weight="700" fill="#0369a1"></text><text x="166" y="970" font-size="17" fill="#0f172a">type</text><line x1="80" y1="982" x2="440" y2="982" stroke="#0369a1" stroke-width="1" opacity="0.35"/><line x1="150" y1="982" x2="150" y2="1018" stroke="#0369a1" stroke-width="1" opacity="0.35"/><text x="114" y="1006" text-anchor="middle" font-size="16" font-weight="700" fill="#0369a1"></text><text x="166" y="1006" font-size="17" fill="#0f172a">data</text><line x1="80" y1="1018" x2="440" y2="1018" stroke="#0369a1" stroke-width="1" opacity="0.35"/><line x1="150" y1="1018" x2="150" y2="1054" stroke="#0369a1" stroke-width="1" opacity="0.35"/><text x="114" y="1042" text-anchor="middle" font-size="16" font-weight="700" fill="#0369a1"></text><text x="166" y="1042" font-size="17" fill="#0f172a">read_at</text></g>
+
+    <g class="entity">
+      <rect x="1460" y="500" width="380" height="234" rx="10" fill="#ecfdf5" stroke="#047857" stroke-width="3"/>
+      <rect x="1460" y="500" width="380" height="54" rx="10" fill="#047857" opacity="0.12"/>
+      <line x1="1460" y1="554" x2="1840" y2="554" stroke="#047857" stroke-width="2"/>
+      <text x="1650" y="535" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">JOBS</text><line x1="1530" y1="554" x2="1530" y2="590" stroke="#047857" stroke-width="1" opacity="0.35"/><text x="1494" y="578" text-anchor="middle" font-size="16" font-weight="700" fill="#047857">PK</text><text x="1546" y="578" font-size="17" fill="#0f172a">id</text><line x1="1460" y1="590" x2="1840" y2="590" stroke="#047857" stroke-width="1" opacity="0.35"/><line x1="1530" y1="590" x2="1530" y2="626" stroke="#047857" stroke-width="1" opacity="0.35"/><text x="1494" y="614" text-anchor="middle" font-size="16" font-weight="700" fill="#047857">FK</text><text x="1546" y="614" font-size="17" fill="#0f172a">created_by</text><line x1="1460" y1="626" x2="1840" y2="626" stroke="#047857" stroke-width="1" opacity="0.35"/><line x1="1530" y1="626" x2="1530" y2="662" stroke="#047857" stroke-width="1" opacity="0.35"/><text x="1494" y="650" text-anchor="middle" font-size="16" font-weight="700" fill="#047857">FK</text><text x="1546" y="650" font-size="17" fill="#0f172a">archived_by</text><line x1="1460" y1="662" x2="1840" y2="662" stroke="#047857" stroke-width="1" opacity="0.35"/><line x1="1530" y1="662" x2="1530" y2="698" stroke="#047857" stroke-width="1" opacity="0.35"/><text x="1494" y="686" text-anchor="middle" font-size="16" font-weight="700" fill="#047857"></text><text x="1546" y="686" font-size="17" fill="#0f172a">title, company</text><line x1="1460" y1="698" x2="1840" y2="698" stroke="#047857" stroke-width="1" opacity="0.35"/><line x1="1530" y1="698" x2="1530" y2="734" stroke="#047857" stroke-width="1" opacity="0.35"/><text x="1494" y="722" text-anchor="middle" font-size="16" font-weight="700" fill="#047857"></text><text x="1546" y="722" font-size="17" fill="#0f172a">is_active</text></g>
+
+    <g class="entity">
+      <rect x="1460" y="850" width="380" height="234" rx="10" fill="#ecfdf5" stroke="#047857" stroke-width="3"/>
+      <rect x="1460" y="850" width="380" height="54" rx="10" fill="#047857" opacity="0.12"/>
+      <line x1="1460" y1="904" x2="1840" y2="904" stroke="#047857" stroke-width="2"/>
+      <text x="1650" y="885" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">ANNOUNCEMENTS</text><line x1="1530" y1="904" x2="1530" y2="940" stroke="#047857" stroke-width="1" opacity="0.35"/><text x="1494" y="928" text-anchor="middle" font-size="16" font-weight="700" fill="#047857">PK</text><text x="1546" y="928" font-size="17" fill="#0f172a">id</text><line x1="1460" y1="940" x2="1840" y2="940" stroke="#047857" stroke-width="1" opacity="0.35"/><line x1="1530" y1="940" x2="1530" y2="976" stroke="#047857" stroke-width="1" opacity="0.35"/><text x="1494" y="964" text-anchor="middle" font-size="16" font-weight="700" fill="#047857">FK</text><text x="1546" y="964" font-size="17" fill="#0f172a">created_by</text><line x1="1460" y1="976" x2="1840" y2="976" stroke="#047857" stroke-width="1" opacity="0.35"/><line x1="1530" y1="976" x2="1530" y2="1012" stroke="#047857" stroke-width="1" opacity="0.35"/><text x="1494" y="1000" text-anchor="middle" font-size="16" font-weight="700" fill="#047857">FK</text><text x="1546" y="1000" font-size="17" fill="#0f172a">archived_by</text><line x1="1460" y1="1012" x2="1840" y2="1012" stroke="#047857" stroke-width="1" opacity="0.35"/><line x1="1530" y1="1012" x2="1530" y2="1048" stroke="#047857" stroke-width="1" opacity="0.35"/><text x="1494" y="1036" text-anchor="middle" font-size="16" font-weight="700" fill="#047857"></text><text x="1546" y="1036" font-size="17" fill="#0f172a">title, content</text><line x1="1460" y1="1048" x2="1840" y2="1048" stroke="#047857" stroke-width="1" opacity="0.35"/><line x1="1530" y1="1048" x2="1530" y2="1084" stroke="#047857" stroke-width="1" opacity="0.35"/><text x="1494" y="1072" text-anchor="middle" font-size="16" font-weight="700" fill="#047857"></text><text x="1546" y="1072" font-size="17" fill="#0f172a">is_published</text></g>
+
+    <g class="entity">
+      <rect x="980" y="1190" width="380" height="270" rx="10" fill="#fff7ed" stroke="#c2410c" stroke-width="3"/>
+      <rect x="980" y="1190" width="380" height="54" rx="10" fill="#c2410c" opacity="0.12"/>
+      <line x1="980" y1="1244" x2="1360" y2="1244" stroke="#c2410c" stroke-width="2"/>
+      <text x="1170" y="1225" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">SYSTEM_LOGS</text><line x1="1050" y1="1244" x2="1050" y2="1280" stroke="#c2410c" stroke-width="1" opacity="0.35"/><text x="1014" y="1268" text-anchor="middle" font-size="16" font-weight="700" fill="#c2410c">PK</text><text x="1066" y="1268" font-size="17" fill="#0f172a">id</text><line x1="980" y1="1280" x2="1360" y2="1280" stroke="#c2410c" stroke-width="1" opacity="0.35"/><line x1="1050" y1="1280" x2="1050" y2="1316" stroke="#c2410c" stroke-width="1" opacity="0.35"/><text x="1014" y="1304" text-anchor="middle" font-size="16" font-weight="700" fill="#c2410c">FK</text><text x="1066" y="1304" font-size="17" fill="#0f172a">user_id</text><line x1="980" y1="1316" x2="1360" y2="1316" stroke="#c2410c" stroke-width="1" opacity="0.35"/><line x1="1050" y1="1316" x2="1050" y2="1352" stroke="#c2410c" stroke-width="1" opacity="0.35"/><text x="1014" y="1340" text-anchor="middle" font-size="16" font-weight="700" fill="#c2410c">FK</text><text x="1066" y="1340" font-size="17" fill="#0f172a">admin_id</text><line x1="980" y1="1352" x2="1360" y2="1352" stroke="#c2410c" stroke-width="1" opacity="0.35"/><line x1="1050" y1="1352" x2="1050" y2="1388" stroke="#c2410c" stroke-width="1" opacity="0.35"/><text x="1014" y="1376" text-anchor="middle" font-size="16" font-weight="700" fill="#c2410c">FK</text><text x="1066" y="1376" font-size="17" fill="#0f172a">super_admin_id</text><line x1="980" y1="1388" x2="1360" y2="1388" stroke="#c2410c" stroke-width="1" opacity="0.35"/><line x1="1050" y1="1388" x2="1050" y2="1424" stroke="#c2410c" stroke-width="1" opacity="0.35"/><text x="1014" y="1412" text-anchor="middle" font-size="16" font-weight="700" fill="#c2410c"></text><text x="1066" y="1412" font-size="17" fill="#0f172a">action</text><line x1="980" y1="1424" x2="1360" y2="1424" stroke="#c2410c" stroke-width="1" opacity="0.35"/><line x1="1050" y1="1424" x2="1050" y2="1460" stroke="#c2410c" stroke-width="1" opacity="0.35"/><text x="1014" y="1448" text-anchor="middle" font-size="16" font-weight="700" fill="#c2410c"></text><text x="1066" y="1448" font-size="17" fill="#0f172a">created_at</text></g>
+</svg>

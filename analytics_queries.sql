@@ -8,12 +8,12 @@
 -- ===========================================
 
 -- Total alumni count
-SELECT COUNT(*) as total_alumni FROM users WHERE is_admin = FALSE;
+SELECT COUNT(*) as total_alumni FROM users WHERE role = 'alumni';
 
 -- Alumni by department
 SELECT department, COUNT(*) as count
 FROM users
-WHERE department IS NOT NULL AND is_admin = FALSE
+WHERE department IS NOT NULL AND role = 'alumni'
 GROUP BY department
 ORDER BY count DESC;
 
@@ -27,7 +27,7 @@ SELECT
          NULLIF(COUNT(*), 0)) * 100, 2
     ) as employment_rate
 FROM users
-WHERE is_admin = FALSE;
+WHERE role = 'alumni';
 
 -- ===========================================
 -- EMPLOYMENT ANALYSIS QUERIES
@@ -37,9 +37,9 @@ WHERE is_admin = FALSE;
 SELECT
     industry,
     COUNT(*) as count,
-    ROUND((COUNT(*)::decimal / (SELECT COUNT(*) FROM users WHERE employed_after_grad = 'Yes' AND is_admin = FALSE)) * 100, 2) as percentage
+    ROUND((COUNT(*)::decimal / (SELECT COUNT(*) FROM users WHERE employed_after_grad = 'Yes' AND role = 'alumni')) * 100, 2) as percentage
 FROM users
-WHERE employed_after_grad = 'Yes' AND industry IS NOT NULL AND is_admin = FALSE
+WHERE employed_after_grad = 'Yes' AND industry IS NOT NULL AND role = 'alumni'
 GROUP BY industry
 ORDER BY count DESC;
 
@@ -53,7 +53,7 @@ SELECT
          NULLIF(COUNT(*), 0)) * 100, 2
     ) as employment_rate
 FROM users
-WHERE year_graduated IS NOT NULL AND is_admin = FALSE
+WHERE year_graduated IS NOT NULL AND role = 'alumni'
 GROUP BY year_graduated
 ORDER BY year_graduated DESC;
 
@@ -61,13 +61,13 @@ ORDER BY year_graduated DESC;
 SELECT
     industry,
     COUNT(*) as alumni_count,
-    ROUND(AVG(CASE WHEN salary_range = '25,000-35,000' THEN 30000
-                   WHEN salary_range = '35,000-45,000' THEN 40000
-                   WHEN salary_range = '45,000-55,000' THEN 50000
-                   WHEN salary_range = '55,000-65,000' THEN 60000
+    ROUND(AVG(CASE WHEN salary_range = '25,000.00 - 35,000.00' THEN 30000.00
+                   WHEN salary_range = '35,000.00 - 45,000.00' THEN 40000.00
+                   WHEN salary_range = '45,000.00 - 55,000.00' THEN 50000.00
+                   WHEN salary_range = '55,000.00 - 65,000.00' THEN 60000.00
                    ELSE 0 END), 0) as avg_salary
 FROM users
-WHERE employed_after_grad = 'Yes' AND industry IS NOT NULL AND salary_range IS NOT NULL AND is_admin = FALSE
+WHERE employed_after_grad = 'Yes' AND industry IS NOT NULL AND salary_range IS NOT NULL AND role = 'alumni'
 GROUP BY industry
 ORDER BY avg_salary DESC;
 
@@ -82,24 +82,24 @@ WHERE is_active = TRUE
 GROUP BY type
 ORDER BY count DESC;
 
--- Job applications by status
+-- Job submissions by review status
 SELECT status, COUNT(*) as count
-FROM job_applications
+FROM job_submissions
 GROUP BY status
 ORDER BY count DESC;
 
--- Most applied jobs
+-- Most viewed active job postings
 SELECT
-    j.title,
-    j.company,
-    COUNT(ja.id) as applications_count,
-    j.location,
-    j.type
-FROM jobs j
-LEFT JOIN job_applications ja ON j.id = ja.job_id
-WHERE j.is_active = TRUE
-GROUP BY j.id, j.title, j.company, j.location, j.type
-ORDER BY applications_count DESC
+    title,
+    company,
+    views_count,
+    location,
+    type,
+    salary_range
+FROM jobs
+WHERE is_active = TRUE
+  AND archived_at IS NULL
+ORDER BY views_count DESC
 LIMIT 10;
 
 -- ===========================================
@@ -137,10 +137,10 @@ LIMIT 5;
 -- Tracer response rate
 SELECT
     COUNT(DISTINCT tr.user_id) as responded,
-    (SELECT COUNT(*) FROM users WHERE is_admin = FALSE) as total_alumni,
+    (SELECT COUNT(*) FROM users WHERE role = 'alumni') as total_alumni,
     ROUND(
         (COUNT(DISTINCT tr.user_id)::decimal /
-         (SELECT COUNT(*) FROM users WHERE is_admin = FALSE)) * 100, 2
+         (SELECT COUNT(*) FROM users WHERE role = 'alumni')) * 100, 2
     ) as response_rate
 FROM tracer_records tr;
 
@@ -158,12 +158,12 @@ ORDER BY job_satisfaction;
 SELECT
     industry,
     COUNT(*) as alumni_count,
-    AVG(job_satisfaction) as avg_satisfaction,
-    ROUND(AVG(monthly_income), 2) as avg_income
+    monthly_income as income_range,
+    AVG(job_satisfaction) as avg_satisfaction
 FROM tracer_records
-WHERE industry IS NOT NULL AND is_employed = TRUE
-GROUP BY industry
-ORDER BY avg_income DESC;
+WHERE industry IS NOT NULL AND monthly_income IS NOT NULL AND is_employed = TRUE
+GROUP BY industry, monthly_income
+ORDER BY industry, alumni_count DESC;
 
 -- ===========================================
 -- TIME-BASED ANALYTICS
@@ -174,7 +174,7 @@ SELECT
     DATE_TRUNC('month', created_at) as month,
     COUNT(*) as registrations
 FROM users
-WHERE is_admin = FALSE
+WHERE role = 'alumni'
 GROUP BY DATE_TRUNC('month', created_at)
 ORDER BY month DESC;
 
@@ -203,9 +203,9 @@ ORDER BY month DESC;
 SELECT
     location,
     COUNT(*) as count,
-    ROUND((COUNT(*)::decimal / (SELECT COUNT(*) FROM users WHERE location IS NOT NULL AND is_admin = FALSE)) * 100, 2) as percentage
+    ROUND((COUNT(*)::decimal / (SELECT COUNT(*) FROM users WHERE location IS NOT NULL AND role = 'alumni')) * 100, 2) as percentage
 FROM users
-WHERE location IS NOT NULL AND is_admin = FALSE
+WHERE location IS NOT NULL AND role = 'alumni'
 GROUP BY location
 ORDER BY count DESC;
 
@@ -213,10 +213,11 @@ ORDER BY count DESC;
 SELECT
     location,
     COUNT(*) as job_count,
-    AVG(salary_min) as avg_min_salary,
-    AVG(salary_max) as avg_max_salary
+    COUNT(DISTINCT salary_range) as salary_range_count
 FROM jobs
-WHERE is_active = TRUE AND location IS NOT NULL
+WHERE is_active = TRUE
+  AND archived_at IS NULL
+  AND location IS NOT NULL
 GROUP BY location
 ORDER BY job_count DESC;
 
@@ -241,7 +242,7 @@ SELECT
     COUNT(sl.id) as activity_count
 FROM users u
 LEFT JOIN system_logs sl ON u.id = sl.user_id
-WHERE u.is_admin = FALSE
+WHERE u.role = 'alumni'
 GROUP BY u.id, u.firstname, u.lastname, u.email
 ORDER BY activity_count DESC
 LIMIT 10;
@@ -252,10 +253,10 @@ LIMIT 10;
 
 -- Complete dashboard statistics
 SELECT
-    (SELECT COUNT(*) FROM users WHERE is_admin = FALSE) as total_alumni,
+    (SELECT COUNT(*) FROM users WHERE role = 'alumni') as total_alumni,
     (SELECT COUNT(*) FROM jobs WHERE is_active = TRUE) as active_jobs,
     (SELECT COUNT(*) FROM announcements WHERE is_published = TRUE) as published_announcements,
-    (SELECT COUNT(*) FROM job_applications) as total_applications,
+    (SELECT COUNT(*) FROM job_submissions) as total_job_submissions,
     (SELECT ROUND(AVG(views_count), 0) FROM announcements WHERE is_published = TRUE) as avg_announcement_views,
     (SELECT COUNT(*) FROM tracer_records) as tracer_responses;
 
@@ -265,7 +266,7 @@ SELECT
     CONCAT(u.firstname, ' ', u.lastname) as description,
     u.created_at as activity_date
 FROM users u
-WHERE u.is_admin = FALSE
+WHERE u.role = 'alumni'
 UNION ALL
 SELECT
     'Job Posted' as activity_type,

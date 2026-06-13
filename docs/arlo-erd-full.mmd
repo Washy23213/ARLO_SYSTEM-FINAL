@@ -1,0 +1,234 @@
+%%{init: {"theme": "base", "themeVariables": {"background": "#ffffff", "primaryColor": "#f8fafc", "primaryBorderColor": "#0f3d2e", "primaryTextColor": "#0f172a", "lineColor": "#334155", "fontFamily": "Inter, Arial, sans-serif", "fontSize": "17px"}}}%%
+erDiagram
+    USERS {
+        uuid id PK
+        string alumni_idnum "imported alumni ID"
+        string student_idnum "optional student ID"
+        string firstname
+        string middlename
+        string lastname
+        date birthdate "verification field"
+        string email UK
+        string phone
+        string sex "Male or Female"
+        string civil_status
+        string department "college"
+        string degree "program"
+        date dt_grad
+        int year_graduated
+        string role "alumni"
+        boolean is_batch_imported "CSV-only until claimed"
+        timestamp batch_imported_at
+        timestamp email_verified_at
+        boolean data_privacy_consent
+        timestamps timestamps
+    }
+
+    ADMINS {
+        uuid id PK
+        string firstname
+        string lastname
+        string email UK
+        string password
+        string phone
+        string role "admin access level"
+        uuid created_by_super_admin FK
+        uuid updated_by_super_admin FK
+        timestamp email_verified_at
+        string remember_token
+        timestamps timestamps
+    }
+
+    SUPER_ADMINS {
+        uuid id PK
+        string firstname
+        string lastname
+        string email UK
+        string password
+        string phone
+        timestamp email_verified_at
+        string remember_token
+        timestamps timestamps
+    }
+
+    TRACER_RECORDS {
+        uuid id PK
+        uuid user_id FK
+        string tracer_number UK
+        date tracer_date
+        boolean is_employed
+        string employment_type
+        string presently_employed
+        string present_employment_status
+        string current_position
+        string current_company
+        string industry
+        string monthly_income
+        string salary_range
+        string first_job_related_to_course
+        string time_to_first_job
+        string facilities_satisfaction
+        tinyint teaching_rating_fields
+        tinyint overall_rating_fields
+        string employment_proof_path
+        timestamps timestamps
+    }
+
+    JOBS {
+        uuid id PK
+        string title
+        string company
+        text description
+        text requirements
+        string location
+        string type
+        decimal salary_min
+        decimal salary_max
+        date application_deadline
+        string contact_email
+        boolean is_active
+        int views_count
+        int applications_count
+        uuid created_by FK
+        uuid archived_by FK
+        timestamp archived_at
+        timestamps timestamps
+    }
+
+    JOB_APPLICATIONS {
+        uuid id PK
+        uuid job_id FK
+        uuid user_id FK
+        text cover_letter
+        string resume_url
+        string status
+        timestamp applied_at
+        timestamp reviewed_at
+        uuid reviewed_by FK
+        text notes
+        timestamps timestamps
+    }
+
+    JOB_SUBMISSIONS {
+        bigint id PK
+        uuid user_id FK
+        string title
+        string company
+        string type
+        string location
+        string contact_email
+        date application_deadline
+        text description
+        text requirements
+        string status "pending, approved, rejected"
+        text admin_notes
+        uuid reviewed_by FK
+        timestamp reviewed_at
+        timestamps timestamps
+    }
+
+    ANNOUNCEMENTS {
+        uuid id PK
+        string title
+        text content
+        string type
+        string priority
+        string target_audience
+        string target_department
+        smallint target_graduation_year
+        string image_url
+        string attachment_url
+        boolean is_published
+        timestamp published_at
+        timestamp expires_at
+        int views_count
+        uuid created_by FK
+        uuid archived_by FK
+        string facebook_post_id
+        string facebook_permalink_url
+        timestamp archived_at
+        timestamps timestamps
+    }
+
+    ANNOUNCEMENT_READS {
+        bigint id PK
+        uuid announcement_id FK
+        uuid user_id FK
+        timestamp read_at
+        timestamps timestamps
+    }
+
+    FEEDBACK {
+        uuid id PK
+        uuid user_id FK
+        string subject
+        text message
+        string type
+        string status
+        string priority
+        uuid assigned_to FK
+        timestamp resolved_at
+        timestamps timestamps
+    }
+
+    NOTIFICATIONS {
+        uuid id PK
+        string type
+        uuid notifiable_id
+        string notifiable_type
+        text data
+        timestamp read_at
+        timestamps timestamps
+    }
+
+    SYSTEM_LOGS {
+        uuid id PK
+        uuid user_id FK
+        uuid admin_id FK
+        uuid super_admin_id FK
+        string action
+        text description
+        string ip_address
+        text user_agent
+        timestamp created_at
+    }
+
+    SESSIONS {
+        string id PK
+        uuid user_id FK
+        string ip_address
+        text user_agent
+        text payload
+        int last_activity
+    }
+
+    PASSWORD_RESET_TOKENS {
+        string email PK
+        string token
+        timestamp created_at
+    }
+
+    USERS ||--o{ TRACER_RECORDS : "submits"
+    USERS ||--o{ JOB_APPLICATIONS : "applies to"
+    USERS ||--o{ JOB_SUBMISSIONS : "proposes"
+    USERS ||--o{ FEEDBACK : "sends"
+    USERS ||--o{ ANNOUNCEMENT_READS : "reads"
+    USERS ||--o{ NOTIFICATIONS : "receives"
+    USERS ||--o{ SESSIONS : "owns"
+    USERS ||--o{ SYSTEM_LOGS : "alumni activity"
+
+    ADMINS ||--o{ JOBS : "creates or archives"
+    ADMINS ||--o{ ANNOUNCEMENTS : "publishes or archives"
+    ADMINS ||--o{ JOB_APPLICATIONS : "reviews"
+    ADMINS ||--o{ JOB_SUBMISSIONS : "reviews"
+    ADMINS ||--o{ FEEDBACK : "handles"
+    ADMINS ||--o{ SYSTEM_LOGS : "admin activity"
+    ADMINS ||--o{ NOTIFICATIONS : "may receive"
+
+    SUPER_ADMINS ||--o{ ADMINS : "creates updates deletes"
+    SUPER_ADMINS ||--o{ USERS : "edits alumni accounts"
+    SUPER_ADMINS ||--o{ SYSTEM_LOGS : "account control"
+    SUPER_ADMINS ||--o{ NOTIFICATIONS : "may receive"
+
+    JOBS ||--o{ JOB_APPLICATIONS : "receives"
+    ANNOUNCEMENTS ||--o{ ANNOUNCEMENT_READS : "has"

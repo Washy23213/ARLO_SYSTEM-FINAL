@@ -1,148 +1,515 @@
+@php
+    $pageTitle = trim($__env->yieldContent('title', 'Alumni Portal'));
+    $pageTitle = $pageTitle !== '' ? $pageTitle : 'Alumni Portal';
+    $currentUser = Auth::user();
+    $firstName = trim((string) ($currentUser?->firstname ?? 'Alumni'));
+    $userName = trim((string) ($currentUser?->firstname ?? 'Alumni') . ' ' . (string) ($currentUser?->lastname ?? 'Member'));
+    $displayPageTitle = $pageTitle === 'Dashboard' ? 'Welcome, ' . $firstName : $pageTitle;
+    $degreeLabel = $currentUser?->degree ?: 'Complete your alumni profile';
+    $departmentLabel = $currentUser?->department ?: 'CMU Alumni';
+    $classLabel = $currentUser?->year_graduated ? 'Batch ' . $currentUser->year_graduated : 'Alumni';
+    $todayLabel = now()->format('l, F j, Y');
+    $sidebarStorageUserKey = substr(sha1((string) ($currentUser?->getAuthIdentifier() ?? 'guest')), 0, 16);
+    $notificationBadgeCount = (int) ($sidebarNotificationIndicatorCount ?? 0);
+    $notificationBadge = $notificationBadgeCount > 0 ? ($notificationBadgeCount > 99 ? '99+' : (string) $notificationBadgeCount) : null;
+    $notificationBellIcon = $notificationBadgeCount > 0 ? 'bxs-bell-ring' : 'bx-bell';
+    $notificationBellLabel = $notificationBadgeCount > 0
+        ? 'Open updates center, ' . $notificationBadgeCount . ' new ' . \Illuminate\Support\Str::plural('update', $notificationBadgeCount)
+        : 'Open updates center';
+    $notificationLiveSummaryUrl = route('notifications.live-summary');
+    $showLatestNotificationPreviewOnLogin = (bool) session('show_latest_notification_preview', false);
+    $jobsBadge = ($sidebarAlumniReviewedJobSubmissionsCount ?? 0) > 0 ? (($sidebarAlumniReviewedJobSubmissionsCount ?? 0) > 9 ? '9+' : (string) ($sidebarAlumniReviewedJobSubmissionsCount ?? 0)) : null;
+    $navigationItems = [
+        [
+            'label' => 'Dashboard',
+            'description' => 'Dashboard home',
+            'route' => route('dashboard'),
+            'active' => request()->routeIs('dashboard'),
+            'icon' => 'bx-home-circle',
+            'badge' => null,
+        ],
+        [
+            'label' => 'Profile',
+            'description' => 'Profile',
+            'route' => route('profile'),
+            'active' => request()->routeIs('profile'),
+            'icon' => 'bx-id-card',
+            'badge' => null,
+        ],
+        [
+            'label' => 'Tracer',
+            'description' => 'Tracer records',
+            'route' => route('tracer.index'),
+            'active' => request()->routeIs('tracer.*'),
+            'icon' => 'bx-spreadsheet',
+            'badge' => null,
+        ],
+        [
+            'label' => 'Job Opportunities',
+            'description' => 'Job board',
+            'route' => route('jobs'),
+            'active' => request()->routeIs('jobs') || request()->routeIs('job.detail'),
+            'icon' => 'bx-briefcase-alt-2',
+            'badge' => $jobsBadge,
+        ],
+        [
+            'label' => 'Feedback',
+            'description' => 'Feedback',
+            'route' => route('feedback.form'),
+            'active' => request()->routeIs('feedback.form'),
+            'icon' => 'bx-message-rounded-dots',
+            'badge' => null,
+        ],
+        [
+            'label' => 'Settings',
+            'description' => 'Account settings',
+            'route' => route('settings'),
+            'active' => request()->routeIs('settings'),
+            'icon' => 'bx-cog',
+            'badge' => null,
+        ],
+        [
+            'label' => 'Help Desk',
+            'description' => 'System guide',
+            'route' => route('help-desk'),
+            'active' => request()->routeIs('help-desk'),
+            'icon' => 'bx-help-circle',
+            'badge' => null,
+        ],
+    ];
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? 'CMU ARLO - Dashboard' }}</title>
+    <title>{{ $pageTitle }} | CMU OARL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        .alumni-portal .alumni-topbar {
+            position: relative;
+            overflow: hidden;
+            padding: clamp(1.4rem, 1.8vw, 1.9rem);
+            border: 1px solid rgba(255, 255, 255, 0.78);
+            border-radius: 2rem;
+            background:
+                radial-gradient(circle at top right, rgba(200, 154, 45, 0.22), transparent 28%),
+                radial-gradient(circle at bottom left, rgba(20, 87, 38, 0.12), transparent 30%),
+                linear-gradient(135deg, rgba(255, 255, 255, 0.97), rgba(251, 248, 241, 0.93));
+            box-shadow: 0 26px 58px rgba(7, 24, 14, 0.16);
+        }
 
-    {{-- Tailwind CSS --}}
-    <script src="https://cdn.tailwindcss.com"></script>
+        .alumni-portal .alumni-topbar::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(120deg, rgba(255, 255, 255, 0.52), transparent 38%),
+                repeating-linear-gradient(90deg, rgba(11, 59, 31, 0.04) 0 1px, transparent 1px 34px);
+            opacity: 0.42;
+        }
 
-    {{-- Boxicons --}}
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+        .alumni-portal .alumni-topbar::after {
+            content: "";
+            position: absolute;
+            inset: auto -7% -72% auto;
+            width: 18rem;
+            height: 18rem;
+            border-radius: 999px;
+            pointer-events: none;
+            background: radial-gradient(circle, rgba(200, 154, 45, 0.24), transparent 68%);
+        }
 
-    {{-- Fonts --}}
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        .alumni-portal .alumni-topbar__shell {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            gap: 1.25rem;
+        }
 
-    {{-- Chart.js --}}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        .alumni-portal .alumni-topbar__main {
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+            min-width: 0;
+        }
+
+        .alumni-portal .alumni-topbar__lead {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .alumni-portal .alumni-topbar__copy {
+            min-width: 0;
+        }
+
+        .alumni-portal .alumni-mobile-toggle {
+            color: var(--alumni-emerald-deep);
+            background: rgba(255, 255, 255, 0.84);
+            border-color: rgba(11, 59, 31, 0.1);
+            box-shadow: 0 12px 22px rgba(7, 24, 14, 0.12);
+        }
+
+        .alumni-portal .alumni-mobile-toggle:hover {
+            background: #fff;
+            border-color: rgba(20, 87, 38, 0.18);
+            box-shadow: 0 16px 28px rgba(7, 24, 14, 0.16);
+        }
+
+        .alumni-portal .alumni-topbar__eyebrow {
+            color: #9a6800;
+            letter-spacing: 0.28em;
+            font-size: 0.76rem;
+            font-weight: 800;
+        }
+
+        .alumni-portal .alumni-topbar__title {
+            max-width: 12ch;
+            color: var(--alumni-emerald-deep);
+            font-size: clamp(2.35rem, 4vw, 4.15rem);
+            line-height: 0.92;
+            text-wrap: balance;
+        }
+
+        .alumni-portal .alumni-topbar__meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .alumni-portal .alumni-topbar__meta-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            max-width: 100%;
+            padding: 0.8rem 1.05rem;
+            border: 1px solid rgba(11, 59, 31, 0.1);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.82);
+            box-shadow: 0 14px 28px rgba(7, 24, 14, 0.08), inset 0 1px rgba(255, 255, 255, 0.75);
+            color: var(--alumni-emerald-deep);
+            font-size: 0.86rem;
+            font-weight: 700;
+            line-height: 1.35;
+        }
+
+        .alumni-portal .alumni-topbar__meta-chip i {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 999px;
+            background: linear-gradient(135deg, rgba(20, 87, 38, 0.12), rgba(200, 154, 45, 0.18));
+            box-shadow: inset 0 0 0 1px rgba(11, 59, 31, 0.08);
+            color: var(--alumni-emerald-deep);
+            font-size: 1rem;
+        }
+
+        .alumni-portal .alumni-topbar__spotlight {
+            position: relative;
+            overflow: hidden;
+            padding: 1.3rem 1.35rem;
+            border: 1px solid rgba(244, 230, 189, 0.24);
+            border-radius: 1.55rem;
+            background: linear-gradient(160deg, rgba(7, 39, 20, 0.97), rgba(15, 74, 43, 0.9));
+            box-shadow: 0 22px 46px rgba(6, 21, 13, 0.28);
+        }
+
+        .alumni-portal .alumni-topbar__spotlight::before {
+            content: "";
+            position: absolute;
+            inset: auto -22% -56% auto;
+            width: 12rem;
+            height: 12rem;
+            border-radius: 999px;
+            pointer-events: none;
+            background: radial-gradient(circle, rgba(200, 154, 45, 0.34), transparent 66%);
+        }
+
+        .alumni-portal .alumni-topbar__spotlight::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(140deg, rgba(255, 255, 255, 0.08), transparent 42%);
+        }
+
+        .alumni-portal .alumni-topbar__spotlight-header {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .alumni-portal .alumni-topbar__spotlight-label {
+            color: rgba(244, 230, 189, 0.92);
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            font-size: 0.68rem;
+            font-weight: 800;
+        }
+
+        .alumni-portal .alumni-topbar__spotlight-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 2.9rem;
+            height: 2.9rem;
+            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+            color: #fff;
+            font-size: 1.55rem;
+        }
+
+        .alumni-portal .alumni-topbar__spotlight-name {
+            position: relative;
+            z-index: 1;
+            margin-top: 1rem;
+            color: #fff;
+            font-size: clamp(1.45rem, 2.1vw, 2rem);
+            font-weight: 800;
+            line-height: 1.05;
+            text-wrap: balance;
+        }
+
+        .alumni-portal .alumni-topbar__spotlight-detail {
+            position: relative;
+            z-index: 1;
+            margin-top: 0.55rem;
+            color: rgba(255, 255, 255, 0.74);
+            font-size: 0.94rem;
+            line-height: 1.6;
+        }
+
+        @media (min-width: 1024px) {
+            .alumni-portal .alumni-topbar__shell {
+                grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.9fr);
+                align-items: center;
+            }
+
+            .alumni-portal .alumni-topbar__spotlight {
+                min-height: 100%;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .alumni-portal .alumni-topbar {
+                padding: 1.2rem;
+                border-radius: 1.5rem;
+            }
+
+            .alumni-portal .alumni-topbar__lead {
+                gap: 0.85rem;
+            }
+
+            .alumni-portal .alumni-topbar__title {
+                max-width: none;
+                font-size: 2.5rem;
+            }
+
+            .alumni-portal .alumni-topbar__meta-chip {
+                width: 100%;
+                border-radius: 1rem;
+                justify-content: flex-start;
+            }
+
+            .alumni-portal .alumni-topbar__spotlight {
+                padding: 1.15rem 1.1rem;
+                border-radius: 1.3rem;
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-50 font-['Inter']">
-    {{-- Sidebar --}}
-    <div class="fixed left-0 top-0 h-full w-64 bg-white shadow-lg border-r border-gray-200 z-10 p-4 overflow-y-auto">
-        {{-- Brand --}}
-        <div class="p-6 border-b border-gray-200">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-green-700 rounded-lg flex items-center justify-center">
-                    <i class='bx bx-university text-white text-lg'></i>
-                </div>
-                <div>
-                    <h1 class="font-bold text-gray-900">CMU ARLO</h1>
-                    <p class="text-xs text-gray-500">Alumni System</p>
-                </div>
-            </div>
-        </div>
-
-        {{-- User Info --}}
-        <div class="p-4 border-b border-gray-200">
-            <a href="{{ route('profile') }}" class="flex items-center gap-3 hover:bg-green-50 rounded-lg p-2 -m-2 transition-colors">
-                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                    <i class='bx bx-user text-green-700'></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm font-semibold text-gray-900 truncate">{{ Auth::user()->firstname ?? 'User' }} {{ Auth::user()->lastname ?? '' }}</p>
-                    <p class="text-xs text-green-600">Alumni</p>
-                </div>
-                <i class='bx bx-chevron-right text-gray-400'></i>
-            </a>
-        </div>
-
-        {{-- Navigation --}}
-        <nav class="flex-1 p-4">
-            <ul class="space-y-2">
-                <li>
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors {{ request()->routeIs('dashboard') ? 'bg-green-50 text-green-700' : '' }}">
-                        <i class='bx bx-home text-lg'></i>
-                        <span class="font-medium">Dashboard</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('alumni.records') }}" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors {{ request()->routeIs('alumni.records') ? 'bg-green-50 text-green-700' : '' }}">
-                        <i class='bx bx-user text-lg'></i>
-                        <span class="font-medium">Alumni Records</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('jobs') }}" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors {{ request()->routeIs('jobs') ? 'bg-green-50 text-green-700' : '' }}">
-                        <i class='bx bx-briefcase text-lg'></i>
-                        <span class="font-medium">Jobs</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('settings') }}" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors {{ request()->routeIs('settings') ? 'bg-green-50 text-green-700' : '' }}">
-                        <i class='bx bx-cog text-lg'></i>
-                        <span class="font-medium">Settings</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-
-        {{-- Job Offerings --}}
-        <div class="p-4 border-t border-gray-200">
-            <h3 class="text-sm font-semibold text-gray-900 mb-3">Latest Job Opportunities</h3>
-            <div class="space-y-2 max-h-48 overflow-y-auto">
-                <!-- Job announcements that match the jobs page -->
-                <a href="{{ route('job.detail', 1) }}" class="block bg-blue-50 p-2 rounded-lg hover:bg-blue-100 transition-colors border-l-4 border-blue-500">
-                    <p class="text-xs font-medium text-gray-900">Software Engineer</p>
-                    <p class="text-xs text-gray-600">Tech Corp</p>
-                    <p class="text-xs text-blue-600">Posted 2 days ago</p>
-                </a>
-                <a href="{{ route('job.detail', 2) }}" class="block bg-blue-50 p-2 rounded-lg hover:bg-blue-100 transition-colors border-l-4 border-blue-500">
-                    <p class="text-xs font-medium text-gray-900">Marketing Specialist</p>
-                    <p class="text-xs text-gray-600">Marketing Inc</p>
-                    <p class="text-xs text-blue-600">Posted 1 week ago</p>
-                </a>
-                <a href="{{ route('job.detail', 3) }}" class="block bg-blue-50 p-2 rounded-lg hover:bg-blue-100 transition-colors border-l-4 border-blue-500">
-                    <p class="text-xs font-medium text-gray-900">Data Analyst</p>
-                    <p class="text-xs text-gray-600">Data Solutions</p>
-                    <p class="text-xs text-blue-600">Posted 3 days ago</p>
-                </a>
-            </div>
-            <div class="mt-3">
-                <a href="{{ route('jobs') }}" class="text-xs text-green-600 hover:text-green-700 font-medium">
-                    View all jobs →
-                </a>
-            </div>
-        </div>
-
-        {{-- General Announcements --}}
-        <div class="p-4 border-t border-gray-200">
-            <h3 class="text-sm font-semibold text-gray-900 mb-3">General Announcements</h3>
-            <div class="space-y-2 max-h-32 overflow-y-auto">
-                <!-- General announcements (non-job related) -->
-                <a href="{{ route('announcement.detail', 2) }}" class="block bg-purple-50 p-2 rounded-lg hover:bg-purple-100 transition-colors border-l-4 border-purple-500">
-                    <p class="text-xs font-medium text-gray-900">Alumni Networking Event</p>
-                    <p class="text-xs text-gray-600">CMU Alumni Association</p>
-                    <p class="text-xs text-purple-600">Posted 1 week ago</p>
-                </a>
-                <a href="{{ route('announcement.detail', 4) }}" class="block bg-purple-50 p-2 rounded-lg hover:bg-purple-100 transition-colors border-l-4 border-purple-500">
-                    <p class="text-xs font-medium text-gray-900">CMU Career Fair 2026</p>
-                    <p class="text-xs text-gray-600">CMU Career Services</p>
-                    <p class="text-xs text-purple-600">Posted 5 days ago</p>
-                </a>
-                <a href="{{ route('announcement.detail', 5) }}" class="block bg-green-50 p-2 rounded-lg hover:bg-green-100 transition-colors border-l-4 border-green-500">
-                    <p class="text-xs font-medium text-gray-900">Scholarship Opportunities</p>
-                    <p class="text-xs text-gray-600">CMU Financial Aid</p>
-                    <p class="text-xs text-green-600">Posted 1 week ago</p>
-                </a>
-            </div>
-        </div>
-
-        {{-- Logout --}}
-        <div class="p-4 border-t border-gray-200">
-            <a href="{{ route('logout') }}" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-red-50 hover:text-red-700 transition-colors">
-                <i class='bx bx-log-out text-lg'></i>
-                <span class="font-medium">Logout</span>
-            </a>
-        </div>
+<body class="portal-page alumni-portal font-['Plus_Jakarta_Sans'] text-slate-900" data-sidebar-storage-key="cmu-arlo-sidebar-collapsed-{{ $sidebarStorageUserKey }}" data-live-notification-preview-on-login="{{ $showLatestNotificationPreviewOnLogin ? 'true' : 'false' }}">
+    <div class="portal-flash-overlay fixed right-3 top-3 z-[100] sm:right-6 sm:top-6">
+        @include('components.flash-messages')
     </div>
 
-    {{-- Main Content --}}
-    <div class="ml-64 mr-4 min-h-screen">
-        @yield('content')
+    <div class="alumni-notification-dock">
+        <a
+            href="{{ route('notifications.index') }}"
+            class="alumni-live-bell alumni-notification-dock__bell {{ $notificationBadge ? 'has-unread' : '' }}"
+            aria-label="{{ $notificationBellLabel }}"
+            data-tooltip="Notifications"
+            data-live-notification-endpoint="{{ $notificationLiveSummaryUrl }}"
+            data-live-notification-button
+        >
+            <span class="alumni-live-bell__icon">
+                <i class='bx {{ $notificationBellIcon }} text-2xl' data-live-notification-icon></i>
+            </span>
+            <span class="alumni-live-bell__badge {{ $notificationBadge ? '' : 'hidden' }}" data-live-notification-badge>{{ $notificationBadge }}</span>
+            <span class="sr-only">Open updates center</span>
+        </a>
+        <a
+            href="{{ route('notifications.index') }}"
+            class="alumni-notification-preview hidden"
+            data-live-notification-preview
+            data-live-notification-preview-link
+            aria-live="polite"
+        >
+            <span class="alumni-notification-preview__icon" aria-hidden="true">
+                <i class="bx bx-bell" data-live-notification-preview-icon></i>
+            </span>
+            <span class="alumni-notification-preview__body">
+                <span class="alumni-notification-preview__meta">
+                    <span data-live-notification-preview-category>Latest update</span>
+                    <span data-live-notification-preview-time>Just now</span>
+                </span>
+                <span class="alumni-notification-preview__title" data-live-notification-preview-title>Open notifications</span>
+                <span class="alumni-notification-preview__summary" data-live-notification-preview-summary>See the newest update in your portal.</span>
+            </span>
+        </a>
     </div>
 
-    {{-- Optional JS --}}
-    @vite('resources/js/app.js')
+    <div id="mobileSidebarOverlay" class="alumni-sidebar-overlay lg:hidden"></div>
+
+    <aside class="alumni-sidebar z-40 h-full overflow-y-auto overflow-x-visible p-4">
+        <div class="alumni-sidebar-content">
+            <div class="alumni-sidebar-panel border-b border-white/10 pb-5">
+                <div class="sidebar-brand flex items-start justify-between gap-3">
+                    <div class="flex min-w-0 items-center gap-3">
+                        <div class="alumni-brand-mark">
+                            <img src="{{ asset('images/cmu-sidebar.png') }}" alt="CMU logo" class="alumni-brand-mark__image">
+                        </div>
+                        <div class="sidebar-brand-copy min-w-0">
+                            <p class="alumni-brand-kicker">CMU Alumni Portal</p>
+                            <h1 class="alumni-brand-title">OARL</h1>
+                            <p class="alumni-brand-subtitle">Opportunities and updates</p>
+                        </div>
+                    </div>
+                    <button id="sidebarToggle" type="button" class="portal-sidebar-toggle alumni-mobile-toggle hidden flex-shrink-0 lg:inline-flex" aria-label="Collapse sidebar" aria-expanded="true" data-tooltip="Hide sidebar">
+                        <i class='bx bx-menu-alt-left text-xl'></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="alumni-membership-card mt-5">
+                <div class="flex items-center gap-4">
+                    <div class="alumni-membership-card__avatar">
+                        <span>{{ strtoupper(substr((string) ($currentUser?->firstname ?? 'A'), 0, 1) . substr((string) ($currentUser?->lastname ?? 'M'), 0, 1)) }}</span>
+                    </div>
+                    <div class="alumni-membership-card__copy min-w-0 flex-1">
+                        <p class="alumni-membership-card__kicker">Alumni Member</p>
+                        <h2 class="alumni-membership-card__name">{{ $userName }}</h2>
+                        <p class="alumni-membership-card__subtitle">{{ $degreeLabel }}</p>
+                    </div>
+                </div>
+
+                <div class="alumni-membership-card__details sidebar-collapse-hide">
+                    <p class="alumni-membership-card__meta">{{ $classLabel }}</p>
+                    <p class="alumni-membership-card__meta">{{ $departmentLabel }}</p>
+                </div>
+            </div>
+
+            <nav class="alumni-sidebar-panel mt-5">
+                <div class="sidebar-collapse-hide mb-3">
+                    <p class="sidebar-panel-label">Navigate</p>
+                </div>
+                <div class="alumni-nav-group">
+                    @foreach ($navigationItems as $item)
+                        <a data-tooltip="{{ $item['description'] }}" href="{{ $item['route'] }}" class="alumni-sidebar-link {{ $item['active'] ? 'is-active' : '' }}">
+                            <span class="alumni-sidebar-link__icon">
+                                <i class='bx {{ $item['icon'] }} text-xl'></i>
+                            </span>
+                            <span class="sidebar-label min-w-0 flex-1">
+                                <span class="alumni-sidebar-link__label">{{ $item['label'] }}</span>
+                            </span>
+                            @if ($item['badge'])
+                                <span class="alumni-sidebar-link__badge">{{ $item['badge'] }}</span>
+                            @endif
+                        </a>
+                    @endforeach
+                </div>
+            </nav>
+        </div>
+
+        <div class="p-4 pt-5">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" data-tooltip="Sign out" class="sidebar-logout-button alumni-logout-button w-full">
+                    <i class='bx bx-log-out text-lg'></i>
+                    <span class="sidebar-label font-medium">Logout</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <div class="dashboard-shell min-h-screen flex flex-col">
+        <header class="px-6 pt-6">
+            <div class="alumni-topbar">
+                <div class="alumni-topbar__shell">
+                    <div class="alumni-topbar__main">
+                        <div class="alumni-topbar__lead">
+                            <button id="mobileSidebarToggle" type="button" class="alumni-mobile-toggle lg:hidden" aria-label="Open sidebar" aria-expanded="false">
+                                <i class='bx bx-menu-alt-left text-xl'></i>
+                            </button>
+                            <div class="alumni-topbar__copy min-w-0">
+                                <p class="alumni-topbar__eyebrow">Alumni Portal</p>
+                                <h2 class="alumni-topbar__title">{{ $displayPageTitle }}</h2>
+                            </div>
+                        </div>
+                        <div class="alumni-topbar__meta" aria-label="Current alumni context">
+                            <span class="alumni-topbar__meta-chip">
+                                <i class='bx bx-calendar-star'></i>
+                                <span>{{ $todayLabel }}</span>
+                            </span>
+                            <span class="alumni-topbar__meta-chip">
+                                <i class='bx bx-medal'></i>
+                                <span>{{ $classLabel }}</span>
+                            </span>
+                            <span class="alumni-topbar__meta-chip">
+                                <i class='bx bx-building-house'></i>
+                                <span>{{ $departmentLabel }}</span>
+                            </span>
+                        </div>
+                    </div>
+                    <aside class="alumni-topbar__spotlight" aria-label="Alumni details">
+                        <div class="alumni-topbar__spotlight-header">
+                            <span class="alumni-topbar__spotlight-label">My Account</span>
+                            <span class="alumni-topbar__spotlight-icon" aria-hidden="true">
+                                <i class='bx bx-user-circle'></i>
+                            </span>
+                        </div>
+                        <p class="alumni-topbar__spotlight-name">{{ $userName }}</p>
+                        <p class="alumni-topbar__spotlight-detail">{{ $degreeLabel }}</p>
+                    </aside>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 px-6 pb-6 pt-5">
+            <div class="dashboard-content mx-auto">
+                @yield('content')
+            </div>
+        </main>
+
+        <footer class="px-6 pb-6 pt-2">
+            <div class="alumni-footer-card">
+                <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div class="flex items-center gap-4">
+                        <span class="alumni-footer-card__logo">
+                            <img src="{{ asset('images/cmu-sidebar.png') }}" alt="CMU logo" class="alumni-footer-card__logo-image">
+                        </span>
+                        <div>
+                            <p class="alumni-footer-card__eyebrow">CMU OARL</p>
+                            <p class="alumni-footer-card__title">Office of the Alumni Relations and Linkages (OARL)</p>
+                        </div>
+                    </div>
+                    <p class="alumni-footer-card__copy">A more professional, connected alumni experience for records, opportunities, and meaningful campus ties.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
 </body>
 </html>

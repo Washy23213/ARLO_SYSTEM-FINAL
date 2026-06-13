@@ -1,0 +1,81 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 55, "rankSpacing": 80}, "themeVariables": {"background": "#ffffff", "primaryColor": "#ecfdf5", "primaryBorderColor": "#047857", "primaryTextColor": "#0f172a", "lineColor": "#334155", "fontFamily": "Inter, Arial, sans-serif", "fontSize": "17px"}}}%%
+flowchart LR
+    subgraph A["Account Layer"]
+        direction TB
+        Alumni["ALUMNI<br/>Name, birthdate, email, phone<br/>college, program, year graduated<br/>CSV status: registered or not registered"]
+        Admin["ADMIN<br/>OARL staff account<br/>manages operational records"]
+        SuperAdmin["SUPER ADMIN<br/>separate account table<br/>admin account control only<br/>stored in super_admins"]
+    end
+
+    subgraph B["Verification and Profile Layer"]
+        direction TB
+        CsvRoster["IMPORTED ALUMNI ROSTER<br/>alumni_idnum, optional student_idnum<br/>first/middle/last name, birthdate<br/>college, program, graduation date"]
+        Registration["REGISTRATION VERIFICATION<br/>matches name + birthdate<br/>optional student ID strengthens matching<br/>email code must be verified before next step"]
+        Profile["ALUMNI PROFILE<br/>personal, academic, contact<br/>scholarship and background information"]
+    end
+
+    subgraph C["Tracer and Employment Layer"]
+        direction TB
+        Tracer["TRACER RECORD<br/>employment status, job alignment<br/>income, industry, satisfaction<br/>proof and feedback ratings"]
+        Analytics["ANALYTICS AND REPORTS<br/>registered vs not registered counts<br/>employment trends, traced graduates<br/>filters by date, college, program, sex, status"]
+    end
+
+    subgraph D["Engagement Layer"]
+        direction TB
+        JobSubmission["JOB SUBMISSION<br/>alumni-proposed opportunity<br/>admin review before publication"]
+        JobPosting["JOB POSTING<br/>published opportunity<br/>admin-created or approved submission"]
+        JobApplication["JOB APPLICATION<br/>alumni application<br/>admin review and status update"]
+        Announcement["ANNOUNCEMENT<br/>published updates<br/>targeted by audience, college, batch"]
+        Notification["NOTIFICATION<br/>system notices and reminders"]
+        Feedback["FEEDBACK<br/>concerns, suggestions, inquiries<br/>admin handling and status"]
+    end
+
+    subgraph E["Control and Traceability Layer"]
+        direction TB
+        AdminAccounts["REGULAR ADMIN ACCOUNTS<br/>stored in admins<br/>created, edited, deleted by Super Admin"]
+        SuperAdminAccounts["SUPER ADMIN ACCOUNTS<br/>stored in super_admins<br/>separate from regular admin accounts"]
+        AuditLogs["SYSTEM LOGS<br/>tracks admin and account actions<br/>supports accountability"]
+        Sessions["SESSIONS<br/>authenticated access tracking"]
+    end
+
+    CsvRoster -->|"provides authoritative record for"| Registration
+    Registration -->|"claims CSV-only record and creates active account"| Alumni
+    Alumni -->|"maintains"| Profile
+    Alumni -->|"submits"| Tracer
+    Tracer -->|"feeds"| Analytics
+
+    Alumni -->|"proposes"| JobSubmission
+    JobSubmission -->|"reviewed by"| Admin
+    Admin -->|"approves or creates"| JobPosting
+    Alumni -->|"applies to"| JobPosting
+    JobPosting -->|"receives"| JobApplication
+    Admin -->|"reviews"| JobApplication
+
+    Admin -->|"publishes"| Announcement
+    Announcement -->|"generates"| Notification
+    Notification -->|"delivered to"| Alumni
+    Alumni -->|"sends"| Feedback
+    Admin -->|"handles"| Feedback
+
+    SuperAdmin -->|"controls"| AdminAccounts
+    SuperAdmin -->|"uses"| SuperAdminAccounts
+    AdminAccounts -->|"identifies"| Admin
+    SuperAdmin -->|"can correct alumni account details"| Alumni
+    Admin -->|"creates monitored actions"| AuditLogs
+    SuperAdminAccounts -->|"creates account-control logs"| AuditLogs
+    SuperAdmin -->|"creates account-control logs"| AuditLogs
+    Alumni -->|"login activity"| Sessions
+    Admin -->|"login activity"| Sessions
+    SuperAdmin -->|"login activity"| Sessions
+
+    classDef actor fill:#ecfdf5,stroke:#047857,stroke-width:2px,color:#0f172a;
+    classDef verify fill:#eff6ff,stroke:#2563eb,stroke-width:2px,color:#0f172a;
+    classDef tracer fill:#fefce8,stroke:#ca8a04,stroke-width:2px,color:#0f172a;
+    classDef engage fill:#f8fafc,stroke:#475569,stroke-width:2px,color:#0f172a;
+    classDef control fill:#fff7ed,stroke:#c2410c,stroke-width:2px,color:#0f172a;
+
+    class Alumni,Admin,SuperAdmin actor;
+    class CsvRoster,Registration,Profile verify;
+    class Tracer,Analytics tracer;
+    class JobSubmission,JobPosting,JobApplication,Announcement,Notification,Feedback engage;
+    class AdminAccounts,SuperAdminAccounts,AuditLogs,Sessions control;

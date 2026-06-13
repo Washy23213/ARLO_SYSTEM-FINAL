@@ -1,0 +1,361 @@
+%%{init: {"theme": "base", "themeVariables": {"background": "#ffffff", "primaryColor": "#eef7ec", "primaryBorderColor": "#006000", "primaryTextColor": "#102414", "lineColor": "#35543b", "secondaryColor": "#fff4c2", "tertiaryColor": "#f8faf8", "fontFamily": "Inter, Arial, sans-serif", "fontSize": "16px"}}}%%
+erDiagram
+    USERS {
+        uuid id PK
+        varchar firstname
+        varchar middlename
+        varchar lastname
+        varchar email UK
+        varchar password
+        varchar phone
+        varchar alumni_idnum
+        varchar student_idnum
+        varchar sex
+        date birthdate
+        varchar civil_status
+        varchar department
+        varchar degree
+        varchar course
+        varchar major
+        date dt_grad
+        integer year_graduated
+        varchar employed_after_grad
+        varchar industry
+        varchar current_position
+        varchar company
+        varchar location
+        varchar salary_range
+        varchar linkedin_profile
+        text skills
+        text achievements
+        boolean has_scholarship
+        varchar scholarship_name
+        smallint scholarship_year_awarded
+        boolean scholarship_helped_get_job
+        varchar role
+        boolean is_admin
+        varchar profile_visibility
+        boolean is_batch_imported
+        boolean data_privacy_consent
+        varchar remember_token
+        timestamp email_verified_at
+        timestamp batch_imported_at
+        timestamp data_privacy_consented_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    TRACER_RECORDS {
+        uuid id PK
+        varchar tracer_number UK
+        uuid user_id FK
+        date tracer_date
+        boolean is_employed
+        varchar employment_type
+        varchar current_position
+        varchar current_company
+        string monthly_income
+        varchar industry
+        smallint job_satisfaction
+        text skills_used
+        boolean curriculum_relevant_to_first_job
+        json first_job_useful_competencies
+        varchar first_job_useful_competencies_other
+        varchar curriculum_not_relevant_reason
+        varchar curriculum_not_relevant_reason_other
+        boolean employed_after_graduation
+        varchar time_to_first_job
+        varchar time_to_first_job_other
+        varchar first_job_related_to_course
+        varchar first_job_finding_method
+        varchar first_job_finding_method_other
+        varchar first_job_monthly_earnings
+        varchar first_job_duration
+        varchar first_job_duration_other
+        varchar presently_employed
+        varchar present_employment_status
+        varchar direct_supervisor_name
+        varchar employer_email
+        boolean is_first_job_after_college
+        varchar employment_proof_path
+        varchar employment_proof_disk
+        varchar employment_proof_original_name
+        varchar employment_proof_mime_type
+        bigint employment_proof_size_bytes
+        timestamp employment_proof_uploaded_at
+        varchar employment_proof_status
+        varchar employment_proof_reviewed_by_guard
+        uuid employment_proof_reviewed_by_id
+        timestamp employment_proof_reviewed_at
+        text employment_proof_rejection_note
+        varchar job_level
+        varchar job_level_other
+        json present_job_acceptance_reasons
+        varchar present_job_acceptance_other
+        varchar present_job_monthly_earnings
+        boolean has_employee_awards
+        text employee_awards
+        smallint teaching_faculty_enthusiastic
+        smallint teaching_concepts_clear
+        smallint teaching_faculty_knowledgeable
+        smallint teaching_commitment
+        smallint degree_program_quality
+        boolean has_curriculum_suggestions
+        text curriculum_suggestions
+        boolean has_employability_suggestions
+        text employability_suggestions
+        varchar facilities_satisfaction
+        boolean has_facility_suggestions
+        text facility_suggestions
+        smallint overall_recommend_institution
+        smallint overall_objectives_met
+        smallint overall_university_experience
+        boolean further_education
+        varchar education_level
+        text challenges_faced
+        text recommendations
+        boolean contact_permission
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ADMINS {
+        uuid id PK
+        varchar firstname
+        varchar lastname
+        varchar email UK
+        varchar password
+        varchar phone
+        varchar role
+        varchar remember_token
+        timestamp email_verified_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    SUPER_ADMINS {
+        uuid id PK
+        varchar firstname
+        varchar lastname
+        varchar email UK
+        varchar password
+        varchar phone
+        varchar remember_token
+        timestamp email_verified_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ROLES {
+        uuid id PK
+        varchar name UK
+        varchar label
+        varchar guard_name
+        text description
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    PERMISSIONS {
+        uuid id PK
+        varchar name UK
+        varchar label
+        varchar guard_name
+        text description
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ADMIN_ROLE {
+        uuid admin_id PK
+        uuid role_id PK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ROLE_PERMISSION {
+        uuid role_id PK
+        uuid permission_id PK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    JOBS {
+        uuid id PK
+        varchar title
+        varchar company
+        text description
+        text requirements
+        varchar location
+        varchar type
+        varchar salary_range
+        date application_deadline
+        varchar contact_email
+        varchar contact_phone
+        boolean is_active
+        integer views_count
+        uuid created_by FK
+        uuid archived_by FK
+        timestamp created_at
+        timestamp updated_at
+        timestamp archived_at
+    }
+
+    JOB_SUBMISSIONS {
+        bigint id PK
+        uuid user_id FK
+        varchar title
+        varchar company
+        varchar type
+        varchar location
+        varchar contact_email
+        date application_deadline
+        text description
+        text requirements
+        varchar status
+        text admin_notes
+        uuid reviewed_by FK
+        timestamp reviewed_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ANNOUNCEMENTS {
+        uuid id PK
+        varchar title
+        text content
+        varchar type
+        varchar priority
+        varchar target_audience
+        varchar target_department
+        smallint target_graduation_year
+        text image_url
+        text attachment_url
+        timestamp event_date
+        varchar event_location
+        boolean is_published
+        timestamp published_at
+        timestamp expires_at
+        integer views_count
+        uuid created_by FK
+        uuid archived_by FK
+        varchar facebook_post_id UK
+        text facebook_post_url
+        timestamp facebook_last_synced_at
+        timestamp created_at
+        timestamp updated_at
+        timestamp archived_at
+    }
+
+    ANNOUNCEMENT_READS {
+        bigint id PK
+        uuid announcement_id FK
+        uuid user_id FK
+        timestamp read_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    FEEDBACK {
+        uuid id PK
+        uuid user_id FK
+        varchar subject
+        text message
+        varchar type
+        varchar status
+        varchar priority
+        uuid assigned_to FK
+        timestamp resolved_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    NOTIFICATIONS {
+        uuid id PK
+        varchar type
+        varchar notifiable_type
+        uuid notifiable_id
+        text data
+        timestamp read_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    SYSTEM_LOGS {
+        uuid id PK
+        uuid user_id FK
+        uuid admin_id FK
+        uuid super_admin_id FK
+        varchar action
+        text description
+        varchar ip_address
+        text user_agent
+        timestamp created_at
+    }
+
+    PASSWORD_RESET_TOKENS {
+        varchar email PK
+        varchar token
+        timestamp created_at
+    }
+
+    SESSIONS {
+        varchar id PK
+        uuid user_id FK
+        varchar ip_address
+        text user_agent
+        text payload
+        integer last_activity
+    }
+
+    FAILED_JOBS {
+        bigint id PK
+        varchar uuid UK
+        text connection
+        text queue
+        text payload
+        text exception
+        timestamp failed_at
+    }
+
+    CACHE {
+        varchar key PK
+        text value
+        integer expiration
+    }
+
+    CACHE_LOCKS {
+        varchar key PK
+        varchar owner
+        integer expiration
+    }
+
+    MIGRATIONS {
+        integer id PK
+        varchar migration
+        integer batch
+    }
+
+    USERS ||--o{ TRACER_RECORDS : has
+    USERS ||--o{ JOB_SUBMISSIONS : submits
+    USERS ||--o{ FEEDBACK : sends
+    USERS ||--o{ ANNOUNCEMENT_READS : reads
+    USERS ||--o{ SYSTEM_LOGS : logs_as_alumni
+    USERS ||--o{ SESSIONS : owns
+    USERS ||--o{ NOTIFICATIONS : receives_polymorphic
+
+    ADMINS ||--o{ JOBS : creates
+    ADMINS ||--o{ JOBS : archives
+    ADMINS ||--o{ JOB_SUBMISSIONS : reviews
+    ADMINS ||--o{ ANNOUNCEMENTS : creates
+    ADMINS ||--o{ ANNOUNCEMENTS : archives
+    ADMINS ||--o{ FEEDBACK : handles
+    ADMINS ||--o{ SYSTEM_LOGS : logs_as_admin
+    ADMINS ||--o{ ADMIN_ROLE : assigned
+
+    ROLES ||--o{ ADMIN_ROLE : assigned_to_admins
+    ROLES ||--o{ ROLE_PERMISSION : grants
+    PERMISSIONS ||--o{ ROLE_PERMISSION : included_in_roles
+
+    SUPER_ADMINS ||--o{ SYSTEM_LOGS : logs_as_super_admin
+    ANNOUNCEMENTS ||--o{ ANNOUNCEMENT_READS : has

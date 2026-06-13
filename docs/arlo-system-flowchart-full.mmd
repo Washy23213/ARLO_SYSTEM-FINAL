@@ -1,0 +1,110 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 40, "rankSpacing": 70}, "themeVariables": {"background": "#ffffff", "primaryColor": "#f8fafc", "primaryBorderColor": "#334155", "primaryTextColor": "#0f172a", "lineColor": "#334155", "fontFamily": "Inter, Arial, sans-serif", "fontSize": "17px"}}}%%
+flowchart TB
+    Start([Start])
+
+    subgraph AdminPrep["Administrator Preparation"]
+        A1["Admin imports alumni CSV roster"]
+        A2["System compares CSV with required template"]
+        A3{"Required columns complete?"}
+        A4["Ignore extra columns automatically"]
+        A5["Create or update CSV-only alumni records<br/>is_batch_imported = true"]
+        A6["Show roster totals:<br/>Alumni Records, Registered, Not Registered"]
+        A7["Return missing-column warning<br/>Admin fixes CSV before import"]
+    end
+
+    subgraph AlumniSignup["Alumni Registration and Verification"]
+        B1["Alumni opens registration"]
+        B2["Enter name, birthdate, college, year graduated<br/>and optional student ID"]
+        B3{"Matches imported roster?"}
+        B4["Enter email address"]
+        B5["Send new 6-digit code to Gmail/email"]
+        B6{"Code verified?"}
+        B7["Set password and complete personal profile"]
+        B8["Claim roster record<br/>is_batch_imported = false"]
+        B9["Alumni account becomes registered"]
+        B10["Show not verified message<br/>check details or contact OARL"]
+        B11["Block Next until email code is verified"]
+    end
+
+    subgraph AlumniUse["Alumni Portal Use"]
+        C1["Alumni logs in"]
+        C2["Update profile, education, background, scholarship"]
+        C3["Submit tracer and employment data"]
+        C4["Browse jobs and apply"]
+        C5["Submit job opportunity for review"]
+        C6["View announcements and notifications"]
+        C7["Submit feedback or inquiry"]
+    end
+
+    subgraph AdminUse["Administrator Operations"]
+        D1["Admin logs in"]
+        D2["Manage alumni and tracer records"]
+        D3["Review job submissions and applications"]
+        D4["Create jobs and announcements"]
+        D5["Handle feedback"]
+        D6["Filter analytics by date, college, program,<br/>sex, civil status, and employment status"]
+        D7["Select graphs to show in report"]
+        D8["Generate dashboards and export reports"]
+    end
+
+    subgraph SuperAdminUse["Super Admin Account Control"]
+        E1["Super Admin logs in to separate UI"]
+        E2["Create admin account"]
+        E3["Edit admin account"]
+        E4["Delete admin account"]
+        E5["Assign or update admin role"]
+        E6["Edit alumni account details when correction is needed"]
+    end
+
+    subgraph Traceability["Database and Accountability"]
+        F1["Store records in PostgreSQL tables:<br/>users, admins, super_admins,<br/>tracer_records, jobs, announcements, feedback"]
+        F2["Create notifications and session records"]
+        F3["Write system logs for monitored actions"]
+        End([End])
+    end
+
+    Start --> A1 --> A2 --> A3
+    A3 -- Yes --> A4 --> A5 --> A6 --> F1
+    A3 -- No --> A7 --> A1
+
+    F1 --> B1 --> B2 --> B3
+    B3 -- Yes --> B4 --> B5 --> B6
+    B3 -- No --> B10 --> B2
+    B6 -- Yes --> B7 --> B8 --> B9 --> C1
+    B6 -- No --> B11 --> B5
+
+    C1 --> C2 --> C3 --> F1
+    C1 --> C4 --> F1
+    C1 --> C5 --> F1
+    C1 --> C6 --> F2
+    C1 --> C7 --> F1
+
+    D1 --> D2 --> F1
+    D1 --> D3 --> F1
+    D1 --> D4 --> F1
+    D1 --> D5 --> F1
+    D1 --> D6 --> D7 --> D8 --> F1
+
+    E1 --> E2 --> F1
+    E1 --> E3 --> F1
+    E1 --> E4 --> F1
+    E1 --> E5 --> F1
+    E1 --> E6 --> F1
+
+    F1 --> F2 --> F3 --> End
+
+    classDef start fill:#0b3b1f,stroke:#072714,color:#ffffff,stroke-width:2px;
+    classDef admin fill:#eff6ff,stroke:#2563eb,stroke-width:2px,color:#0f172a;
+    classDef alumni fill:#ecfdf5,stroke:#047857,stroke-width:2px,color:#0f172a;
+    classDef super fill:#fff7ed,stroke:#c2410c,stroke-width:2px,color:#0f172a;
+    classDef data fill:#f8fafc,stroke:#475569,stroke-width:2px,color:#0f172a;
+    classDef decision fill:#fef9c3,stroke:#ca8a04,stroke-width:2px,color:#0f172a;
+    classDef warn fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#0f172a;
+
+    class Start,End start;
+    class A1,A2,A4,A5,A6,D1,D2,D3,D4,D5,D6,D7,D8 admin;
+    class B1,B2,B4,B5,B7,B8,B9,C1,C2,C3,C4,C5,C6,C7 alumni;
+    class E1,E2,E3,E4,E5,E6 super;
+    class F1,F2,F3 data;
+    class A3,B3,B6 decision;
+    class A7,B10,B11 warn;

@@ -1,0 +1,84 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 45, "rankSpacing": 70}, "themeVariables": {"background": "#ffffff", "primaryColor": "#eef7ec", "primaryBorderColor": "#006000", "primaryTextColor": "#102414", "lineColor": "#35543b", "fontFamily": "Inter, Arial, sans-serif", "fontSize": "16px"}}}%%
+flowchart LR
+    subgraph Access["Access Control Layer"]
+        Alumni["Alumni<br/>verified graduate account"]
+        Admin["Administrator<br/>full operational access"]
+        AlumniMgr["Alumni Records Manager<br/>manage alumni only"]
+        JobMgr["Job Manager<br/>manage jobs only"]
+        SuperAdmin["Super Admin<br/>account control"]
+        Role["Role<br/>admin, alumni_records_manager, job_manager"]
+        Permission["Permission<br/>dashboard, alumni, jobs, announcements, feedback, analytics, audit"]
+    end
+
+    subgraph AlumniLayer["Alumni Information Layer"]
+        GraduateReference["Graduate Reference Records<br/>XLSX or JSON verification source"]
+        ImportedRoster["Imported Alumni Roster<br/>CSV-only claimable users"]
+        Profile["Alumni Profile<br/>personal, academic, scholarship, employment summary"]
+        Tracer["Tracer Record<br/>employment, first job, present job, ratings, proof"]
+    end
+
+    subgraph Engagement["Engagement Layer"]
+        JobSubmission["Job Opportunity Submission<br/>alumni-submitted for review"]
+        JobPosting["Approved Job Posting<br/>published opportunity"]
+        Announcement["Announcement<br/>targeted portal and Facebook-connected update"]
+        AnnouncementRead["Announcement Read<br/>view tracking"]
+        Notification["Notification<br/>database and email alert"]
+        Feedback["Feedback<br/>concern, inquiry, suggestion"]
+    end
+
+    subgraph Reporting["Monitoring and Reporting Layer"]
+        Analytics["Analytics and Reports<br/>filtered charts and CSV exports"]
+        AuditLog["System Audit Logs<br/>alumni, admin, and super admin actions"]
+    end
+
+    GraduateReference -->|"verifies registration"| Alumni
+    ImportedRoster -->|"may be claimed by"| Alumni
+    Alumni -->|"maintains"| Profile
+    Alumni -->|"submits or updates"| Tracer
+    Tracer -->|"feeds"| Analytics
+    Profile -->|"feeds filters and summaries"| Analytics
+
+    Alumni -->|"submits"| JobSubmission
+    JobSubmission -->|"reviewed by"| Admin
+    JobSubmission -->|"reviewed by"| JobMgr
+    Admin -->|"creates or publishes"| JobPosting
+    JobMgr -->|"creates or publishes"| JobPosting
+    Alumni -->|"browses"| JobPosting
+
+    Admin -->|"publishes"| Announcement
+    Announcement -->|"creates alert"| Notification
+    Alumni -->|"reads"| Announcement
+    Announcement -->|"tracked by"| AnnouncementRead
+    Alumni -->|"receives"| Notification
+    Alumni -->|"sends"| Feedback
+    Admin -->|"handles"| Feedback
+
+    SuperAdmin -->|"creates and updates"| Admin
+    SuperAdmin -->|"assigns"| Role
+    Admin -->|"has"| Role
+    AlumniMgr -->|"has"| Role
+    JobMgr -->|"has"| Role
+    Role -->|"grants"| Permission
+
+    Admin -->|"views"| Analytics
+    AlumniMgr -->|"manages"| Profile
+    AlumniMgr -->|"monitors"| Tracer
+    SuperAdmin -->|"can supervise"| Profile
+
+    Alumni -->|"activity recorded in"| AuditLog
+    Admin -->|"activity recorded in"| AuditLog
+    AlumniMgr -->|"activity recorded in"| AuditLog
+    JobMgr -->|"activity recorded in"| AuditLog
+    SuperAdmin -->|"activity recorded in"| AuditLog
+
+    classDef access fill:#eef7ec,stroke:#006000,stroke-width:2px,color:#102414;
+    classDef alumniData fill:#f8fff4,stroke:#5f8800,stroke-width:2px,color:#102414;
+    classDef engagement fill:#fff4c2,stroke:#ffc000,stroke-width:2px,color:#102414;
+    classDef reporting fill:#f8faf8,stroke:#35543b,stroke-width:2px,color:#102414;
+    classDef super fill:#006000,stroke:#003300,stroke-width:2px,color:#ffffff;
+
+    class Alumni,Admin,AlumniMgr,JobMgr,Role,Permission access;
+    class SuperAdmin super;
+    class GraduateReference,ImportedRoster,Profile,Tracer alumniData;
+    class JobSubmission,JobPosting,Announcement,AnnouncementRead,Notification,Feedback engagement;
+    class Analytics,AuditLog reporting;

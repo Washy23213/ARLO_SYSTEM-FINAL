@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    'facebook' => [
+        'app_id' => env('FACEBOOK_APP_ID'),
+        'app_secret' => env('FACEBOOK_APP_SECRET'),
+        'graph_version' => env('FACEBOOK_GRAPH_VERSION', 'v25.0'),
+        'page_id' => env('FACEBOOK_PAGE_ID'),
+        'page_access_token' => env('FACEBOOK_PAGE_ACCESS_TOKEN'),
+        'page_sync_enabled' => (bool) env('FACEBOOK_PAGE_SYNC_ENABLED', false),
+    ],
+
 ];

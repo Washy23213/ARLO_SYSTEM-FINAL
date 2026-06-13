@@ -1,0 +1,107 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 45, "rankSpacing": 75}, "themeVariables": {"background": "#ffffff", "primaryColor": "#eef2ff", "primaryBorderColor": "#4f46e5", "primaryTextColor": "#0f172a", "lineColor": "#334155", "fontFamily": "Inter, Arial, sans-serif", "fontSize": "17px"}}}%%
+flowchart LR
+    Alumni["Actor: Alumni"]
+    Admin["Actor: Administrator"]
+    SuperAdmin["Actor: Super Admin"]
+
+    subgraph System["Web-Based Tracer and Employment Analytics System"]
+        direction TB
+
+        subgraph AlumniCases["Alumni Use Cases"]
+            direction TB
+            UC01(["Verify alumni roster record"])
+            UC02(["Verify email code"])
+            UC03(["Register and log in"])
+            UC04(["Maintain profile and settings"])
+            UC05(["Submit tracer record"])
+            UC06(["Browse job postings"])
+            UC07(["Apply for job"])
+            UC08(["Submit job opportunity"])
+            UC09(["View announcements and notifications"])
+            UC10(["Submit feedback"])
+            UC11(["Reset password"])
+        end
+
+        subgraph AdminCases["Administrator Use Cases"]
+            direction TB
+            UC12(["Log in to admin dashboard"])
+            UC13(["Import alumni CSV roster"])
+            UC14(["Manage alumni records"])
+            UC15(["Monitor tracer submissions"])
+            UC16(["Manage job postings"])
+            UC17(["Review job submissions"])
+            UC18(["Review job applications"])
+            UC19(["Publish announcements"])
+            UC20(["Send notifications"])
+            UC21(["Manage feedback"])
+            UC22(["View analytics and reports"])
+            UC23(["Export filtered report"])
+            UC24(["View audit logs"])
+        end
+
+        subgraph SuperAdminCases["Super Admin Use Cases"]
+            direction TB
+            UC25(["Log in to Super Admin UI"])
+            UC26(["Create admin account"])
+            UC27(["View admin accounts"])
+            UC28(["Edit admin account"])
+            UC29(["Delete admin account"])
+            UC30(["Assign or update admin role"])
+            UC31(["Edit alumni account details"])
+            UC32(["View account-control audit logs"])
+        end
+    end
+
+    Alumni --- UC01
+    Alumni --- UC02
+    Alumni --- UC03
+    Alumni --- UC04
+    Alumni --- UC05
+    Alumni --- UC06
+    Alumni --- UC07
+    Alumni --- UC08
+    Alumni --- UC09
+    Alumni --- UC10
+    Alumni --- UC11
+
+    Admin --- UC12
+    Admin --- UC13
+    Admin --- UC14
+    Admin --- UC15
+    Admin --- UC16
+    Admin --- UC17
+    Admin --- UC18
+    Admin --- UC19
+    Admin --- UC20
+    Admin --- UC21
+    Admin --- UC22
+    Admin --- UC23
+    Admin --- UC24
+
+    SuperAdmin --- UC25
+    SuperAdmin --- UC26
+    SuperAdmin --- UC27
+    SuperAdmin --- UC28
+    SuperAdmin --- UC29
+    SuperAdmin --- UC30
+    SuperAdmin --- UC31
+    SuperAdmin --- UC32
+
+    UC01 -. "includes" .-> UC02
+    UC03 -. "requires" .-> UC01
+    UC05 -. "uses" .-> UC04
+    UC07 -. "extends" .-> UC06
+    UC17 -. "may publish as" .-> UC16
+    UC22 -. "uses filtered data from" .-> UC15
+    UC23 -. "extends" .-> UC22
+    UC26 -. "creates regular admin only" .-> UC30
+
+    classDef actor fill:#ffffff,stroke:#111827,stroke-width:2px,color:#0f172a;
+    classDef alumni fill:#ecfdf5,stroke:#047857,stroke-width:2px,color:#0f172a;
+    classDef admin fill:#eff6ff,stroke:#2563eb,stroke-width:2px,color:#0f172a;
+    classDef super fill:#fff7ed,stroke:#c2410c,stroke-width:2px,color:#0f172a;
+
+    class Alumni,Admin,SuperAdmin actor;
+    class UC01,UC02,UC03,UC04,UC05,UC06,UC07,UC08,UC09,UC10,UC11 alumni;
+    class UC12,UC13,UC14,UC15,UC16,UC17,UC18,UC19,UC20,UC21,UC22,UC23,UC24 admin;
+    class UC25,UC26,UC27,UC28,UC29,UC30,UC31,UC32 super;

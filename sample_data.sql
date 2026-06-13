@@ -1,106 +1,281 @@
 -- ===========================================
 -- SAMPLE DATA FOR CMU ARLO SYSTEM
--- PostgreSQL Insert Queries
+-- Aligned with database_schema.sql
 -- ===========================================
 
--- Insert sample users (alumni)
-INSERT INTO users (firstname, lastname, email, password, department, degree, year_graduated, employed_after_grad, industry, current_position, company, location) VALUES
-('Juan', 'Dela Cruz', 'juan.delacruz@cmu.edu.ph', '$2y$10$hashedpassword1', 'College of Engineering', 'Bachelor of Science in Computer Science', 2024, 'Yes', 'Technology', 'Software Engineer', 'Tech Solutions Inc.', 'Manila'),
-('Maria', 'Santos', 'maria.santos@cmu.edu.ph', '$2y$10$hashedpassword2', 'College of Business', 'Bachelor of Science in Business Administration', 2023, 'Yes', 'Finance', 'Financial Analyst', 'BDO Unibank', 'Makati'),
-('Pedro', 'Garcia', 'pedro.garcia@cmu.edu.ph', '$2y$10$hashedpassword3', 'College of Engineering', 'Bachelor of Science in Civil Engineering', 2022, 'Yes', 'Construction', 'Project Engineer', 'DMCI Homes', 'Quezon City'),
-('Ana', 'Reyes', 'ana.reyes@cmu.edu.ph', '$2y$10$hashedpassword4', 'College of Arts & Sciences', 'Bachelor of Science in Psychology', 2024, 'No', NULL, 'Student', NULL, 'Baguio City'),
-('Carlos', 'Mendoza', 'carlos.mendoza@cmu.edu.ph', '$2y$10$hashedpassword5', 'College of Business', 'Bachelor of Science in Accounting', 2021, 'Yes', 'Finance', 'Senior Accountant', 'SGV & Co.', 'Taguig'),
-('Elena', 'Torres', 'elena.torres@cmu.edu.ph', '$2y$10$hashedpassword6', 'College of Nursing', 'Bachelor of Science in Nursing', 2023, 'Yes', 'Healthcare', 'Registered Nurse', 'Baguio General Hospital', 'Baguio City'),
-('Miguel', 'Flores', 'miguel.flores@cmu.edu.ph', '$2y$10$hashedpassword7', 'College of Engineering', 'Bachelor of Science in Electrical Engineering', 2020, 'Yes', 'Technology', 'Electrical Engineer', 'Philippine Electrical Company', 'Manila'),
-('Sofia', 'Castro', 'sofia.castro@cmu.edu.ph', '$2y$10$hashedpassword8', 'College of Education', 'Bachelor of Elementary Education', 2022, 'Yes', 'Education', 'Teacher', 'Baguio City National High School', 'Baguio City'),
-('Diego', 'Villanueva', 'diego.villanueva@cmu.edu.ph', '$2y$10$hashedpassword9', 'College of Arts & Sciences', 'Bachelor of Arts in English', 2024, 'No', NULL, 'Freelance Writer', NULL, 'Cebu'),
-('Isabella', 'Ramos', 'isabella.ramos@cmu.edu.ph', '$2y$10$hashedpassword10', 'College of Business', 'Bachelor of Science in Marketing', 2023, 'Yes', 'Marketing', 'Marketing Specialist', 'Unilever Philippines', 'Pasig');
+BEGIN;
 
--- Insert admin user
-INSERT INTO users (firstname, lastname, email, password, is_admin) VALUES
-('Admin', 'User', 'admin@cmu.edu.ph', '$2y$10$adminhashedpassword', TRUE);
+-- Reusable bcrypt hash for the password "password"
+-- (Laravel default sample hash)
+-- Use real user-specific hashes in production.
 
--- Insert sample jobs
-INSERT INTO jobs (title, company, description, requirements, location, type, salary_min, salary_max, contact_email, created_by) VALUES
-('Software Developer', 'TechCorp Philippines', 'We are looking for a skilled software developer to join our growing team. You will be working on exciting projects using modern technologies.', '• Bachelor''s degree in Computer Science or related field
-• 2+ years of experience in software development
-• Proficiency in PHP, JavaScript, and SQL
-• Experience with Laravel framework is a plus', 'Makati City', 'Full-time', 45000.00, 65000.00, 'hr@techcorp.ph', (SELECT id FROM users WHERE email = 'admin@cmu.edu.ph' LIMIT 1)),
+-- ===========================================
+-- USERS (super admin + admin + alumni records)
+-- ===========================================
+INSERT INTO users (
+    firstname, lastname, email, password, phone, department, degree,
+    year_graduated, employed_after_grad, industry, current_position, company,
+    location, salary_range, skills, achievements, is_admin, role, email_verified_at
+) VALUES
+(
+    'Arlo', 'Super Admin', 'admin@cmu.edu.ph',
+    '$2y$12$ag28.N8/O66GYTThsuipg.CdoesNkAHiG3Kh5EasdyiWQuRlMleCO',
+    '09170000001', 'Alumni Office', 'N/A', 2018, 'Yes', 'Education',
+    'System Administrator', 'Central Mindanao University', 'Musuan, Bukidnon',
+    NULL, 'System administration', 'Managed alumni portal launch', TRUE, 'super_admin', NOW()
+),
+(
+    'OARL', 'Admin', 'oarl.admin@cmu.edu.ph',
+    '$2y$12$ag28.N8/O66GYTThsuipg.CdoesNkAHiG3Kh5EasdyiWQuRlMleCO',
+    '09170000009', 'Alumni Office', 'N/A', NULL, NULL, 'Education',
+    'Alumni Records Administrator', 'Central Mindanao University', 'Musuan, Bukidnon',
+    NULL, 'Records management', 'Maintains alumni records and announcements', TRUE, 'admin', NOW()
+),
+(
+    'John Paul', 'Mabuhay', 'john.mabuhay@cmu.edu.ph',
+    '$2y$12$ag28.N8/O66GYTThsuipg.CdoesNkAHiG3Kh5EasdyiWQuRlMleCO',
+    '09170000002', 'College of Information Sciences and Computing',
+    'BS Information Technology', 2023, 'Yes', 'Technology',
+    'Junior Software Developer', 'Bukidnon Tech Solutions',
+    'Malaybalay City, Bukidnon', '25,000.00 - 35,000.00',
+    'PHP, Laravel, PostgreSQL', 'Dean''s Lister 2022', FALSE, 'alumni', NOW()
+),
+(
+    'Maria Luisa', 'Caballero', 'maria.caballero@cmu.edu.ph',
+    '$2y$12$ag28.N8/O66GYTThsuipg.CdoesNkAHiG3Kh5EasdyiWQuRlMleCO',
+    '09170000003', 'College of Business and Management',
+    'BS Business Administration', 2022, 'Yes', 'Banking',
+    'Account Officer', 'Land Bank of the Philippines',
+    'Cagayan de Oro City', '35,000.00 - 45,000.00',
+    'Client management, Excel', 'Best in Internship Award', FALSE, 'alumni', NOW()
+),
+(
+    'Rico', 'Salvador', 'rico.salvador@cmu.edu.ph',
+    '$2y$12$ag28.N8/O66GYTThsuipg.CdoesNkAHiG3Kh5EasdyiWQuRlMleCO',
+    '09170000004', 'College of Engineering',
+    'BS Civil Engineering', 2021, 'Yes', 'Construction',
+    'Site Engineer', 'Mindanao Infra Builders',
+    'Valencia City, Bukidnon', '45,000.00 - 55,000.00',
+    'AutoCAD, Project planning', 'Passed CE board exam 2021', FALSE, 'alumni', NOW()
+),
+(
+    'Anne', 'Dizon', 'anne.dizon@cmu.edu.ph',
+    '$2y$12$ag28.N8/O66GYTThsuipg.CdoesNkAHiG3Kh5EasdyiWQuRlMleCO',
+    '09170000005', 'College of Human Ecology',
+    'BS Nutrition and Dietetics', 2024, 'No', NULL,
+    'Job Seeker', NULL, 'Manolo Fortich, Bukidnon', NULL,
+    'Nutrition planning, Community work', 'Outstanding practicum performance', FALSE, 'alumni', NOW()
+),
+(
+    'Kevin', 'Alonzo', 'kevin.alonzo@cmu.edu.ph',
+    '$2y$12$ag28.N8/O66GYTThsuipg.CdoesNkAHiG3Kh5EasdyiWQuRlMleCO',
+    '09170000006', 'College of Agriculture',
+    'BS Agriculture', 2020, 'Yes', 'Agribusiness',
+    'Field Operations Supervisor', 'AgriGrow Mindanao',
+    'Maramag, Bukidnon', '35,000.00 - 45,000.00',
+    'Crop planning, Team leadership', 'Regional youth agri awardee', FALSE, 'alumni', NOW()
+),
+(
+    'Jessa', 'Neri', 'jessa.neri@cmu.edu.ph',
+    '$2y$12$ag28.N8/O66GYTThsuipg.CdoesNkAHiG3Kh5EasdyiWQuRlMleCO',
+    '09170000007', 'College of Education',
+    'BSEd Major in English', 2023, 'Yes', 'Education',
+    'English Teacher', 'Bukidnon National High School',
+    'Malaybalay City, Bukidnon', '25,000.00 - 35,000.00',
+    'Classroom management, Writing', 'LET passer 2024', FALSE, 'alumni', NOW()
+),
+(
+    'Paolo', 'Ventura', 'paolo.ventura@cmu.edu.ph',
+    '$2y$12$ag28.N8/O66GYTThsuipg.CdoesNkAHiG3Kh5EasdyiWQuRlMleCO',
+    '09170000008', 'College of Forestry and Environmental Science',
+    'BS Forestry', 2022, 'Yes', 'Environment',
+    'Forester I', 'DENR Region X',
+    'Cagayan de Oro City', '25,000.00 - 35,000.00',
+    'GIS mapping, Field surveys', 'Campus environmental leadership award', FALSE, 'alumni', NOW()
+)
+ON CONFLICT (email) DO NOTHING;
 
-('Marketing Coordinator', 'Global Brands Inc.', 'Join our marketing team to help promote our products and build brand awareness in the Philippine market.', '• Bachelor''s degree in Marketing, Business, or Communications
-• 1-2 years of marketing experience
-• Strong communication and creative skills
-• Knowledge of social media marketing', 'Taguig City', 'Full-time', 30000.00, 45000.00, 'careers@globalbrands.ph', (SELECT id FROM users WHERE email = 'admin@cmu.edu.ph' LIMIT 1)),
+-- ===========================================
+-- JOBS
+-- ===========================================
+INSERT INTO jobs (
+    title, company, description, requirements, location, type,
+    salary_range, application_deadline, contact_email, contact_phone,
+    is_active, created_at, updated_at
+) VALUES
+(
+    'Laravel Developer', 'Bukidnon Tech Solutions',
+    'Develop and maintain web modules for alumni and student services.',
+    'BSIT/BSCS graduate, Laravel experience, SQL fundamentals.',
+    'Malaybalay City, Bukidnon', 'Full-time',
+    '25,000.00 - 34,999.00', '2026-04-30', 'hr@bktech.ph', '0888130011',
+    TRUE,
+    NOW() - INTERVAL '6 days', NOW() - INTERVAL '6 days'
+),
+(
+    'Junior Agribusiness Analyst', 'AgriGrow Mindanao',
+    'Support farm operations reporting and value-chain analysis.',
+    'Agriculture or related degree, Excel skills, strong communication.',
+    'Maramag, Bukidnon', 'Full-time',
+    '25,000.00 - 34,999.00', '2026-05-15', 'careers@agrigrow.ph', '0888130022',
+    TRUE,
+    NOW() - INTERVAL '3 days', NOW() - INTERVAL '3 days'
+),
+(
+    'Science Teacher', 'Bukidnon National High School',
+    'Teach science subjects for junior and senior high school.',
+    'Education graduate, LET passer preferred.',
+    'Malaybalay City, Bukidnon', 'Part-time',
+    '15,000.00 - 24,999.00', '2026-04-20', 'principal@bnhs.edu.ph', '0888130033',
+    TRUE,
+    NOW() - INTERVAL '9 days', NOW() - INTERVAL '9 days'
+)
+ON CONFLICT DO NOTHING;
 
-('Civil Engineer', 'Infrastructure Solutions', 'We need experienced civil engineers for various infrastructure projects across the Philippines.', '• Licensed Civil Engineer
-• 3+ years of experience in construction projects
-• Knowledge of AutoCAD and engineering software
-• Project management skills preferred', 'Quezon City', 'Full-time', 55000.00, 80000.00, 'engineering@infra.ph', (SELECT id FROM users WHERE email = 'admin@cmu.edu.ph' LIMIT 1)),
+-- ===========================================
+-- ANNOUNCEMENTS
+-- ===========================================
+INSERT INTO announcements (
+    title, content, type, priority, target_audience, is_published, published_at,
+    event_date, event_location, views_count, created_at, updated_at
+) VALUES
+(
+    'CMU Alumni Homecoming 2026',
+    'All CMU alumni are invited to the annual homecoming and networking day.',
+    'Event', 'High', 'All', TRUE, NOW() - INTERVAL '2 days',
+    NOW() + INTERVAL '20 days', 'CMU University Gym, Musuan, Bukidnon',
+    143,
+    NOW() - INTERVAL '2 days', NOW() - INTERVAL '2 days'
+),
+(
+    'New Job Board Filters Released',
+    'You can now filter job posts by location, salary range, and employment type.',
+    'Update', 'Medium', 'All', TRUE, NOW() - INTERVAL '5 days',
+    NULL, NULL, 97,
+    NOW() - INTERVAL '5 days', NOW() - INTERVAL '5 days'
+),
+(
+    'Graduate Tracer Form Reminder',
+    'Please complete the tracer form to help CMU improve programs and employment support.',
+    'News', 'Medium', 'Alumni', TRUE, NOW() - INTERVAL '1 day',
+    NULL, NULL, 63,
+    NOW() - INTERVAL '1 day', NOW() - INTERVAL '1 day'
+)
+ON CONFLICT DO NOTHING;
 
-('Registered Nurse', 'Medical Center Baguio', 'Seeking compassionate and skilled nurses to join our healthcare team in providing quality patient care.', '• Bachelor of Science in Nursing
-• PRC license
-• 1+ years of clinical experience
-• Excellent communication skills', 'Baguio City', 'Full-time', 25000.00, 35000.00, 'hr@medicalbaguio.ph', (SELECT id FROM users WHERE email = 'admin@cmu.edu.ph' LIMIT 1)),
+-- ===========================================
+-- JOB SUBMISSIONS
+-- ===========================================
+INSERT INTO job_submissions (
+    user_id, title, company, type, location, contact_email,
+    application_deadline, description, requirements, status, admin_notes,
+    created_at, updated_at
+) VALUES
+(
+    (SELECT id FROM users WHERE email = 'john.mabuhay@cmu.edu.ph'),
+    'Backend Developer', 'Bukidnon Tech Solutions', 'Full-time',
+    'Malaybalay City, Bukidnon', 'hr@bktech.ph', '2026-05-30',
+    'Suggested opening for Laravel and API development work.',
+    'BSIT/BSCS graduate, Laravel experience, SQL fundamentals.',
+    'approved', 'Approved as relevant to CMU alumni.',
+    NOW() - INTERVAL '4 days', NOW() - INTERVAL '3 days'
+),
+(
+    (SELECT id FROM users WHERE email = 'kevin.alonzo@cmu.edu.ph'),
+    'Agribusiness Data Assistant', 'AgriGrow Mindanao', 'Full-time',
+    'Maramag, Bukidnon', 'careers@agrigrow.ph', '2026-06-15',
+    'Alumni-submitted opportunity for agricultural operations reporting.',
+    'Agriculture or related degree, Excel skills, strong communication.',
+    'pending', NULL,
+    NOW() - INTERVAL '2 days', NOW() - INTERVAL '2 days'
+),
+(
+    (SELECT id FROM users WHERE email = 'jessa.neri@cmu.edu.ph'),
+    'Volunteer Science Tutor', 'Bukidnon Learning Center', 'Part-time',
+    'Malaybalay City, Bukidnon', 'programs@blc.edu.ph', '2026-05-20',
+    'Submitted community tutoring opportunity for education graduates.',
+    'Education graduate or LET passer preferred.',
+    'rejected', 'Rejected because the posting did not include enough compensation details.',
+    NOW() - INTERVAL '5 days', NOW() - INTERVAL '4 days'
+)
+ON CONFLICT DO NOTHING;
 
-('Data Analyst', 'Analytics Pro', 'Looking for a data analyst to help analyze business data and provide insights for decision making.', '• Bachelor''s degree in Statistics, Mathematics, or related field
-• Experience with SQL and Excel
-• Knowledge of data visualization tools
-• Analytical mindset', 'Cebu City', 'Full-time', 35000.00, 50000.00, 'jobs@analyticspro.ph', (SELECT id FROM users WHERE email = 'admin@cmu.edu.ph' LIMIT 1));
+-- ===========================================
+-- TRACER RECORDS
+-- ===========================================
+INSERT INTO tracer_records (
+    user_id, tracer_date, is_employed, employment_type, current_position,
+    current_company, monthly_income, industry, job_satisfaction, skills_used,
+    further_education, education_level, challenges_faced, recommendations,
+    contact_permission
+) VALUES
+(
+    (SELECT id FROM users WHERE email = 'john.mabuhay@cmu.edu.ph'),
+    '2025-11-15', TRUE, 'Full-time', 'Junior Software Developer',
+    'Bukidnon Tech Solutions', 'P30,000.00 to less than P40,000.00', 'Technology', 4,
+    'Laravel, SQL, debugging, teamwork', FALSE, NULL,
+    'Adjusting to project deadlines', 'Offer more backend API electives', TRUE
+),
+(
+    (SELECT id FROM users WHERE email = 'maria.caballero@cmu.edu.ph'),
+    '2025-11-15', TRUE, 'Full-time', 'Account Officer',
+    'Land Bank of the Philippines', 'P40,000.00 to less than P50,000.00', 'Banking', 4,
+    'Reporting, account management, communication', FALSE, NULL,
+    'High workload during reporting periods', 'Add finance software workshops', TRUE
+),
+(
+    (SELECT id FROM users WHERE email = 'anne.dizon@cmu.edu.ph'),
+    '2025-11-15', FALSE, 'Unemployed', 'Job Seeker',
+    NULL, NULL, NULL, NULL,
+    'Nutrition planning, community outreach', TRUE, 'Certificate Program',
+    'Limited entry-level openings nearby', 'Strengthen internship-to-hire partnerships', TRUE
+)
+ON CONFLICT (user_id, tracer_date) DO NOTHING;
 
--- Insert sample announcements
-INSERT INTO announcements (title, content, type, priority, is_published, published_at, created_by) VALUES
-('Alumni Homecoming 2026', 'Join us for the annual CMU Alumni Homecoming on March 15, 2026! This year''s theme is "Building Bridges, Creating Futures". We''ll have reunions, career talks, and special events throughout the weekend.
+-- ===========================================
+-- FEEDBACK
+-- ===========================================
+INSERT INTO feedback (
+    user_id, subject, message, type, status, priority
+) VALUES
+(
+    (SELECT id FROM users WHERE email = 'john.mabuhay@cmu.edu.ph'),
+    'Job search improvement',
+    'Please add a filter for remote-friendly opportunities.',
+    'Feature Request', 'Open', 'Medium'
+),
+(
+    (SELECT id FROM users WHERE email = 'anne.dizon@cmu.edu.ph'),
+    'Cannot upload resume',
+    'Resume upload shows an error on mobile browser.',
+    'Bug Report', 'In Progress', 'High'
+),
+(
+    (SELECT id FROM users WHERE email = 'jessa.neri@cmu.edu.ph'),
+    'Thanks for alumni event',
+    'Networking with fellow graduates was very helpful.',
+    'General Feedback', 'Resolved', 'Low'
+)
+ON CONFLICT DO NOTHING;
 
-Activities include:
-• Welcome dinner on Friday
-• Career networking sessions
-• Department reunions
-• Sports tournaments
-• Cultural performances
+-- ===========================================
+-- SYSTEM LOGS
+-- ===========================================
+INSERT INTO system_logs (user_id, action, description, ip_address, user_agent) VALUES
+(
+    (SELECT id FROM users WHERE email = 'john.mabuhay@cmu.edu.ph'),
+    'LOGIN', 'User logged in successfully.', '192.168.1.20',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+),
+(
+    (SELECT id FROM users WHERE email = 'admin@cmu.edu.ph'),
+    'CREATE_JOB', 'Posted Laravel Developer opening.', '192.168.1.10',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+),
+(
+    (SELECT id FROM users WHERE email = 'maria.caballero@cmu.edu.ph'),
+    'SUBMIT_TRACER', 'Submitted alumni tracer form.', '192.168.1.30',
+    'Mozilla/5.0 (Linux; Android 13)'
+);
 
-Don''t miss this opportunity to reconnect with old friends and make new connections!', 'Event', 'High', TRUE, CURRENT_TIMESTAMP, (SELECT id FROM users WHERE email = 'admin@cmu.edu.ph' LIMIT 1)),
-
-('New Job Portal Features', 'We''ve enhanced our job portal with new features to better serve our alumni community:
-
-• Advanced job search filters
-• Resume builder tool
-• Application tracking system
-• Company reviews and ratings
-• Salary insights
-
-These improvements will help you find better career opportunities and make informed decisions about your professional development.', 'Update', 'Medium', TRUE, CURRENT_TIMESTAMP - INTERVAL '2 days', (SELECT id FROM users WHERE email = 'admin@cmu.edu.ph' LIMIT 1)),
-
-('Scholarship Opportunities for Graduate Studies', 'Several scholarship opportunities are now available for CMU alumni pursuing graduate studies:
-
-1. CMU Alumni Scholarship Fund - Up to ₱50,000 for master''s programs
-2. Academic Excellence Grant - For graduates with GPA 3.5 and above
-3. Professional Development Scholarship - For career advancement courses
-
-Application deadline: April 30, 2026
-Contact the Alumni Office for more information.', 'Announcement', 'Medium', TRUE, CURRENT_TIMESTAMP - INTERVAL '5 days', (SELECT id FROM users WHERE email = 'admin@cmu.edu.ph' LIMIT 1)),
-
-('Emergency: Campus Closure Notice', 'Due to the approaching typhoon, CMU campus will be closed starting tomorrow, February 3, 2026, at 12:00 PM until further notice.
-
-All classes, events, and non-essential activities are suspended. Staff and students are advised to stay safe and follow local government directives.
-
-We will provide updates through this portal and our social media channels.', 'Alert', 'Urgent', TRUE, CURRENT_TIMESTAMP - INTERVAL '1 day', (SELECT id FROM users WHERE email = 'admin@cmu.edu.ph' LIMIT 1));
-
--- Insert sample job applications
-INSERT INTO job_applications (job_id, user_id, cover_letter, status) VALUES
-((SELECT id FROM jobs WHERE title = 'Software Developer' LIMIT 1), (SELECT id FROM users WHERE email = 'juan.delacruz@cmu.edu.ph' LIMIT 1), 'I am excited to apply for the Software Developer position. With my background in Computer Science from CMU and experience in web development, I believe I would be a great fit for your team.', 'Under Review'),
-((SELECT id FROM jobs WHERE title = 'Marketing Coordinator' LIMIT 1), (SELECT id FROM users WHERE email = 'maria.santos@cmu.edu.ph' LIMIT 1), 'I am interested in the Marketing Coordinator role as it aligns perfectly with my marketing degree and passion for brand development.', 'Pending'),
-((SELECT id FROM jobs WHERE title = 'Civil Engineer' LIMIT 1), (SELECT id FROM users WHERE email = 'pedro.garcia@cmu.edu.ph' LIMIT 1), 'As a licensed Civil Engineer with experience in construction projects, I am eager to contribute to your infrastructure development initiatives.', 'Interview');
-
--- Insert sample tracer records
-INSERT INTO tracer_records (user_id, tracer_date, is_employed, employment_type, current_position, current_company, monthly_income, industry, job_satisfaction, skills_used) VALUES
-((SELECT id FROM users WHERE email = 'juan.delacruz@cmu.edu.ph' LIMIT 1), '2024-06-15', TRUE, 'Full-time', 'Software Engineer', 'Tech Solutions Inc.', 55000.00, 'Technology', 4, 'Programming, Problem Solving, Team Collaboration'),
-((SELECT id FROM users WHERE email = 'maria.santos@cmu.edu.ph' LIMIT 1), '2024-05-20', TRUE, 'Full-time', 'Financial Analyst', 'BDO Unibank', 45000.00, 'Finance', 5, 'Financial Analysis, Excel, Communication'),
-((SELECT id FROM users WHERE email = 'pedro.garcia@cmu.edu.ph' LIMIT 1), '2024-04-10', TRUE, 'Full-time', 'Project Engineer', 'DMCI Homes', 60000.00, 'Construction', 4, 'Project Management, AutoCAD, Engineering'),
-((SELECT id FROM users WHERE email = 'ana.reyes@cmu.edu.ph' LIMIT 1), '2024-07-01', FALSE, 'Unemployed', 'Student', NULL, NULL, NULL, NULL, NULL),
-((SELECT id FROM users WHERE email = 'carlos.mendoza@cmu.edu.ph' LIMIT 1), '2024-03-15', TRUE, 'Full-time', 'Senior Accountant', 'SGV & Co.', 52000.00, 'Finance', 4, 'Accounting, Auditing, Tax Planning');
-
--- Insert sample feedback
-INSERT INTO feedback (user_id, subject, message, type, status) VALUES
-((SELECT id FROM users WHERE email = 'juan.delacruz@cmu.edu.ph' LIMIT 1), 'Job Portal Enhancement', 'The new job search filters are very helpful. Could you add a feature to save job searches?', 'Feature Request', 'Open'),
-((SELECT id FROM users WHERE email = 'maria.santos@cmu.edu.ph' LIMIT 1), 'Profile Update Issue', 'I''m having trouble updating my profile picture. The upload keeps failing.', 'Bug Report', 'In Progress'),
-((SELECT id FROM users WHERE email = 'pedro.garcia@cmu.edu.ph' LIMIT 1), 'Great Alumni Network', 'Thank you for organizing the recent networking event. It was very beneficial for career development.', 'General Feedback', 'Resolved');
+COMMIT;
