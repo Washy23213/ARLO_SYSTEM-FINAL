@@ -777,12 +777,12 @@
         .registration-email-verify {
             position: relative;
             display: grid;
-            gap: 0.9rem;
-            padding: 1rem 1.1rem;
+            gap: 0.65rem;
+            padding: 0.8rem 0.9rem;
             border: 1px solid #d6e5da;
-            border-radius: 0.85rem;
-            background: linear-gradient(145deg, #ffffff 0%, #fbfdfb 100%);
-            box-shadow: 0 8px 22px rgba(15, 45, 25, 0.045);
+            border-radius: 0.75rem;
+            background: #ffffff;
+            box-shadow: 0 3px 10px rgba(15, 45, 25, 0.035);
             overflow: visible;
         }
 
@@ -820,8 +820,8 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 2.25rem;
-            height: 2.25rem;
+            width: 2rem;
+            height: 2rem;
             border: 1px solid #dbe7df;
             border-radius: 0.45rem;
             color: #0b5b2c;
@@ -841,16 +841,16 @@
         .registration-email-verify__title {
             display: block;
             color: #0b2615;
-            font-size: 1rem;
+            font-size: 0.96rem;
             font-weight: 700;
             line-height: 1.3;
         }
 
         .registration-email-verify__copy {
             display: block;
-            margin: 0.28rem 0 0;
+            margin: 0.16rem 0 0;
             color: #58695f;
-            font-size: 0.84rem;
+            font-size: 0.8rem;
             line-height: 1.45;
         }
 
@@ -873,10 +873,10 @@
             align-items: center;
             justify-content: center;
             gap: 0.45rem;
-            min-height: 2.35rem;
+            min-height: 2.15rem;
             border-radius: 0.45rem;
-            padding: 0.62rem 0.9rem;
-            font-size: 0.88rem;
+            padding: 0.52rem 0.78rem;
+            font-size: 0.84rem;
             font-weight: 700;
             line-height: 1;
             transition:
@@ -927,17 +927,17 @@
         .registration-email-verify__code {
             position: relative;
             display: grid;
-            gap: 0.8rem;
-            padding: 1rem;
+            gap: 0.55rem;
+            padding: 0.75rem;
             border: 1px solid #dce9df;
-            border-radius: 0.8rem;
-            background: linear-gradient(145deg, #f7faf8 0%, #f1f7f3 100%);
+            border-radius: 0.7rem;
+            background: #f5f9f6;
         }
 
         .registration-email-verify__code label {
             margin: 0;
             color: #274032;
-            font-size: 0.86rem;
+            font-size: 0.82rem;
             font-weight: 700;
         }
 
@@ -945,8 +945,8 @@
             position: relative;
             display: grid;
             grid-template-columns: repeat(6, minmax(0, 1fr));
-            gap: 0.5rem;
-            width: min(100%, 26rem);
+            gap: 0.4rem;
+            width: min(100%, 23rem);
             justify-self: center;
         }
 
@@ -955,12 +955,12 @@
             align-items: center;
             justify-content: center;
             min-width: 0;
-            min-height: 3.15rem;
+            min-height: 2.7rem;
             border: 1px solid #cbdccf;
             border-radius: 0.5rem;
             background: #ffffff;
             color: #0b2615;
-            font-size: 1.2rem;
+            font-size: 1.05rem;
             font-weight: 700;
             line-height: 1;
             transition: border-color 0.16s ease, background-color 0.16s ease, box-shadow 0.16s ease;
@@ -1018,12 +1018,12 @@
 
         .registration-email-verify__resend-button {
             justify-self: start;
-            min-height: 1.8rem;
-            padding: 0.25rem 0;
+            min-height: 1.5rem;
+            padding: 0.15rem 0;
             border: 0;
             background: transparent;
             color: #0b5b2c;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 700;
             letter-spacing: 0.035em;
             text-transform: uppercase;
@@ -1038,28 +1038,28 @@
         .registration-email-verify__code-row {
             display: grid;
             grid-template-columns: minmax(0, 1fr);
-            gap: 0.65rem;
+            gap: 0.45rem;
         }
 
         .registration-email-verify__footer {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 0.75rem;
-            padding-top: 0.2rem;
+            gap: 0.55rem;
+            padding-top: 0.05rem;
         }
 
         .registration-email-verify__message {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
             margin: 0;
-            padding: 0.45rem 0.65rem;
+            padding: 0.35rem 0.55rem;
             border: 0;
             border-radius: 0.45rem;
             background: #f7faf8;
             color: #43584b;
-            font-size: 0.84rem;
+            font-size: 0.8rem;
             line-height: 1.45;
         }
 
@@ -1264,9 +1264,9 @@
             }
 
             .registration-email-verify__otp-digit {
-                min-height: 2.9rem;
+                min-height: 2.55rem;
                 border-radius: 0.4rem;
-                font-size: 1.08rem;
+                font-size: 1rem;
             }
 
             .registration-email-verify__resend-button {
