@@ -105,7 +105,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const verifyEmailCodeBtn = document.getElementById("verifyEmailCodeBtn");
   const emailVerificationMessage = document.getElementById("emailVerificationMessage");
   const emailVerificationTiming = document.getElementById("emailVerificationTiming");
-  const emailVerificationSupport = document.getElementById("emailVerificationSupport");
   const accountPasswordLockedNotice = document.getElementById("accountPasswordLockedNotice");
   const accountPasswordFields = document.getElementById("accountPasswordFields");
   const verificationStatusMessage = document.getElementById("verificationStatusMessage");
@@ -1317,12 +1316,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       }
 
-      timingItems.push({
-        type: "resend",
-        icon: resendSeconds > 0 ? "bx-refresh" : "bx-check-circle",
-        label: "Resend",
-        value: resendSeconds > 0 ? `available in ${formatCountdown(resendSeconds)}` : "available now",
-      });
     }
 
     setEmailVerificationTimingItems(timingItems);
@@ -1429,7 +1422,6 @@ document.addEventListener("DOMContentLoaded", function () {
       if (resendEmailVerificationBtn) {
         resendEmailVerificationBtn.classList.add("hidden");
       }
-      emailVerificationSupport?.classList.add("hidden");
       setEmailVerificationMessage("verified", "Email verified. Set your password below.");
       syncEmailVerificationTiming();
       syncAccountPasswordGate();
@@ -1450,12 +1442,8 @@ document.addEventListener("DOMContentLoaded", function () {
       resendEmailVerificationBtn.classList.toggle("hidden", !codeWasSent);
     }
 
-    emailVerificationSupport?.classList.toggle("hidden", codeWasSent);
-
     if (!emailVerificationState.message) {
-      setEmailVerificationMessage("idle", codeWasSent
-        ? "Enter the code from your email, then click Verify."
-        : "Send a verification code to continue.");
+      setEmailVerificationMessage("idle", "");
     }
 
     syncEmailVerificationTiming();
@@ -1526,7 +1514,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       setEmailVerificationTimingFromResponse(result);
-      setEmailVerificationMessage("sent", result?.message || "Verification code sent. Please check your email.");
+      setEmailVerificationMessage("sent", "Code sent. Check your inbox.");
       syncEmailVerificationPanel();
 
       if (emailVerificationCodeInput) {

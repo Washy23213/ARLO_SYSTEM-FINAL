@@ -777,8 +777,8 @@
         .registration-email-verify {
             position: relative;
             display: grid;
-            gap: 0.85rem;
-            padding: 1rem;
+            gap: 0.7rem;
+            padding: 0.9rem;
             border: 1px solid #d8e4dc;
             border-radius: 0.5rem;
             background: #ffffff;
@@ -805,7 +805,7 @@
             align-items: flex-start;
             justify-content: space-between;
             gap: 1rem;
-            padding-bottom: 0.85rem;
+            padding-bottom: 0.65rem;
             border-bottom: 1px solid #edf3ef;
         }
 
@@ -839,25 +839,6 @@
             min-width: 0;
         }
 
-        .registration-email-verify__eyebrow {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.32rem;
-            margin-bottom: 0.22rem;
-            color: #5e6f64;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            font-size: 0.68rem;
-            font-weight: 700;
-            line-height: 1;
-        }
-
-        .registration-email-verify__eyebrow i {
-            color: #0b6b34;
-            font-size: 0.9rem;
-            line-height: 1;
-        }
-
         .registration-email-verify__title {
             display: block;
             color: #0b2615;
@@ -872,56 +853,6 @@
             color: #58695f;
             font-size: 0.84rem;
             line-height: 1.45;
-        }
-
-        .registration-email-verify__support {
-            position: relative;
-            display: flex;
-            align-items: center;
-            padding: 0;
-            border: 1px solid #e1e9e4;
-            border-radius: 0.45rem;
-            background: #fafcfa;
-            overflow: hidden;
-        }
-
-        .registration-email-verify__support-link {
-            display: flex;
-            align-items: center;
-            gap: 0.62rem;
-            width: 100%;
-            min-height: 2.65rem;
-            padding: 0.7rem 0.8rem;
-            color: #3c5144;
-            font-size: 0.83rem;
-            font-weight: 600;
-            line-height: 1.45;
-            text-decoration: none;
-            transition:
-                background-color 0.18s ease,
-                transform 0.18s ease;
-        }
-
-        .registration-email-verify__support-link:hover {
-            background: rgba(255, 255, 255, 0.52);
-            transform: translateY(-1px);
-        }
-
-        .registration-email-verify__support-link:focus-visible {
-            outline: 3px solid rgba(11, 91, 44, 0.16);
-            outline-offset: -3px;
-        }
-
-        .registration-email-verify__support-link i {
-            flex-shrink: 0;
-            color: #0b5b2c;
-            font-size: 1.15rem;
-        }
-
-        .registration-email-verify__support-link .bx-link-external {
-            margin-left: auto;
-            color: #0b5b2c;
-            font-size: 0.95rem;
         }
 
         .registration-email-verify__actions,
@@ -997,11 +928,11 @@
         .registration-email-verify__code {
             position: relative;
             display: grid;
-            gap: 0.6rem;
-            padding: 0.85rem 0.9rem;
-            border: 1px solid #dce7df;
-            border-radius: 0.5rem;
-            background: #f9fbfa;
+            gap: 0.45rem;
+            padding: 0;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
         }
 
         .registration-email-verify__code label {
@@ -1022,13 +953,17 @@
             align-items: center;
             gap: 0.5rem;
             margin: 0;
-            padding: 0.65rem 0.75rem;
-            border: 1px solid #e2eae5;
+            padding: 0.45rem 0.65rem;
+            border: 0;
             border-radius: 0.45rem;
             background: #f7faf8;
             color: #43584b;
             font-size: 0.84rem;
             line-height: 1.45;
+        }
+
+        .registration-email-verify__message:empty {
+            display: none;
         }
 
         .registration-email-verify__message::before {
@@ -1063,8 +998,8 @@
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 0.55rem 1rem;
-            margin: -0.15rem 0 0;
+            gap: 0.4rem 0.75rem;
+            margin: 0;
             color: #56695d;
             font-size: 0.8rem;
             font-weight: 600;
@@ -1100,16 +1035,6 @@
         .registration-email-verify__timing-value {
             color: #173b26;
             font-weight: 700;
-        }
-
-        .registration-email-verify__timing-item--resend {
-            border-color: transparent;
-            background: transparent;
-        }
-
-        .registration-email-verify__timing-item--resend i,
-        .registration-email-verify__timing-item--resend .registration-email-verify__timing-value {
-            color: #173b26;
         }
 
         .registration-email-verify__timing-item--expired {
@@ -1200,22 +1125,6 @@
             line-height: 1.25;
         }
 
-        .registration-newsletter-option__badge {
-            display: inline-flex;
-            align-items: center;
-            min-height: 1.55rem;
-            padding: 0.28rem 0.58rem;
-            border: 1px solid #d7c488;
-            border-radius: 0.4rem;
-            background: #fffdf5;
-            color: #6a520b;
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 0.06em;
-            line-height: 1;
-            text-transform: uppercase;
-        }
-
         .registration-newsletter-option__copy {
             display: block;
             margin-top: 0.35rem;
@@ -1228,14 +1137,12 @@
         .registration-email-verify__code.hidden,
         .registration-email-verify__button.hidden,
         .registration-email-verify__timing.hidden,
-        .registration-email-verify__support.hidden,
         .registration-password-gate.hidden {
             display: none;
         }
 
         @media (max-width: 640px) {
-            .registration-email-verify__top,
-            .registration-email-verify__support {
+            .registration-email-verify__top {
                 align-items: stretch;
                 flex-direction: column;
             }
@@ -1250,13 +1157,8 @@
                 grid-template-columns: 1fr;
             }
 
-            .registration-email-verify__button,
-            .registration-email-verify__support-link {
+            .registration-email-verify__button {
                 justify-content: center;
-            }
-
-            .registration-email-verify__support-link .bx-link-external {
-                margin-left: 0;
             }
         }
 
@@ -2295,12 +2197,8 @@
                                         <i class="bx bx-envelope"></i>
                                     </span>
                                     <span class="registration-email-verify__heading">
-                                        <span class="registration-email-verify__eyebrow">
-                                            <i class="bx bx-lock-alt" aria-hidden="true"></i>
-                                            Verification
-                                        </span>
-                                        <span class="registration-email-verify__title">Verify email address</span>
-                                        <span class="registration-email-verify__copy">A 6-digit code is required before password setup.</span>
+                                        <span class="registration-email-verify__title">Confirm your email</span>
+                                        <span class="registration-email-verify__copy">Verify this address with a 6-digit code.</span>
                                     </span>
                                 </div>
                                 <div class="registration-email-verify__actions">
@@ -2347,13 +2245,6 @@
                             </div>
                             <p id="emailVerificationMessage" class="registration-email-verify__message" aria-live="polite"></p>
                             <p id="emailVerificationTiming" class="registration-email-verify__timing hidden" aria-live="polite"></p>
-                            <div class="registration-email-verify__support" id="emailVerificationSupport">
-                                <a class="registration-email-verify__support-link" href="https://accounts.google.com/signup?service=mail" target="_blank" rel="noopener noreferrer">
-                                    <i class="bx bx-info-circle" aria-hidden="true"></i>
-                                    <span>Need a Gmail address? Create one with Google.</span>
-                                    <i class="bx bx-link-external" aria-hidden="true"></i>
-                                </a>
-                            </div>
                         </div>
                     </div>
 
@@ -2364,11 +2255,10 @@
                         </span>
                         <span class="registration-newsletter-option__body">
                             <span class="registration-newsletter-option__header">
-                                <span class="registration-newsletter-option__title">OARL updates by email</span>
-                                <span class="registration-newsletter-option__badge">Recommended</span>
+                                <span class="registration-newsletter-option__title">Email updates</span>
                             </span>
                             <span class="registration-newsletter-option__copy">
-                                Receive official announcements, job opportunities, events, and newsletters. You can update this later in Profile settings.
+                                Receive official CMU OARL announcements, alumni events, and career opportunities by email. You can update this preference in Profile settings.
                             </span>
                         </span>
                     </label>
