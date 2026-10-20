@@ -2420,118 +2420,11 @@
                         <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
                         <input type="email" id="email" name="email" required class="mt-1">
                         <p id="emailCheckMessage" class="text-sm mt-1 text-gray-500"></p>
-                        <button
-                            type="button"
-                            id="emailVerificationBackdrop"
-                            class="registration-email-verify__backdrop hidden"
-                            aria-hidden="true"
-                            tabindex="-1"
-                            aria-label="Close email verification"
-                        ></button>
-                        <div
-                            id="emailVerificationPanel"
-                            class="registration-email-verify hidden mt-3"
-                            role="region"
-                            aria-labelledby="emailVerificationTitle"
-                            aria-describedby="emailVerificationCopy"
-                            aria-hidden="true"
-                        >
-                            <div class="registration-email-verify__top">
-                                <div class="registration-email-verify__identity">
-                                    <span class="registration-email-verify__icon" aria-hidden="true">
-                                        <i class="bx bx-envelope"></i>
-                                    </span>
-                                    <span class="registration-email-verify__heading">
-                                        <span id="emailVerificationTitle" class="registration-email-verify__title" tabindex="-1">Verify your email</span>
-                                        <span id="emailVerificationCopy" class="registration-email-verify__copy">We will send a 6-digit code to confirm this address.</span>
-                                    </span>
-                                </div>
-                                <div class="registration-email-verify__actions">
-                                    <button
-                                        type="button"
-                                        id="sendEmailVerificationBtn"
-                                        class="registration-email-verify__button registration-email-verify__button--primary"
-                                    >
-                                        <i class="bx bx-send" aria-hidden="true"></i>
-                                        <span data-email-verification-label>Send code</span>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        id="emailVerificationCloseBtn"
-                                        class="registration-email-verify__close hidden"
-                                        aria-label="Close email verification"
-                                    >
-                                        <i class="bx bx-x" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="emailVerificationCodeGroup" class="registration-email-verify__code hidden">
-                                <label id="emailVerificationCodeLabel" for="emailVerificationCode">Verification code</label>
-                                <div class="registration-email-verify__code-row">
-                                    <div id="emailVerificationOtp" class="registration-email-verify__otp" role="group" aria-label="Six-digit verification code">
-                                        <span class="registration-email-verify__otp-digit" data-email-verification-digit aria-hidden="true"></span>
-                                        <span class="registration-email-verify__otp-digit" data-email-verification-digit aria-hidden="true"></span>
-                                        <span class="registration-email-verify__otp-digit" data-email-verification-digit aria-hidden="true"></span>
-                                        <span class="registration-email-verify__otp-digit" data-email-verification-digit aria-hidden="true"></span>
-                                        <span class="registration-email-verify__otp-digit" data-email-verification-digit aria-hidden="true"></span>
-                                        <span class="registration-email-verify__otp-digit" data-email-verification-digit aria-hidden="true"></span>
-                                        <input
-                                            type="text"
-                                            id="emailVerificationCode"
-                                            class="registration-email-verify__otp-input"
-                                            inputmode="numeric"
-                                            maxlength="6"
-                                            autocomplete="one-time-code"
-                                            pattern="[0-9]{6}"
-                                            aria-label="6-digit verification code"
-                                            aria-describedby="emailVerificationCodeLabel emailVerificationMessage"
-                                            spellcheck="false"
-                                        >
-                                    </div>
-                                    <button
-                                        type="button"
-                                        id="resendEmailVerificationBtn"
-                                        disabled
-                                        class="registration-email-verify__button registration-email-verify__resend-button hidden"
-                                    >
-                                        <i class="bx bx-refresh" aria-hidden="true"></i>
-                                        <span data-email-verification-label>Resend code</span>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        id="verifyEmailCodeBtn"
-                                        class="registration-email-verify__button registration-email-verify__button--primary"
-                                    >
-                                        <i class="bx bx-check-shield" aria-hidden="true"></i>
-                                        <span data-email-verification-label>Confirm</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <p id="emailVerificationMessage" class="registration-email-verify__message" aria-live="polite"></p>
-                            <div id="emailVerificationFooter" class="registration-email-verify__footer hidden">
-                                <p id="emailVerificationTiming" class="registration-email-verify__timing hidden" aria-live="polite"></p>
-                            </div>
-                        </div>
                         <div id="emailVerificationMiniTrigger" class="registration-email-verify__mini-trigger hidden" aria-hidden="true">
                             <span>A verification code was sent to your email.</span>
                             <button type="button" id="emailVerificationOpenBtn">Enter code</button>
                         </div>
                     </div>
-
-                    <input type="hidden" name="newsletter_opt_in" value="0">
-                    <label for="newsletter_opt_in" class="registration-newsletter-option">
-                        <span class="registration-newsletter-option__control">
-                            <input type="checkbox" id="newsletter_opt_in" name="newsletter_opt_in" value="1" checked>
-                        </span>
-                        <span class="registration-newsletter-option__body">
-                            <span class="registration-newsletter-option__header">
-                                <span class="registration-newsletter-option__title">Email updates</span>
-                            </span>
-                            <span class="registration-newsletter-option__copy">
-                                Receive official CMU OARL announcements, alumni events, and career opportunities by email. You can update this preference in Profile settings.
-                            </span>
-                        </span>
-                    </label>
 
                     <div id="accountPasswordLockedNotice" class="registration-password-gate">
                         <i class="bx bx-lock-alt" aria-hidden="true"></i>
@@ -2580,6 +2473,114 @@
                         </div>
 
                     </div>
+
+                    <button
+                        type="button"
+                        id="emailVerificationBackdrop"
+                        class="registration-email-verify__backdrop hidden"
+                        aria-hidden="true"
+                        tabindex="-1"
+                        aria-label="Close email verification"
+                    ></button>
+                    <div
+                        id="emailVerificationPanel"
+                        class="registration-email-verify hidden"
+                        role="region"
+                        aria-labelledby="emailVerificationTitle"
+                        aria-describedby="emailVerificationCopy"
+                        aria-hidden="true"
+                    >
+                        <div class="registration-email-verify__top">
+                            <div class="registration-email-verify__identity">
+                                <span class="registration-email-verify__icon" aria-hidden="true">
+                                    <i class="bx bx-envelope"></i>
+                                </span>
+                                <span class="registration-email-verify__heading">
+                                    <span id="emailVerificationTitle" class="registration-email-verify__title" tabindex="-1">Verify your email</span>
+                                    <span id="emailVerificationCopy" class="registration-email-verify__copy">We will send a 6-digit code to confirm this address.</span>
+                                </span>
+                            </div>
+                            <div class="registration-email-verify__actions">
+                                <button
+                                    type="button"
+                                    id="sendEmailVerificationBtn"
+                                    class="registration-email-verify__button registration-email-verify__button--primary"
+                                >
+                                    <i class="bx bx-send" aria-hidden="true"></i>
+                                    <span data-email-verification-label>Send code</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    id="emailVerificationCloseBtn"
+                                    class="registration-email-verify__close hidden"
+                                    aria-label="Close email verification"
+                                >
+                                    <i class="bx bx-x" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="emailVerificationCodeGroup" class="registration-email-verify__code hidden">
+                            <label id="emailVerificationCodeLabel" for="emailVerificationCode">Verification code</label>
+                            <div class="registration-email-verify__code-row">
+                                <div id="emailVerificationOtp" class="registration-email-verify__otp" role="group" aria-label="Six-digit verification code">
+                                    <span class="registration-email-verify__otp-digit" data-email-verification-digit aria-hidden="true"></span>
+                                    <span class="registration-email-verify__otp-digit" data-email-verification-digit aria-hidden="true"></span>
+                                    <span class="registration-email-verify__otp-digit" data-email-verification-digit aria-hidden="true"></span>
+                                    <span class="registration-email-verify__otp-digit" data-email-verification-digit aria-hidden="true"></span>
+                                    <span class="registration-email-verify__otp-digit" data-email-verification-digit aria-hidden="true"></span>
+                                    <span class="registration-email-verify__otp-digit" data-email-verification-digit aria-hidden="true"></span>
+                                    <input
+                                        type="text"
+                                        id="emailVerificationCode"
+                                        class="registration-email-verify__otp-input"
+                                        inputmode="numeric"
+                                        maxlength="6"
+                                        autocomplete="one-time-code"
+                                        pattern="[0-9]{6}"
+                                        aria-label="6-digit verification code"
+                                        aria-describedby="emailVerificationCodeLabel emailVerificationMessage"
+                                        spellcheck="false"
+                                    >
+                                </div>
+                                <button
+                                    type="button"
+                                    id="resendEmailVerificationBtn"
+                                    disabled
+                                    class="registration-email-verify__button registration-email-verify__resend-button hidden"
+                                >
+                                    <i class="bx bx-refresh" aria-hidden="true"></i>
+                                    <span data-email-verification-label>Resend code</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    id="verifyEmailCodeBtn"
+                                    class="registration-email-verify__button registration-email-verify__button--primary"
+                                >
+                                    <i class="bx bx-check-shield" aria-hidden="true"></i>
+                                    <span data-email-verification-label>Confirm</span>
+                                </button>
+                            </div>
+                        </div>
+                        <p id="emailVerificationMessage" class="registration-email-verify__message" aria-live="polite"></p>
+                        <div id="emailVerificationFooter" class="registration-email-verify__footer hidden">
+                            <p id="emailVerificationTiming" class="registration-email-verify__timing hidden" aria-live="polite"></p>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="newsletter_opt_in" value="0">
+                    <label for="newsletter_opt_in" class="registration-newsletter-option">
+                        <span class="registration-newsletter-option__control">
+                            <input type="checkbox" id="newsletter_opt_in" name="newsletter_opt_in" value="1" checked>
+                        </span>
+                        <span class="registration-newsletter-option__body">
+                            <span class="registration-newsletter-option__header">
+                                <span class="registration-newsletter-option__title">Email updates</span>
+                            </span>
+                            <span class="registration-newsletter-option__copy">
+                                Receive official CMU OARL announcements, alumni events, and career opportunities by email. You can update this preference in Profile settings.
+                            </span>
+                        </span>
+                    </label>
 
                     <div class="flex justify-between pt-6">
                         <button type="button" class="previous-btn">Previous</button>
