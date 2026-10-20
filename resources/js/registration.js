@@ -98,6 +98,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const passwordConfirmationInput = document.getElementById("password_confirmation");
   const emailCheckMessage = document.getElementById("emailCheckMessage");
   const emailVerificationPanel = document.getElementById("emailVerificationPanel");
+  const emailVerificationBackdrop = document.getElementById("emailVerificationBackdrop");
+  const emailVerificationCloseBtn = document.getElementById("emailVerificationCloseBtn");
+  const emailVerificationMiniTrigger = document.getElementById("emailVerificationMiniTrigger");
+  const emailVerificationOpenBtn = document.getElementById("emailVerificationOpenBtn");
   const emailVerificationTitle = document.getElementById("emailVerificationTitle");
   const emailVerificationCopy = document.getElementById("emailVerificationCopy");
   const emailVerificationFooter = document.getElementById("emailVerificationFooter");
@@ -148,6 +152,7 @@ document.addEventListener("DOMContentLoaded", function () {
   };
   let emailVerificationTimerId = null;
   let emailVerificationBusy = false;
+  let emailVerificationMiniViewOpen = false;
   let emailCheckTimeoutId = null;
   let verificationCheckTimeoutId = null;
   let verificationRequestController = null;
@@ -1389,6 +1394,46 @@ document.addEventListener("DOMContentLoaded", function () {
     syncAccountPasswordGate();
   }
 
+  function setEmailVerificationMiniViewState(isOpen) {
+    emailVerificationMiniViewOpen = !!isOpen;
+
+    if (emailVerificationPanel) {
+      emailVerificationPanel.classList.toggle("is-mini-view", emailVerificationMiniViewOpen);
+      emailVerificationPanel.setAttribute("role", emailVerificationMiniViewOpen ? "dialog" : "region");
+      emailVerificationPanel.setAttribute("aria-hidden", "false");
+      if (emailVerificationMiniViewOpen) {
+        emailVerificationPanel.setAttribute("aria-modal", "true");
+      } else {
+        emailVerificationPanel.removeAttribute("aria-modal");
+      }
+    }
+
+    emailVerificationBackdrop?.classList.toggle("hidden", !emailVerificationMiniViewOpen);
+    emailVerificationCloseBtn?.classList.toggle("hidden", !emailVerificationMiniViewOpen);
+    document.body.classList.toggle("email-verification-modal-open", emailVerificationMiniViewOpen);
+  }
+
+  function openEmailVerificationMiniView() {
+    const email = getNormalizedAccountEmail();
+    if (!emailVerificationPanel || !email || emailVerificationState.sentEmail !== email || isCurrentEmailVerified()) {
+      return;
+    }
+
+    setEmailVerificationMiniViewState(true);
+    syncEmailVerificationPanel();
+    window.requestAnimationFrame(() => {
+      try { emailVerificationCodeInput?.focus(); } catch (e) {}
+    });
+  }
+
+  function dismissEmailVerificationMiniView() {
+    setEmailVerificationMiniViewState(false);
+    syncEmailVerificationPanel();
+    if (emailVerificationOpenBtn && !emailVerificationOpenBtn.classList.contains("hidden")) {
+      try { emailVerificationOpenBtn.focus(); } catch (e) {}
+    }
+  }
+
   function resetEmailVerificationState(message = "") {
     stopEmailVerificationTimer();
 
@@ -1400,6 +1445,11 @@ document.addEventListener("DOMContentLoaded", function () {
       expiresAt: null,
       resendAvailableAt: null,
     };
+    setEmailVerificationMiniViewState(false);
+    if (emailVerificationMiniTrigger) {
+      emailVerificationMiniTrigger.classList.add("hidden");
+      emailVerificationMiniTrigger.setAttribute("aria-hidden", "true");
+    }
 
     if (form) {
       form.dataset.emailVerified = "false";
@@ -1442,14 +1492,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const email = getNormalizedAccountEmail();
     const shouldShow = !!email && emailCheckState.status === "valid";
-    emailVerificationPanel.classList.toggle("hidden", !shouldShow);
 
     if (!shouldShow) {
+      setEmailVerificationMiniViewState(false);
+      emailVerificationPanel.classList.add("hidden");
+      emailVerificationPanel.setAttribute("aria-hidden", "true");
+      if (emailVerificationMiniTrigger) {
+        emailVerificationMiniTrigger.classList.add("hidden");
+        emailVerificationMiniTrigger.setAttribute("aria-hidden", "true");
+      }
       syncAccountPasswordGate({ clearPasswords: true });
       return;
     }
 
     if (isCurrentEmailVerified()) {
+      setEmailVerificationMiniViewState(false);
+      emailVerificationPanel.classList.remove("hidden");
+      emailVerificationPanel.setAttribute("aria-hidden", "false");
+      if (emailVerificationMiniTrigger) {
+        emailVerificationMiniTrigger.classList.add("hidden");
+        emailVerificationMiniTrigger.setAttribute("aria-hidden", "true");
+      }
       if (emailVerificationTitle) {
         emailVerificationTitle.textContent = "Email verified";
       }
@@ -1475,6 +1538,24 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const codeWasSent = emailVerificationState.sentEmail === email;
+
+    if (codeWasSent) {
+      setEmailVerificationMiniViewState(emailVerificationMiniViewOpen);
+      emailVerificationPanel.classList.toggle("hidden", !emailVerificationMiniViewOpen);
+      emailVerificationPanel.setAttribute("aria-hidden", emailVerificationMiniViewOpen ? "false" : "true");
+      if (emailVerificationMiniTrigger) {
+        emailVerificationMiniTrigger.classList.toggle("hidden", emailVerificationMiniViewOpen);
+        emailVerificationMiniTrigger.setAttribute("aria-hidden", emailVerificationMiniViewOpen ? "true" : "false");
+      }
+    } else {
+      setEmailVerificationMiniViewState(false);
+      emailVerificationPanel.classList.remove("hidden");
+      emailVerificationPanel.setAttribute("aria-hidden", "false");
+      if (emailVerificationMiniTrigger) {
+        emailVerificationMiniTrigger.classList.add("hidden");
+        emailVerificationMiniTrigger.setAttribute("aria-hidden", "true");
+      }
+    }
 
     if (emailVerificationTitle) {
       emailVerificationTitle.textContent = codeWasSent ? "Confirmation" : "Verify your email";
@@ -1545,6 +1626,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (response.status === 429 && result?.resend_after_seconds) {
           emailVerificationState.sentEmail = getNormalizedAccountEmail();
           emailVerificationState.verifiedEmail = "";
+          setEmailVerificationMiniViewState(true);
           if (form) {
             form.dataset.emailVerified = "false";
           }
@@ -1562,6 +1644,7 @@ document.addEventListener("DOMContentLoaded", function () {
       clearInvalid(emailInput);
       emailVerificationState.sentEmail = getNormalizedAccountEmail();
       emailVerificationState.verifiedEmail = "";
+      setEmailVerificationMiniViewState(true);
       if (form) {
         form.dataset.emailVerified = "false";
       }
@@ -1642,6 +1725,7 @@ document.addEventListener("DOMContentLoaded", function () {
       setEmailVerificationMessage("verified", result?.message || "Email verified. Set your password below.");
       syncEmailVerificationPanel();
       syncAccountPasswordGate();
+      try { emailVerificationTitle?.focus(); } catch (e) {}
       return true;
     } catch (error) {
       setEmailVerificationMessage("invalid", "Unable to verify the code right now.");
@@ -5972,6 +6056,38 @@ document.addEventListener("DOMContentLoaded", function () {
     button.addEventListener("click", function () {
       sendEmailVerificationCode();
     });
+  });
+
+  emailVerificationCloseBtn?.addEventListener("click", dismissEmailVerificationMiniView);
+  emailVerificationBackdrop?.addEventListener("click", dismissEmailVerificationMiniView);
+  emailVerificationOpenBtn?.addEventListener("click", openEmailVerificationMiniView);
+
+  document.addEventListener("keydown", function (event) {
+    if (!emailVerificationMiniViewOpen || !emailVerificationPanel) return;
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      dismissEmailVerificationMiniView();
+      return;
+    }
+
+    if (event.key !== "Tab") return;
+
+    const focusableElements = Array.from(emailVerificationPanel.querySelectorAll(
+      'button:not(:disabled):not(.hidden), input:not(:disabled):not([type="hidden"])'
+    )).filter((element) => element.offsetParent !== null);
+    if (!focusableElements.length) return;
+
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    if (event.shiftKey && (document.activeElement === firstElement || !emailVerificationPanel.contains(document.activeElement))) {
+      event.preventDefault();
+      lastElement.focus();
+    } else if (!event.shiftKey && (document.activeElement === lastElement || !emailVerificationPanel.contains(document.activeElement))) {
+      event.preventDefault();
+      firstElement.focus();
+    }
   });
 
   if (verifyEmailCodeBtn) {

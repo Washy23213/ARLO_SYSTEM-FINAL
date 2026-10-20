@@ -799,6 +799,95 @@
             border-color: #e6b8b8;
         }
 
+        .registration-email-verify__backdrop {
+            position: fixed;
+            z-index: 109;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            background: rgba(7, 30, 15, 0.42);
+            backdrop-filter: blur(3px);
+            cursor: default;
+        }
+
+        .registration-email-verify.is-mini-view {
+            position: fixed;
+            z-index: 110;
+            top: 50%;
+            left: 50%;
+            width: min(calc(100vw - 2rem), 32rem);
+            max-height: min(calc(100vh - 2rem), 42rem);
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            transform: translate(-50%, -50%);
+            margin: 0 !important;
+            padding: 1rem;
+            border-color: #cddfd2;
+            border-radius: 1rem;
+            background: #ffffff;
+            box-shadow: 0 24px 68px rgba(8, 34, 17, 0.24);
+        }
+
+        .registration-email-verify__close {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            width: 2rem;
+            height: 2rem;
+            padding: 0;
+            border: 1px solid #dce9df;
+            border-radius: 999px;
+            background: #f7faf8;
+            color: #315840;
+            font-size: 1.15rem;
+            line-height: 1;
+        }
+
+        .registration-email-verify__close:hover {
+            border-color: #b9d1c0;
+            background: #edf5ef;
+            color: #0b5b2c;
+        }
+
+        .registration-email-verify__mini-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-top: 0.45rem;
+            padding: 0.55rem 0.7rem;
+            border: 1px solid #dce9df;
+            border-radius: 0.6rem;
+            background: #f7faf8;
+            color: #43584b;
+            font-size: 0.82rem;
+            line-height: 1.35;
+        }
+
+        .registration-email-verify__mini-trigger button {
+            flex: 0 0 auto;
+            padding: 0.38rem 0.65rem;
+            border: 1px solid #cbdccf;
+            border-radius: 0.45rem;
+            background: #ffffff;
+            color: #0b5b2c;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .registration-email-verify__mini-trigger button:hover {
+            border-color: #9fb8a7;
+            background: #f1f7f3;
+        }
+
+        body.email-verification-modal-open {
+            overflow: hidden;
+        }
+
         .registration-email-verify__top {
             position: relative;
             display: flex;
@@ -1235,9 +1324,12 @@
         }
 
         .registration-email-verify.hidden,
+        .registration-email-verify__backdrop.hidden,
+        .registration-email-verify__mini-trigger.hidden,
         .registration-email-verify__code.hidden,
         .registration-email-verify__footer.hidden,
         .registration-email-verify__button.hidden,
+        .registration-email-verify__close.hidden,
         .registration-email-verify__timing.hidden,
         .registration-password-gate.hidden {
             display: none;
@@ -1249,9 +1341,29 @@
                 flex-direction: column;
             }
 
+            .registration-email-verify.is-mini-view .registration-email-verify__top {
+                align-items: flex-start;
+                flex-direction: row;
+            }
+
+            .registration-email-verify.is-mini-view .registration-email-verify__actions {
+                width: auto;
+                flex: 0 0 auto;
+                margin-left: auto;
+            }
+
             .registration-email-verify__footer {
                 align-items: flex-start;
                 flex-direction: column;
+            }
+
+            .registration-email-verify__mini-trigger {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .registration-email-verify__mini-trigger button {
+                width: 100%;
             }
 
             .registration-email-verify__actions,
@@ -2308,14 +2420,29 @@
                         <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
                         <input type="email" id="email" name="email" required class="mt-1">
                         <p id="emailCheckMessage" class="text-sm mt-1 text-gray-500"></p>
-                        <div id="emailVerificationPanel" class="registration-email-verify hidden mt-3">
+                        <button
+                            type="button"
+                            id="emailVerificationBackdrop"
+                            class="registration-email-verify__backdrop hidden"
+                            aria-hidden="true"
+                            tabindex="-1"
+                            aria-label="Close email verification"
+                        ></button>
+                        <div
+                            id="emailVerificationPanel"
+                            class="registration-email-verify hidden mt-3"
+                            role="region"
+                            aria-labelledby="emailVerificationTitle"
+                            aria-describedby="emailVerificationCopy"
+                            aria-hidden="true"
+                        >
                             <div class="registration-email-verify__top">
                                 <div class="registration-email-verify__identity">
                                     <span class="registration-email-verify__icon" aria-hidden="true">
                                         <i class="bx bx-envelope"></i>
                                     </span>
                                     <span class="registration-email-verify__heading">
-                                        <span id="emailVerificationTitle" class="registration-email-verify__title">Verify your email</span>
+                                        <span id="emailVerificationTitle" class="registration-email-verify__title" tabindex="-1">Verify your email</span>
                                         <span id="emailVerificationCopy" class="registration-email-verify__copy">We will send a 6-digit code to confirm this address.</span>
                                     </span>
                                 </div>
@@ -2327,6 +2454,14 @@
                                     >
                                         <i class="bx bx-send" aria-hidden="true"></i>
                                         <span data-email-verification-label>Send code</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        id="emailVerificationCloseBtn"
+                                        class="registration-email-verify__close hidden"
+                                        aria-label="Close email verification"
+                                    >
+                                        <i class="bx bx-x" aria-hidden="true"></i>
                                     </button>
                                 </div>
                             </div>
@@ -2376,6 +2511,10 @@
                             <div id="emailVerificationFooter" class="registration-email-verify__footer hidden">
                                 <p id="emailVerificationTiming" class="registration-email-verify__timing hidden" aria-live="polite"></p>
                             </div>
+                        </div>
+                        <div id="emailVerificationMiniTrigger" class="registration-email-verify__mini-trigger hidden" aria-hidden="true">
+                            <span>A verification code was sent to your email.</span>
+                            <button type="button" id="emailVerificationOpenBtn">Enter code</button>
                         </div>
                     </div>
 
