@@ -98,6 +98,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const passwordConfirmationInput = document.getElementById("password_confirmation");
   const emailCheckMessage = document.getElementById("emailCheckMessage");
   const emailVerificationPanel = document.getElementById("emailVerificationPanel");
+  const emailVerificationTitle = document.getElementById("emailVerificationTitle");
+  const emailVerificationCopy = document.getElementById("emailVerificationCopy");
+  const emailVerificationFooter = document.getElementById("emailVerificationFooter");
   const sendEmailVerificationBtn = document.getElementById("sendEmailVerificationBtn");
   const resendEmailVerificationBtn = document.getElementById("resendEmailVerificationBtn");
   const emailVerificationCodeGroup = document.getElementById("emailVerificationCodeGroup");
@@ -1386,6 +1389,15 @@ document.addEventListener("DOMContentLoaded", function () {
     if (emailVerificationCodeGroup) {
       emailVerificationCodeGroup.classList.add("hidden");
     }
+    if (emailVerificationFooter) {
+      emailVerificationFooter.classList.add("hidden");
+    }
+    if (emailVerificationTitle) {
+      emailVerificationTitle.textContent = "Verify your email";
+    }
+    if (emailVerificationCopy) {
+      emailVerificationCopy.textContent = "We will send a 6-digit code to confirm this address.";
+    }
 
     if (sendEmailVerificationBtn) {
       sendEmailVerificationBtn.classList.remove("hidden");
@@ -1413,6 +1425,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (isCurrentEmailVerified()) {
+      if (emailVerificationTitle) {
+        emailVerificationTitle.textContent = "Email verified";
+      }
+      if (emailVerificationCopy) {
+        emailVerificationCopy.textContent = "You can now set your password.";
+      }
       if (emailVerificationCodeGroup) {
         emailVerificationCodeGroup.classList.add("hidden");
       }
@@ -1422,13 +1440,28 @@ document.addEventListener("DOMContentLoaded", function () {
       if (resendEmailVerificationBtn) {
         resendEmailVerificationBtn.classList.add("hidden");
       }
-      setEmailVerificationMessage("verified", "Email verified. Set your password below.");
+      if (emailVerificationFooter) {
+        emailVerificationFooter.classList.add("hidden");
+      }
+      setEmailVerificationMessage("verified", "Email verified.");
       syncEmailVerificationTiming();
       syncAccountPasswordGate();
       return;
     }
 
     const codeWasSent = emailVerificationState.sentEmail === email;
+
+    if (emailVerificationTitle) {
+      emailVerificationTitle.textContent = codeWasSent ? "Enter your verification code" : "Verify your email";
+    }
+    if (emailVerificationCopy) {
+      emailVerificationCopy.textContent = codeWasSent
+        ? "We sent a 6-digit code to your email address."
+        : "We will send a 6-digit code to confirm this address.";
+    }
+    if (emailVerificationFooter) {
+      emailVerificationFooter.classList.toggle("hidden", !codeWasSent);
+    }
 
     if (emailVerificationCodeGroup) {
       emailVerificationCodeGroup.classList.toggle("hidden", !codeWasSent);
@@ -1514,7 +1547,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       setEmailVerificationTimingFromResponse(result);
-      setEmailVerificationMessage("sent", "Code sent. Check your inbox.");
+      setEmailVerificationMessage("sent", "Check your inbox to continue.");
       syncEmailVerificationPanel();
 
       if (emailVerificationCodeInput) {

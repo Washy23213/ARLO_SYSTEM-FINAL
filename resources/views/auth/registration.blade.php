@@ -777,12 +777,12 @@
         .registration-email-verify {
             position: relative;
             display: grid;
-            gap: 0.7rem;
-            padding: 0.9rem;
-            border: 1px solid #d8e4dc;
-            border-radius: 0.5rem;
-            background: #ffffff;
-            box-shadow: 0 1px 2px rgba(15, 45, 25, 0.04);
+            gap: 0.9rem;
+            padding: 1rem 1.1rem;
+            border: 1px solid #d6e5da;
+            border-radius: 0.85rem;
+            background: linear-gradient(145deg, #ffffff 0%, #fbfdfb 100%);
+            box-shadow: 0 8px 22px rgba(15, 45, 25, 0.045);
             overflow: visible;
         }
 
@@ -802,11 +802,10 @@
         .registration-email-verify__top {
             position: relative;
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             justify-content: space-between;
             gap: 1rem;
-            padding-bottom: 0.65rem;
-            border-bottom: 1px solid #edf3ef;
+            padding-bottom: 0.1rem;
         }
 
         .registration-email-verify__identity {
@@ -928,11 +927,11 @@
         .registration-email-verify__code {
             position: relative;
             display: grid;
-            gap: 0.45rem;
-            padding: 0;
-            border: 0;
-            border-radius: 0;
-            background: transparent;
+            gap: 0.65rem;
+            padding: 0.85rem 0.9rem;
+            border: 1px solid #e0ebe3;
+            border-radius: 0.7rem;
+            background: #f7faf8;
         }
 
         .registration-email-verify__code label {
@@ -943,9 +942,27 @@
         }
 
         .registration-email-verify__code input {
-            letter-spacing: 0.08em;
+            min-height: 3.15rem;
+            border-color: #d5e2d9;
+            background: #ffffff;
+            letter-spacing: 0.28em;
             font-weight: 700;
-            text-align: left;
+            font-size: 1.05rem;
+            text-align: center;
+        }
+
+        .registration-email-verify__footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding-top: 0.2rem;
+        }
+
+        .registration-email-verify__footer .registration-email-verify__button {
+            min-height: 2.15rem;
+            padding: 0.52rem 0.75rem;
+            font-weight: 600;
         }
 
         .registration-email-verify__message {
@@ -1001,7 +1018,7 @@
             gap: 0.4rem 0.75rem;
             margin: 0;
             color: #56695d;
-            font-size: 0.8rem;
+            font-size: 0.82rem;
             font-weight: 600;
             line-height: 1.45;
         }
@@ -1135,6 +1152,7 @@
 
         .registration-email-verify.hidden,
         .registration-email-verify__code.hidden,
+        .registration-email-verify__footer.hidden,
         .registration-email-verify__button.hidden,
         .registration-email-verify__timing.hidden,
         .registration-password-gate.hidden {
@@ -1144,6 +1162,11 @@
         @media (max-width: 640px) {
             .registration-email-verify__top {
                 align-items: stretch;
+                flex-direction: column;
+            }
+
+            .registration-email-verify__footer {
+                align-items: flex-start;
                 flex-direction: column;
             }
 
@@ -2197,8 +2220,8 @@
                                         <i class="bx bx-envelope"></i>
                                     </span>
                                     <span class="registration-email-verify__heading">
-                                        <span class="registration-email-verify__title">Confirm your email</span>
-                                        <span class="registration-email-verify__copy">Verify this address with a 6-digit code.</span>
+                                        <span id="emailVerificationTitle" class="registration-email-verify__title">Verify your email</span>
+                                        <span id="emailVerificationCopy" class="registration-email-verify__copy">We will send a 6-digit code to confirm this address.</span>
                                     </span>
                                 </div>
                                 <div class="registration-email-verify__actions">
@@ -2210,19 +2233,10 @@
                                         <i class="bx bx-send" aria-hidden="true"></i>
                                         <span data-email-verification-label>Send code</span>
                                     </button>
-                                    <button
-                                        type="button"
-                                        id="resendEmailVerificationBtn"
-                                        disabled
-                                        class="registration-email-verify__button registration-email-verify__button--secondary hidden"
-                                    >
-                                        <i class="bx bx-refresh" aria-hidden="true"></i>
-                                        <span data-email-verification-label>Resend</span>
-                                    </button>
                                 </div>
                             </div>
                             <div id="emailVerificationCodeGroup" class="registration-email-verify__code hidden">
-                                <label for="emailVerificationCode">Verification code</label>
+                                <label for="emailVerificationCode">Enter your 6-digit code</label>
                                 <div class="registration-email-verify__code-row">
                                     <input
                                         type="text"
@@ -2244,7 +2258,18 @@
                                 </div>
                             </div>
                             <p id="emailVerificationMessage" class="registration-email-verify__message" aria-live="polite"></p>
-                            <p id="emailVerificationTiming" class="registration-email-verify__timing hidden" aria-live="polite"></p>
+                            <div id="emailVerificationFooter" class="registration-email-verify__footer hidden">
+                                <p id="emailVerificationTiming" class="registration-email-verify__timing hidden" aria-live="polite"></p>
+                                <button
+                                    type="button"
+                                    id="resendEmailVerificationBtn"
+                                    disabled
+                                    class="registration-email-verify__button registration-email-verify__button--secondary hidden"
+                                >
+                                    <i class="bx bx-refresh" aria-hidden="true"></i>
+                                    <span data-email-verification-label>Resend</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
