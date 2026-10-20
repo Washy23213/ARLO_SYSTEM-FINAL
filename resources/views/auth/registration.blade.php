@@ -2484,7 +2484,7 @@
                                             autocomplete="one-time-code"
                                             pattern="[0-9]{6}"
                                             aria-label="6-digit verification code"
-                                            aria-describedby="emailVerificationCodeLabel"
+                                            aria-describedby="emailVerificationCodeLabel emailVerificationMessage"
                                             spellcheck="false"
                                         >
                                     </div>

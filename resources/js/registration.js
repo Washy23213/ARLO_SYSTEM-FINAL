@@ -787,10 +787,16 @@ document.addEventListener("DOMContentLoaded", function () {
   function markInvalid(input, message = "") {
     input.classList.remove("border-gray-300");
     input.classList.add("border-red-500", "ring-2", "ring-red-200");
-    if (message) setFieldError(input, message);
     if (input === emailVerificationCodeInput) {
+      // The OTP input overlays a six-column digit grid. Inserting a generic
+      // field error beside it makes the message occupy one narrow grid cell;
+      // the verification status message below the code row already presents it
+      // at full width.
+      clearFieldError(input);
       syncEmailVerificationOtpDisplay();
+      return;
     }
+    if (message) setFieldError(input, message);
   }
 
   function clearInvalid(input) {

@@ -288,10 +288,12 @@ class AuthController extends Controller
         }
 
         if (!Hash::check($code, (string) ($payload['code_hash'] ?? ''))) {
+            $message = 'That code does not match the latest code sent to your email. Check your inbox or request a new code.';
+
             return response()->json([
-                'message' => 'The verification code is incorrect.',
+                'message' => $message,
                 'errors' => [
-                    'code' => ['The verification code is incorrect.'],
+                    'code' => [$message],
                 ],
             ], 422);
         }
