@@ -105,6 +105,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const resendEmailVerificationBtn = document.getElementById("resendEmailVerificationBtn");
   const emailVerificationCodeGroup = document.getElementById("emailVerificationCodeGroup");
   const emailVerificationCodeInput = document.getElementById("emailVerificationCode");
+  const emailVerificationOtp = document.getElementById("emailVerificationOtp");
+  const emailVerificationOtpDigits = Array.from(document.querySelectorAll("[data-email-verification-digit]"));
   const verifyEmailCodeBtn = document.getElementById("verifyEmailCodeBtn");
   const emailVerificationMessage = document.getElementById("emailVerificationMessage");
   const emailVerificationTiming = document.getElementById("emailVerificationTiming");
@@ -781,12 +783,34 @@ document.addEventListener("DOMContentLoaded", function () {
     input.classList.remove("border-gray-300");
     input.classList.add("border-red-500", "ring-2", "ring-red-200");
     if (message) setFieldError(input, message);
+    if (input === emailVerificationCodeInput) {
+      syncEmailVerificationOtpDisplay();
+    }
   }
 
   function clearInvalid(input) {
     input.classList.remove("border-red-500", "ring-2", "ring-red-200");
     input.classList.add("border-gray-300");
     clearFieldError(input);
+    if (input === emailVerificationCodeInput) {
+      syncEmailVerificationOtpDisplay();
+    }
+  }
+
+  function syncEmailVerificationOtpDisplay() {
+    if (!emailVerificationOtp) return;
+
+    const code = (emailVerificationCodeInput?.value || "").replace(/\D/g, "").slice(0, 6);
+    const hasFocus = document.activeElement === emailVerificationCodeInput;
+
+    emailVerificationOtpDigits.forEach((digit, index) => {
+      digit.textContent = code[index] || "";
+      digit.classList.toggle("is-current", hasFocus && code.length < 6 && index === code.length);
+    });
+    emailVerificationOtp.classList.toggle(
+      "is-invalid",
+      !!emailVerificationCodeInput?.classList.contains("border-red-500")
+    );
   }
 
   function hasValue(input) {
@@ -1327,8 +1351,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const waitingToResend = codeWasSentForCurrentEmail && resendSeconds > 0 && !isVerified;
       resendEmailVerificationBtn.disabled = waitingToResend;
       setEmailVerificationButtonLabel(resendEmailVerificationBtn, waitingToResend
-        ? `Resend in ${formatCountdown(resendSeconds)}`
-        : "Resend");
+        ? `Resend code in ${formatCountdown(resendSeconds)}`
+        : "Resend code");
     }
 
     if (verifyEmailCodeBtn && !emailVerificationBusy) {
@@ -1355,8 +1379,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     setEmailVerificationButtonLabel(sendEmailVerificationBtn, isBusy && action === "send" ? "Sending..." : "Send code");
-    setEmailVerificationButtonLabel(resendEmailVerificationBtn, isBusy && action === "send" ? "Sending..." : "Resend");
-    setEmailVerificationButtonLabel(verifyEmailCodeBtn, isBusy && action === "verify" ? "Verifying..." : "Verify");
+    setEmailVerificationButtonLabel(resendEmailVerificationBtn, isBusy && action === "send" ? "Sending..." : "Resend code");
+    setEmailVerificationButtonLabel(verifyEmailCodeBtn, isBusy && action === "verify" ? "Confirming..." : "Confirm");
 
     if (!isBusy) {
       syncEmailVerificationTiming();
@@ -1384,6 +1408,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (emailVerificationCodeInput) {
       emailVerificationCodeInput.value = "";
       clearInvalid(emailVerificationCodeInput);
+      syncEmailVerificationOtpDisplay();
     }
 
     if (emailVerificationCodeGroup) {
@@ -1452,11 +1477,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const codeWasSent = emailVerificationState.sentEmail === email;
 
     if (emailVerificationTitle) {
-      emailVerificationTitle.textContent = codeWasSent ? "Enter your verification code" : "Verify your email";
+      emailVerificationTitle.textContent = codeWasSent ? "Confirmation" : "Verify your email";
     }
     if (emailVerificationCopy) {
       emailVerificationCopy.textContent = codeWasSent
-        ? "We sent a 6-digit code to your email address."
+        ? "Enter the 6-digit code we sent to your email."
         : "We will send a 6-digit code to confirm this address.";
     }
     if (emailVerificationFooter) {
@@ -1544,6 +1569,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (emailVerificationCodeInput) {
         emailVerificationCodeInput.value = "";
         clearInvalid(emailVerificationCodeInput);
+        syncEmailVerificationOtpDisplay();
       }
 
       setEmailVerificationTimingFromResponse(result);
@@ -5958,10 +5984,14 @@ document.addEventListener("DOMContentLoaded", function () {
     emailVerificationCodeInput.addEventListener("input", function () {
       this.value = this.value.replace(/\D/g, "").slice(0, 6);
       clearInvalid(this);
+      syncEmailVerificationOtpDisplay();
       if (emailVerificationState.status === "invalid") {
         setEmailVerificationMessage("sent", "Enter the email code.");
       }
     });
+
+    emailVerificationCodeInput.addEventListener("focus", syncEmailVerificationOtpDisplay);
+    emailVerificationCodeInput.addEventListener("blur", syncEmailVerificationOtpDisplay);
 
     emailVerificationCodeInput.addEventListener("keydown", function (event) {
       if (event.key !== "Enter") return;
