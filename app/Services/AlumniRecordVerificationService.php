@@ -84,7 +84,8 @@ class AlumniRecordVerificationService
         static $cachedSignature = null;
 
         $path = $this->recordsPath();
-        $signature = $this->recordSourceSignature($path);
+        $csvPath = $this->csvRecordsPath();
+        $signature = $this->recordSourceSignature($path, $csvPath);
 
         if ($cache !== null && $cachedSignature === $signature) {
             return $cache;
@@ -92,6 +93,7 @@ class AlumniRecordVerificationService
 
         $cachedSignature = $signature;
         $cache = $this->mergeRecordSets(
+            $this->loadRecordsFromCsv($csvPath),
             $this->loadRecordsFromSpreadsheet($path),
             $this->loadRecordsFromJsonFallback($path),
         );
@@ -104,11 +106,17 @@ class AlumniRecordVerificationService
         return storage_path('app/alumni-records/cmu_alumni_records.xlsx');
     }
 
-    protected function recordSourceSignature(string $spreadsheetPath): string
+    public function csvRecordsPath(): string
+    {
+        return database_path('alumni-verification.csv');
+    }
+
+    protected function recordSourceSignature(string $spreadsheetPath, string $csvPath): string
     {
         $jsonPath = $this->jsonRecordsPath($spreadsheetPath);
 
         return implode('|', [
+            is_file($csvPath) ? (string) filemtime($csvPath) : 'missing',
             is_file($spreadsheetPath) ? (string) filemtime($spreadsheetPath) : 'missing',
             is_file($jsonPath) ? (string) filemtime($jsonPath) : 'missing',
         ]);
@@ -119,6 +127,56 @@ class AlumniRecordVerificationService
         $jsonPath = preg_replace('/\.xlsx$/i', '.json', $spreadsheetPath);
 
         return is_string($jsonPath) ? $jsonPath : null;
+    }
+
+    protected function loadRecordsFromCsv(string $path): array
+    {
+        if (!is_file($path)) {
+            return [];
+        }
+
+        $handle = fopen($path, 'rb');
+        if ($handle === false) {
+            return [];
+        }
+
+        $headers = fgetcsv($handle, 0, ',', '"', '\\');
+        if (!is_array($headers)) {
+            fclose($handle);
+
+            return [];
+        }
+
+        if (isset($headers[0])) {
+            $headers[0] = preg_replace('/^\xEF\xBB\xBF/', '', (string) $headers[0]) ?? (string) $headers[0];
+        }
+
+        $keys = array_map(fn ($value) => $this->normalizeHeader((string) $value), $headers);
+        $records = [];
+
+        while (($values = fgetcsv($handle, 0, ',', '"', '\\')) !== false) {
+            $record = [];
+
+            foreach ($keys as $index => $key) {
+                if ($key === '') {
+                    continue;
+                }
+
+                $record[$key] = SystemOptions::clean(isset($values[$index]) ? (string) $values[$index] : null);
+            }
+
+            if (($record['year_graduated'] ?? null) === null && ($record['dt_grad'] ?? null) !== null) {
+                $record['year_graduated'] = $this->graduationYearFromDate($record['dt_grad']);
+            }
+
+            if ($this->rowHasValues($record)) {
+                $records[] = $record;
+            }
+        }
+
+        fclose($handle);
+
+        return $records;
     }
 
     protected function mergeRecordSets(array ...$recordSets): array
