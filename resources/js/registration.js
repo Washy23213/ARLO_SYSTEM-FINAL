@@ -784,6 +784,37 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  function setInlineGroupError(container, fieldKey, message) {
+    if (!container || !fieldKey) return;
+
+    const scope = container.parentElement || container;
+    let errorEl = Array.from(scope.querySelectorAll("[data-registration-group-error-for]")).find((element) =>
+      element.getAttribute("data-registration-group-error-for") === fieldKey
+    );
+
+    if (!errorEl) {
+      errorEl = document.createElement("p");
+      errorEl.setAttribute("data-registration-group-error-for", fieldKey);
+      errorEl.setAttribute("role", "alert");
+      errorEl.className = "mt-2 text-xs text-red-600";
+      container.insertAdjacentElement("afterend", errorEl);
+    }
+
+    errorEl.textContent = message || "";
+    errorEl.classList.toggle("hidden", !message);
+  }
+
+  function clearInlineGroupError(container, fieldKey) {
+    if (!container || !fieldKey) return;
+
+    const scope = container.parentElement || container;
+    Array.from(scope.querySelectorAll("[data-registration-group-error-for]")).forEach((errorEl) => {
+      if (errorEl.getAttribute("data-registration-group-error-for") === fieldKey) {
+        errorEl.remove();
+      }
+    });
+  }
+
   function markInvalid(input, message = "") {
     input.classList.remove("border-gray-300");
     input.classList.add("border-red-500", "ring-2", "ring-red-200");
@@ -796,6 +827,11 @@ document.addEventListener("DOMContentLoaded", function () {
       syncEmailVerificationOtpDisplay();
       return;
     }
+    const checkboxGroup = input.type === "checkbox" && input.closest(".registration-check-grid");
+    if (checkboxGroup) {
+      setInlineGroupError(checkboxGroup, input.name || input.id, message);
+      return;
+    }
     if (message) setFieldError(input, message);
   }
 
@@ -803,6 +839,10 @@ document.addEventListener("DOMContentLoaded", function () {
     input.classList.remove("border-red-500", "ring-2", "ring-red-200");
     input.classList.add("border-gray-300");
     clearFieldError(input);
+    const checkboxGroup = input.type === "checkbox" && input.closest(".registration-check-grid");
+    if (checkboxGroup) {
+      clearInlineGroupError(checkboxGroup, input.name || input.id);
+    }
     if (input === emailVerificationCodeInput) {
       syncEmailVerificationOtpDisplay();
     }
@@ -999,12 +1039,14 @@ document.addEventListener("DOMContentLoaded", function () {
     if (proExamInputs.length > 0) {
       const checkedBoxes = proExamInputs.filter((input) => input.checked);
       if (checkedBoxes.length === 0) {
+        setInlineGroupError(proExamContainer, "proExam[]", "Select at least one professional examination.");
         return {
           ok: false,
           firstInvalid: proExamInputs[0],
           message: "Please select at least one professional examination."
         };
       }
+      clearInlineGroupError(proExamContainer, "proExam[]");
     }
 
     const multiSelectCheckboxGroups = [
@@ -1029,12 +1071,14 @@ document.addEventListener("DOMContentLoaded", function () {
       if (groupInputs.length > 0) {
         const checkedBoxes = groupInputs.filter((input) => input.checked);
         if (checkedBoxes.length === 0) {
+          markInvalid(groupInputs[0], group.message);
           return {
             ok: false,
             firstInvalid: groupInputs[0],
             message: group.message,
           };
         }
+        clearInlineGroupError(groupInputs[0].closest(".registration-check-grid"), group.name);
       }
     }
 
@@ -1096,6 +1140,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         return {
           ok: false,
+          container: firstJobExtendedFields,
           message: "Please save the additional first job details or choose No if you do not want to include them yet.",
         };
       }
@@ -1113,6 +1158,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         return {
           ok: false,
+          container: employmentExtendedDetails,
           message: "Please save the additional work details or choose No if you do not want to include them yet.",
         };
       }
@@ -2172,13 +2218,12 @@ document.addEventListener("DOMContentLoaded", function () {
       if (result.firstInvalid) {
         try { result.firstInvalid.focus(); } catch (e) {}
       }
-      if (result.message) alert(result.message);
       return false;
     }
 
     const miniViewResult = ensureSavedMiniViewsForCurrentStep(currentStep);
     if (!miniViewResult.ok) {
-      if (miniViewResult.message) alert(miniViewResult.message);
+      setMiniViewValidationMessage(miniViewResult.container, miniViewResult.message);
       return false;
     }
 
@@ -3272,6 +3317,12 @@ document.addEventListener("DOMContentLoaded", function () {
       checkbox.name = "proExam[]";
       checkbox.value = exam;
       checkbox.id = exam.replace(/\s+/g, "_");
+      checkbox.addEventListener("change", function () {
+        if (Array.from(proExamContainer.querySelectorAll('input[type="checkbox"]')).some((input) => input.checked)) {
+          proExamContainer.querySelectorAll('input[type="checkbox"]').forEach(clearInvalid);
+          clearInlineGroupError(proExamContainer, "proExam[]");
+        }
+      });
 
       wrapper.appendChild(label);
       wrapper.appendChild(checkbox);
@@ -4824,6 +4875,12 @@ document.addEventListener("DOMContentLoaded", function () {
       input.id = `${containerId}_${index}`;
       input.name = inputName;
       input.value = option;
+      input.addEventListener("change", function () {
+        if (Array.from(container.querySelectorAll('input[type="checkbox"]')).some((checkbox) => checkbox.checked)) {
+          container.querySelectorAll('input[type="checkbox"]').forEach(clearInvalid);
+          clearInlineGroupError(container, inputName);
+        }
+      });
 
       const text = document.createElement("span");
       text.textContent = option;
@@ -5137,10 +5194,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function setFirstJobExtendedSaved(saved) {
     firstJobExtendedViewSaved = saved;
+    if (saved) clearMiniViewValidationMessage(firstJobExtendedFields);
   }
 
   function setEmploymentExtendedSaved(saved) {
     employmentExtendedViewSaved = saved;
+    if (saved) clearMiniViewValidationMessage(employmentExtendedDetails);
+  }
+
+  function setMiniViewValidationMessage(container, message) {
+    if (!container || !message) return;
+
+    let messageElement = container.querySelector("[data-registration-mini-view-error]");
+    if (!messageElement) {
+      messageElement = document.createElement("p");
+      messageElement.dataset.registrationMiniViewError = "true";
+      messageElement.className = "rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900";
+      messageElement.setAttribute("role", "status");
+      const header = container.querySelector(".registration-mini-view__header");
+      if (header) {
+        header.insertAdjacentElement("afterend", messageElement);
+      } else {
+        container.prepend(messageElement);
+      }
+    }
+
+    messageElement.textContent = message;
+  }
+
+  function clearMiniViewValidationMessage(container) {
+    container?.querySelector("[data-registration-mini-view-error]")?.remove();
   }
 
   function validateRequiredFields(container, multiSelectGroups = []) {
@@ -5194,11 +5277,16 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       if (groupInputs.length > 0 && !groupInputs.some((input) => input.checked)) {
+        const groupContainer = groupInputs[0].closest(".registration-check-grid");
+        setInlineGroupError(groupContainer, group.name, group.message);
         return {
           ok: false,
           firstInvalid: groupInputs[0],
           message: group.message,
         };
+      }
+      if (groupInputs.length > 0) {
+        clearInlineGroupError(groupInputs[0].closest(".registration-check-grid"), group.name);
       }
     }
 
@@ -5551,7 +5639,6 @@ document.addEventListener("DOMContentLoaded", function () {
             result.firstInvalid.focus();
           } catch (error) {}
         }
-        if (result.message) alert(result.message);
         return;
       }
 
@@ -5598,7 +5685,6 @@ document.addEventListener("DOMContentLoaded", function () {
             result.firstInvalid.focus();
           } catch (error) {}
         }
-        if (result.message) alert(result.message);
         return;
       }
 
@@ -5704,6 +5790,53 @@ document.addEventListener("DOMContentLoaded", function () {
       syncSubmitAccountOverviewPreview();
     }
 
+    function showRegistrationServerErrors(errors, fallbackMessage) {
+      const entries = Object.entries(errors || {});
+      if (entries.length === 0) return false;
+
+      const [fieldName, rawMessages] = entries[0];
+      const message = Array.isArray(rawMessages)
+        ? String(rawMessages[0] || fallbackMessage || "Please check this field.")
+        : String(rawMessages || fallbackMessage || "Please check this field.");
+      const baseName = fieldName.replace(/\.\d+$/, "");
+      const candidateNames = new Set([fieldName, baseName, `${baseName}[]`]);
+      const field = Array.from(form.elements).find((element) =>
+        element instanceof HTMLElement
+        && !element.disabled
+        && (candidateNames.has(element.name) || candidateNames.has(element.id))
+      );
+
+      if (field) {
+        const fieldset = field.closest("fieldset.form-step");
+        const fieldsetIndex = fieldset ? fieldsets.indexOf(fieldset) : -1;
+        if (fieldsetIndex >= 0) {
+          showStep(getSectionIndexForFieldset(fieldsetIndex));
+        }
+        markInvalid(field, message);
+        try { field.focus(); } catch (e) {}
+        return true;
+      }
+
+      const currentFieldset = getFieldsetsForSection(currentStep)[0] || fieldsets[currentStep];
+      if (!currentFieldset) return false;
+
+      let messageElement = currentFieldset.querySelector("[data-registration-validation-message]");
+      if (!messageElement) {
+        messageElement = document.createElement("p");
+        messageElement.dataset.registrationValidationMessage = "true";
+        messageElement.className = "mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700";
+        messageElement.setAttribute("role", "alert");
+        const legend = currentFieldset.querySelector("legend");
+        if (legend) {
+          legend.insertAdjacentElement("afterend", messageElement);
+        } else {
+          currentFieldset.prepend(messageElement);
+        }
+      }
+      messageElement.textContent = message;
+      return true;
+    }
+
     function validateRegistrationForSubmission() {
       for (let i = 0; i < fieldsets.length; i++) {
         const result = validateStep(i);
@@ -5712,7 +5845,6 @@ document.addEventListener("DOMContentLoaded", function () {
           if (result.firstInvalid) {
             try { result.firstInvalid.focus(); } catch (e) {}
           }
-          if (result.message) alert(result.message);
           submitAccountOverviewConfirmed = false;
           setSubmitAccountOverviewOpen(false);
           return false;
@@ -5738,6 +5870,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const action = form.getAttribute('action') || window.location.href;
       const method = (form.getAttribute('method') || 'POST').toUpperCase();
       const formData = new FormData(form);
+      let serverValidationErrors = null;
+      let serverResponseReceived = false;
 
       setRegistrationSubmitState(true);
       console.log('All steps valid â€” submitting form', { action, method });
@@ -5752,6 +5886,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       })
         .then(async (res) => {
+          serverResponseReceived = true;
           console.log('Registration response status', res.status, res.statusText);
           if (res.ok) {
             const data = await res.json().catch(() => ({}));
@@ -5766,6 +5901,7 @@ document.addEventListener("DOMContentLoaded", function () {
               const data = await res.json();
               if (data && data.message) message = data.message;
               if (data && data.errors) {
+                serverValidationErrors = data.errors;
                 const firstErrorKey = Object.keys(data.errors)[0];
                 if (firstErrorKey && data.errors[firstErrorKey][0]) {
                   message = data.errors[firstErrorKey][0];
@@ -5781,6 +5917,16 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .catch((err) => {
           console.error('Registration submit failed', err);
+          if (serverValidationErrors) {
+            if (!showRegistrationServerErrors(serverValidationErrors, err?.message)) {
+              showRegistrationServerErrors({ registration: err?.message }, err?.message);
+            }
+            return;
+          }
+          if (serverResponseReceived) {
+            showRegistrationServerErrors({ registration: err?.message }, err?.message);
+            return;
+          }
           alert(err && err.message ? err.message : 'Submission failed. Please try again or contact support.');
         })
         .finally(() => {
@@ -5885,7 +6031,6 @@ document.addEventListener("DOMContentLoaded", function () {
           if (result.firstInvalid) {
             try { result.firstInvalid.focus(); } catch (e) {}
           }
-          if (result.message) alert(result.message);
           return;
         }
       }
