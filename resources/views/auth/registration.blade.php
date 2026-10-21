@@ -1138,6 +1138,23 @@
             padding-top: 0.05rem;
         }
 
+        .registration-email-verify__support {
+            display: grid;
+            gap: 0.2rem;
+            padding: 0.65rem 0.75rem;
+            border: 1px solid #dce8df;
+            border-radius: 0.7rem;
+            background: #f7faf8;
+            color: #43584b;
+            font-size: 0.78rem;
+            line-height: 1.45;
+        }
+
+        .registration-email-verify__support-title {
+            color: #173b26;
+            font-weight: 700;
+        }
+
         .registration-email-verify__message {
             display: flex;
             align-items: center;
@@ -2564,6 +2581,11 @@
                         <p id="emailVerificationMessage" class="registration-email-verify__message" aria-live="polite"></p>
                         <div id="emailVerificationFooter" class="registration-email-verify__footer hidden">
                             <p id="emailVerificationTiming" class="registration-email-verify__timing hidden" aria-live="polite"></p>
+                        </div>
+                        <div class="registration-email-verify__support" aria-label="Contact support">
+                            <span class="registration-email-verify__support-title">Need help? Contact OARL.</span>
+                            <span>Sample phone: 09XX-XXX-XXXX</span>
+                            <span>Sample Gmail: your-email@gmail.com</span>
                         </div>
                     </div>
 
