@@ -1155,6 +1155,22 @@
             font-weight: 700;
         }
 
+        .registration-email-verify__support-link {
+            width: fit-content;
+            text-decoration: underline;
+            text-underline-offset: 0.15em;
+        }
+
+        .registration-email-verify__support-link:hover {
+            color: #0b6b35;
+        }
+
+        .registration-email-verify__support-link:focus-visible {
+            border-radius: 0.15rem;
+            outline: 2px solid #0b6b35;
+            outline-offset: 2px;
+        }
+
         .registration-email-verify__message {
             display: flex;
             align-items: center;
@@ -2583,9 +2599,7 @@
                             <p id="emailVerificationTiming" class="registration-email-verify__timing hidden" aria-live="polite"></p>
                         </div>
                         <div class="registration-email-verify__support" aria-label="Contact support">
-                            <span class="registration-email-verify__support-title">Need help? Contact OARL.</span>
-                            <span>Sample phone: 09XX-XXX-XXXX</span>
-                            <span>Sample Gmail: your-email@gmail.com</span>
+                            <a class="registration-email-verify__support-title registration-email-verify__support-link" href="mailto:cmuaai@cmu.edu.ph?subject=Alumni%20Portal%20Registration%20Help" aria-label="Email OARL at cmuaai@cmu.edu.ph">Need help? Contact OARL.</a>
                         </div>
                     </div>
 
