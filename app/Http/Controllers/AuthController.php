@@ -36,7 +36,7 @@ class AuthController extends Controller
     private const REGISTRATION_VERIFICATION_TTL_MINUTES = 60;
     private const REGISTRATION_EMAIL_VERIFICATION_SESSION_KEY = 'registration_email_verification';
     private const REGISTRATION_EMAIL_VERIFICATION_TTL_MINUTES = 5;
-    private const REGISTRATION_EMAIL_RESEND_COOLDOWN_SECONDS = 30;
+    private const REGISTRATION_EMAIL_RESEND_COOLDOWN_SECONDS = 60;
 
     public function showLogin()
     {

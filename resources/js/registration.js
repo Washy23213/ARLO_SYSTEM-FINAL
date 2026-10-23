@@ -108,7 +108,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const emailVerificationOpenBtn = document.getElementById("emailVerificationOpenBtn");
   const emailVerificationTitle = document.getElementById("emailVerificationTitle");
   const emailVerificationCopy = document.getElementById("emailVerificationCopy");
-  const emailVerificationFooter = document.getElementById("emailVerificationFooter");
   const sendEmailVerificationBtn = document.getElementById("sendEmailVerificationBtn");
   const resendEmailVerificationBtn = document.getElementById("resendEmailVerificationBtn");
   const emailVerificationCodeGroup = document.getElementById("emailVerificationCodeGroup");
@@ -117,8 +116,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const emailVerificationOtpDigits = Array.from(document.querySelectorAll("[data-email-verification-digit]"));
   const verifyEmailCodeBtn = document.getElementById("verifyEmailCodeBtn");
   const emailVerificationMessage = document.getElementById("emailVerificationMessage");
-  const emailVerificationTiming = document.getElementById("emailVerificationTiming");
-  const accountPasswordLockedNotice = document.getElementById("accountPasswordLockedNotice");
   const accountPasswordFields = document.getElementById("accountPasswordFields");
   const verificationStatusMessage = document.getElementById("verificationStatusMessage");
   const verificationNextButton = document.getElementById("verificationNextBtn");
@@ -1444,34 +1441,6 @@ document.addEventListener("DOMContentLoaded", function () {
     emailVerificationTimerId = setInterval(syncEmailVerificationTiming, 1000);
   }
 
-  function setEmailVerificationTimingItems(items = []) {
-    if (!emailVerificationTiming) return;
-
-    emailVerificationTiming.replaceChildren();
-
-    items.forEach((item) => {
-      const container = document.createElement("span");
-      container.className = `registration-email-verify__timing-item registration-email-verify__timing-item--${item.type}`;
-
-      const icon = document.createElement("i");
-      icon.className = `bx ${item.icon}`;
-      icon.setAttribute("aria-hidden", "true");
-
-      const label = document.createElement("span");
-      label.className = "registration-email-verify__timing-label";
-      label.textContent = item.label;
-
-      const value = document.createElement("span");
-      value.className = "registration-email-verify__timing-value";
-      value.textContent = item.value;
-
-      container.append(icon, label, value);
-      emailVerificationTiming.appendChild(container);
-    });
-
-    emailVerificationTiming.classList.toggle("hidden", items.length === 0);
-  }
-
   function getAccountStepNextButton() {
     const accountFieldset = emailInput?.closest("fieldset");
     return accountFieldset?.querySelector(".next-btn") || null;
@@ -1498,10 +1467,6 @@ document.addEventListener("DOMContentLoaded", function () {
       accountPasswordFields.classList.toggle("hidden", !unlocked);
     }
 
-    if (accountPasswordLockedNotice) {
-      accountPasswordLockedNotice.classList.toggle("hidden", unlocked);
-    }
-
     if (!unlocked && clearPasswords) {
       [passwordInput, passwordConfirmationInput].forEach((input) => {
         if (!input) return;
@@ -1522,22 +1487,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const isVerified = isCurrentEmailVerified();
     const expiresSeconds = codeWasSentForCurrentEmail ? secondsUntil(emailVerificationState.expiresAt) : 0;
     const resendSeconds = codeWasSentForCurrentEmail ? secondsUntil(emailVerificationState.resendAvailableAt) : 0;
-    const timingItems = [];
-
-    if (!isVerified && codeWasSentForCurrentEmail) {
-      if (emailVerificationState.expiresAt) {
-        timingItems.push({
-          type: expiresSeconds > 0 ? "expires" : "expired",
-          icon: expiresSeconds > 0 ? "bx-time-five" : "bx-error-circle",
-          label: expiresSeconds > 0 ? "Expires in" : "Status",
-          value: expiresSeconds > 0 ? formatCountdown(expiresSeconds) : "Expired",
-        });
-      }
-
-    }
-
-    setEmailVerificationTimingItems(timingItems);
-
     if (resendEmailVerificationBtn && !emailVerificationBusy) {
       const waitingToResend = codeWasSentForCurrentEmail && resendSeconds > 0 && !isVerified;
       resendEmailVerificationBtn.disabled = waitingToResend;
@@ -1650,9 +1599,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (emailVerificationCodeGroup) {
       emailVerificationCodeGroup.classList.add("hidden");
     }
-    if (emailVerificationFooter) {
-      emailVerificationFooter.classList.add("hidden");
-    }
     if (emailVerificationTitle) {
       emailVerificationTitle.textContent = "Verify your email";
     }
@@ -1714,9 +1660,6 @@ document.addEventListener("DOMContentLoaded", function () {
       if (resendEmailVerificationBtn) {
         resendEmailVerificationBtn.classList.add("hidden");
       }
-      if (emailVerificationFooter) {
-        emailVerificationFooter.classList.add("hidden");
-      }
       setEmailVerificationMessage("verified", "Email verified.");
       syncEmailVerificationTiming();
       syncAccountPasswordGate();
@@ -1752,10 +1695,6 @@ document.addEventListener("DOMContentLoaded", function () {
         ? "Enter the 6-digit code we sent to your email."
         : "We will send a 6-digit code to confirm this address.";
     }
-    if (emailVerificationFooter) {
-      emailVerificationFooter.classList.toggle("hidden", !codeWasSent || codeRequestPending);
-    }
-
     if (emailVerificationCodeGroup) {
       emailVerificationCodeGroup.classList.toggle("hidden", !codeWasSent);
     }

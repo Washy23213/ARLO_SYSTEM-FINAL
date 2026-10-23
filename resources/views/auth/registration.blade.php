@@ -1130,14 +1130,6 @@
             gap: 0.45rem;
         }
 
-        .registration-email-verify__footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.55rem;
-            padding-top: 0.05rem;
-        }
-
         .registration-email-verify__support {
             display: grid;
             gap: 0.2rem;
@@ -1217,85 +1209,6 @@
             box-shadow: none;
         }
 
-        .registration-email-verify__timing {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 0.4rem 0.75rem;
-            margin: 0;
-            color: #56695d;
-            font-size: 0.82rem;
-            font-weight: 600;
-            line-height: 1.45;
-        }
-
-        .registration-email-verify__timing::before {
-            display: none;
-        }
-
-        .registration-email-verify__timing-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.32rem;
-            min-height: auto;
-            padding: 0;
-            border: 0;
-            border-radius: 0;
-            background: transparent;
-            color: #47594e;
-        }
-
-        .registration-email-verify__timing-item i {
-            color: #0b5b2c;
-            font-size: 1rem;
-        }
-
-        .registration-email-verify__timing-label {
-            color: #66776c;
-            font-weight: 600;
-        }
-
-        .registration-email-verify__timing-value {
-            color: #173b26;
-            font-weight: 700;
-        }
-
-        .registration-email-verify__timing-item--expired {
-            border-color: transparent;
-            background: transparent;
-        }
-
-        .registration-email-verify__timing-item--expired i,
-        .registration-email-verify__timing-item--expired .registration-email-verify__timing-value {
-            color: #b91c1c;
-        }
-
-        .registration-password-gate {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.95rem 1rem;
-            border: 1px dashed rgba(20, 87, 38, 0.18);
-            border-radius: 0.95rem;
-            background: rgba(247, 250, 246, 0.9);
-            color: #51665a;
-            font-size: 0.9rem;
-            line-height: 1.45;
-        }
-
-        .registration-password-gate i {
-            flex-shrink: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 2.25rem;
-            height: 2.25rem;
-            border-radius: 999px;
-            color: #0b5b2c;
-            background: rgba(20, 87, 38, 0.1);
-            font-size: 1.15rem;
-        }
-
         .registration-newsletter-option {
             display: grid;
             grid-template-columns: auto minmax(0, 1fr);
@@ -1360,11 +1273,8 @@
         .registration-email-verify__backdrop.hidden,
         .registration-email-verify__mini-trigger.hidden,
         .registration-email-verify__code.hidden,
-        .registration-email-verify__footer.hidden,
         .registration-email-verify__button.hidden,
-        .registration-email-verify__close.hidden,
-        .registration-email-verify__timing.hidden,
-        .registration-password-gate.hidden {
+        .registration-email-verify__close.hidden {
             display: none;
         }
 
@@ -1383,11 +1293,6 @@
                 width: auto;
                 flex: 0 0 auto;
                 margin-left: auto;
-            }
-
-            .registration-email-verify__footer {
-                align-items: flex-start;
-                flex-direction: column;
             }
 
             .registration-email-verify__mini-trigger {
@@ -2469,11 +2374,6 @@
                         </div>
                     </div>
 
-                    <div id="accountPasswordLockedNotice" class="registration-password-gate">
-                        <i class="bx bx-lock-alt" aria-hidden="true"></i>
-                        <span>Verify your email address to continue to password setup.</span>
-                    </div>
-
                     <div id="accountPasswordFields" class="hidden space-y-6">
                         <div>
                             <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
@@ -2605,9 +2505,6 @@
                             </div>
                         </div>
                         <p id="emailVerificationMessage" class="registration-email-verify__message" aria-live="polite"></p>
-                        <div id="emailVerificationFooter" class="registration-email-verify__footer hidden">
-                            <p id="emailVerificationTiming" class="registration-email-verify__timing hidden" aria-live="polite"></p>
-                        </div>
                         <div class="registration-email-verify__support" aria-label="Contact support">
                             <a class="registration-email-verify__support-title registration-email-verify__support-link" href="mailto:cmuaai@cmu.edu.ph?subject=Alumni%20Portal%20Registration%20Help" aria-label="Email OARL at cmuaai@cmu.edu.ph">Need help? Contact OARL.</a>
                         </div>
