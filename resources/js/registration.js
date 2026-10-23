@@ -1724,6 +1724,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const codeWasSent = emailVerificationState.sentEmail === email;
+    const codeRequestPending = codeWasSent && emailVerificationState.status === "sending";
 
     if (codeWasSent) {
       setEmailVerificationMiniViewState(emailVerificationMiniViewOpen);
@@ -1752,7 +1753,7 @@ document.addEventListener("DOMContentLoaded", function () {
         : "We will send a 6-digit code to confirm this address.";
     }
     if (emailVerificationFooter) {
-      emailVerificationFooter.classList.toggle("hidden", !codeWasSent);
+      emailVerificationFooter.classList.toggle("hidden", !codeWasSent || codeRequestPending);
     }
 
     if (emailVerificationCodeGroup) {
@@ -1764,7 +1765,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (resendEmailVerificationBtn) {
-      resendEmailVerificationBtn.classList.toggle("hidden", !codeWasSent);
+      resendEmailVerificationBtn.classList.toggle("hidden", !codeWasSent || codeRequestPending);
     }
 
     if (!emailVerificationState.message) {
@@ -1779,7 +1780,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!emailInput) return false;
 
     const email = emailInput.value.trim();
-    const emailOk = await checkEmailAvailability(email);
+    const normalizedEmail = email.toLowerCase();
+    const availabilityIsCurrent = emailCheckState.status === "valid"
+      && emailCheckState.email.trim().toLowerCase() === normalizedEmail;
+    const emailOk = availabilityIsCurrent || await checkEmailAvailability(email);
     if (!emailOk) {
       markInvalid(emailInput);
       try { emailInput.focus(); } catch (e) {}
@@ -1787,7 +1791,23 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     setEmailVerificationBusy(true, "send");
+    const hadActiveCode = emailVerificationState.sentEmail === normalizedEmail;
+    emailVerificationState.sentEmail = normalizedEmail;
+    emailVerificationState.verifiedEmail = "";
+    if (!hadActiveCode) {
+      emailVerificationState.expiresAt = null;
+      emailVerificationState.resendAvailableAt = null;
+    }
+    if (form) {
+      form.dataset.emailVerified = "false";
+    }
+    if (emailVerificationCodeInput) {
+      emailVerificationCodeInput.value = "";
+      clearInvalid(emailVerificationCodeInput);
+      syncEmailVerificationOtpDisplay();
+    }
     setEmailVerificationMessage("sending", "Sending verification code...");
+    openEmailVerificationMiniView();
 
     try {
       const response = await fetch(getEmailVerificationSendUrl(), {
@@ -1810,7 +1830,7 @@ document.addEventListener("DOMContentLoaded", function () {
           : (result?.message || "Unable to send the verification code right now.");
 
         if (response.status === 429 && result?.resend_after_seconds) {
-          emailVerificationState.sentEmail = getNormalizedAccountEmail();
+          emailVerificationState.sentEmail = normalizedEmail;
           emailVerificationState.verifiedEmail = "";
           setEmailVerificationMiniViewState(true);
           if (form) {
@@ -1822,27 +1842,28 @@ document.addEventListener("DOMContentLoaded", function () {
           return false;
         }
 
+        if (!hadActiveCode) {
+          emailVerificationState.sentEmail = "";
+          emailVerificationState.expiresAt = null;
+          emailVerificationState.resendAvailableAt = null;
+          setEmailVerificationMiniViewState(false);
+        }
         setEmailVerificationMessage("invalid", message);
         markInvalid(emailInput, message);
+        syncEmailVerificationPanel();
         return false;
       }
 
       clearInvalid(emailInput);
-      emailVerificationState.sentEmail = getNormalizedAccountEmail();
+      emailVerificationState.sentEmail = normalizedEmail;
       emailVerificationState.verifiedEmail = "";
       setEmailVerificationMiniViewState(true);
       if (form) {
         form.dataset.emailVerified = "false";
       }
 
-      if (emailVerificationCodeInput) {
-        emailVerificationCodeInput.value = "";
-        clearInvalid(emailVerificationCodeInput);
-        syncEmailVerificationOtpDisplay();
-      }
-
       setEmailVerificationTimingFromResponse(result);
-      setEmailVerificationMessage("sent", "Check your inbox to continue.");
+      setEmailVerificationMessage("sent", "");
       syncEmailVerificationPanel();
 
       if (emailVerificationCodeInput) {
@@ -1851,7 +1872,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
       return true;
     } catch (error) {
+      if (!hadActiveCode) {
+        emailVerificationState.sentEmail = "";
+        emailVerificationState.expiresAt = null;
+        emailVerificationState.resendAvailableAt = null;
+        setEmailVerificationMiniViewState(false);
+      }
       setEmailVerificationMessage("invalid", "Unable to send the verification code right now.");
+      syncEmailVerificationPanel();
       return false;
     } finally {
       setEmailVerificationBusy(false);
