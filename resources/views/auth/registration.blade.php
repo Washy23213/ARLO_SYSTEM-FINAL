@@ -195,11 +195,18 @@
 
         .registration-password-guide {
             position: relative;
-            padding: 0.75rem 0.9rem;
+            width: min(34rem, 100%);
+            padding: 0.75rem 2.8rem 0.75rem 0.9rem;
             border: 1px solid #b9ddc2;
-            border-radius: 0.85rem;
-            background: #f1faf3;
+            border-radius: 1rem;
+            background: #f7fcf8;
             color: #16452b;
+            box-shadow: 0 12px 28px rgba(11, 59, 31, 0.12);
+            z-index: 2;
+        }
+
+        .registration-password-guide.hidden {
+            display: none;
         }
 
         .registration-password-guide::after {
@@ -212,7 +219,7 @@
             transform: rotate(45deg);
             border-right: 1px solid #b9ddc2;
             border-bottom: 1px solid #b9ddc2;
-            background: #f1faf3;
+            background: #f7fcf8;
         }
 
         #accountPasswordFields > .registration-password-guide + div {
@@ -230,6 +237,31 @@
         .registration-password-guide__heading i {
             color: #087536;
             font-size: 1.05rem;
+        }
+
+        .registration-password-guide__dismiss {
+            position: absolute;
+            top: 0.4rem;
+            right: 0.4rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.8rem;
+            height: 1.8rem;
+            border: 1px solid #d7e8da;
+            border-radius: 999px;
+            background: #ffffff;
+            color: #376148;
+            cursor: pointer;
+        }
+
+        .registration-password-guide__dismiss:hover {
+            background: #e9f6ec;
+        }
+
+        .registration-password-guide__dismiss:focus-visible {
+            outline: 2px solid #087536;
+            outline-offset: 2px;
         }
 
         .registration-password-guide p {
@@ -2388,7 +2420,10 @@
                     </div>
 
                     <div id="accountPasswordFields" class="hidden space-y-6">
-                        <div class="registration-password-guide" role="status" aria-live="polite">
+                        <div id="registrationPasswordGuide" class="registration-password-guide" role="note">
+                            <button type="button" id="dismissRegistrationPasswordGuide" class="registration-password-guide__dismiss" aria-label="Dismiss password guide">
+                                <i class="bx bx-x" aria-hidden="true"></i>
+                            </button>
                             <strong class="registration-password-guide__heading"><i class="bx bx-down-arrow-alt" aria-hidden="true"></i> Create your password here</strong>
                             <p>Use at least 8 characters. Keep this password with your email address for future sign-ins.</p>
                         </div>

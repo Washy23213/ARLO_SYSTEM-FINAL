@@ -117,6 +117,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const verifyEmailCodeBtn = document.getElementById("verifyEmailCodeBtn");
   const emailVerificationMessage = document.getElementById("emailVerificationMessage");
   const accountPasswordFields = document.getElementById("accountPasswordFields");
+  const registrationPasswordGuide = document.getElementById("registrationPasswordGuide");
+  const dismissRegistrationPasswordGuide = document.getElementById("dismissRegistrationPasswordGuide");
   const verificationStatusMessage = document.getElementById("verificationStatusMessage");
   const verificationNextButton = document.getElementById("verificationNextBtn");
   const verificationDegreeSelect = document.getElementById("degreeGraduated");
@@ -6252,6 +6254,12 @@ document.addEventListener("DOMContentLoaded", function () {
       input.type = isHidden ? "text" : "password";
       this.textContent = isHidden ? "Hide" : "Show";
     });
+  });
+
+  dismissRegistrationPasswordGuide?.addEventListener("click", function () {
+    registrationPasswordGuide?.classList.add("hidden");
+    registrationPasswordGuide?.setAttribute("aria-hidden", "true");
+    try { passwordInput?.focus({ preventScroll: true }); } catch (e) { passwordInput?.focus(); }
   });
 
   if (emailInput) {
