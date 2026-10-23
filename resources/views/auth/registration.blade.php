@@ -2406,7 +2406,7 @@
                         </div>
                         <div>
                             <label for="birthdate" class="block text-sm font-medium text-gray-700">Birthdate</label>
-                            <input type="date" id="birthdate" name="birthdate" required class="mt-1">
+                            <input type="date" id="birthdate" name="birthdate" required max="{{ now()->toDateString() }}" class="mt-1">
                         </div>
                         <div>
                             <label for="suffix" class="block text-sm font-medium text-gray-700">Suffix</label>

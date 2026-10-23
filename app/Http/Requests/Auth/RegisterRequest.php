@@ -18,7 +18,7 @@ class RegisterRequest extends FormRequest
             'middlename' => ['nullable', 'string', 'max:100', 'regex:/^[A-Za-z][A-Za-z\s.\'-]*$/'],
             'lastname' => ['required', 'string', 'max:255'],
             'studentIdnum' => ['nullable', 'string', 'max:100'],
-            'birthdate' => ['required', 'date', 'before_or_equal:today'],
+            'birthdate' => ['required', 'regex:/^\d{4}-\d{2}-\d{2}$/', 'date_format:Y-m-d', 'before_or_equal:today'],
             'collegeGraduated' => ['required', 'string', 'max:255'],
             'degreeGraduated' => ['nullable', 'string', 'max:255'],
             'yearGraduated' => [
@@ -113,6 +113,9 @@ class RegisterRequest extends FormRequest
             'employabilitySuggestions.required' => 'Please enter your employability comments or suggestions.',
             'facilitySuggestions.required' => 'Please enter your university facilities comments or suggestions.',
             'middlename.regex' => 'Middle name may only contain letters, spaces, periods, apostrophes, and hyphens.',
+            'birthdate.regex' => 'Birthdate must use a four-digit year.',
+            'birthdate.date_format' => 'Please enter a valid birthdate using a four-digit year.',
+            'birthdate.before_or_equal' => 'Birthdate cannot be in the future.',
             'sex.in' => 'Please select a valid sex.',
             'employmentProof.mimes' => 'Please upload the employment proof as a PDF file.',
             'employmentProof.mimetypes' => 'Please upload the employment proof as a PDF file.',

@@ -93,6 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let stepNavigationInProgress = false;
   const form = document.getElementById("multiStepForm");
   const emailInput = document.getElementById("email");
+  const birthdateInput = document.getElementById("birthdate");
   const passwordInput = document.getElementById("password");
   const passwordHint = document.getElementById("passwordHint");
   const passwordConfirmationInput = document.getElementById("password_confirmation");
@@ -878,6 +879,32 @@ document.addEventListener("DOMContentLoaded", function () {
       : "Please enter your full middle name.";
   }
 
+  function getBirthdateValidationMessage(input) {
+    const value = String(input?.value || "").trim();
+    if (!value) return "";
+
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+    if (!match) {
+      return "Enter the birth year using four digits.";
+    }
+
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    const day = Number(match[3]);
+    const leapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+    const daysInMonth = [31, leapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+    if (year < 1 || month < 1 || month > 12 || day < 1 || day > daysInMonth[month - 1]) {
+      return "Please enter a valid birthdate using a four-digit year.";
+    }
+
+    if ((input.max && value > input.max) || input.validity.rangeOverflow) {
+      return "Birthdate cannot be in the future.";
+    }
+
+    return "";
+  }
+
   function normalizeLocationValue(value) {
     return String(value || "")
       .toLowerCase()
@@ -945,6 +972,15 @@ document.addEventListener("DOMContentLoaded", function () {
         if (input.type !== "hidden" && input.closest && input.closest(".hidden")) return;
         if (!input.hasAttribute("required")) return;
 
+        if (input === birthdateInput) {
+          const message = getBirthdateValidationMessage(input);
+          input.setCustomValidity(message);
+          if (message) {
+            markInvalid(input, message);
+            return;
+          }
+        }
+
         if (!hasValue(input)) {
           markInvalid(input, "This field is required.");
         } else {
@@ -1004,6 +1040,20 @@ document.addEventListener("DOMContentLoaded", function () {
           firstInvalid: input,
           message: "Please fill out all required fields."
         };
+      }
+
+      if (input === birthdateInput) {
+        const birthdateMessage = getBirthdateValidationMessage(input);
+        input.setCustomValidity(birthdateMessage);
+
+        if (birthdateMessage) {
+          markInvalid(input, birthdateMessage);
+          return {
+            ok: false,
+            firstInvalid: input,
+            message: birthdateMessage,
+          };
+        }
       }
     }
 
