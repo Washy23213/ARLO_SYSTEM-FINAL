@@ -975,6 +975,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (input === birthdateInput) {
           const message = getBirthdateValidationMessage(input);
+
+          // Let the browser keep a partial date while the user is editing it.
+          // Restoring the previous value on every `input` event makes Backspace
+          // appear broken in native date controls.
+          if (event.type === "input" && (message || input.validity.badInput)) {
+            input.setCustomValidity("");
+            clearInvalid(input);
+            return;
+          }
+
+          // An empty value is an intentional clear. Do not restore the old date.
+          if (!input.value) {
+            input.setCustomValidity("");
+            if (event.type === "change" || event.type === "blur") {
+              lastAcceptedBirthdate = "";
+            }
+            clearInvalid(input);
+            return;
+          }
+
           if (message || input.validity.badInput) {
             input.value = lastAcceptedBirthdate;
             input.setCustomValidity("");
@@ -1017,8 +1037,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (input === birthdateInput) {
         const birthdateMessage = getBirthdateValidationMessage(input);
-        if (birthdateMessage || input.validity.badInput) {
+        if ((birthdateMessage || input.validity.badInput) && input.value) {
           input.value = lastAcceptedBirthdate;
+          input.setCustomValidity("");
+        } else if (birthdateMessage || input.validity.badInput) {
+          input.value = "";
           input.setCustomValidity("");
         }
       }
