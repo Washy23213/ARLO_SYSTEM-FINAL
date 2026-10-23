@@ -117,6 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const verifyEmailCodeBtn = document.getElementById("verifyEmailCodeBtn");
   const emailVerificationMessage = document.getElementById("emailVerificationMessage");
   const accountPasswordFields = document.getElementById("accountPasswordFields");
+  const registrationAccountGuide = document.getElementById("registrationAccountGuide");
   const verificationStatusMessage = document.getElementById("verificationStatusMessage");
   const verificationNextButton = document.getElementById("verificationNextBtn");
   const verificationDegreeSelect = document.getElementById("degreeGraduated");
@@ -1465,6 +1466,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (accountPasswordFields) {
       accountPasswordFields.classList.toggle("hidden", !unlocked);
+    }
+
+    if (registrationAccountGuide) {
+      registrationAccountGuide.classList.toggle("hidden", !unlocked);
+      registrationAccountGuide.setAttribute("aria-hidden", unlocked ? "false" : "true");
     }
 
     if (!unlocked && clearPasswords) {

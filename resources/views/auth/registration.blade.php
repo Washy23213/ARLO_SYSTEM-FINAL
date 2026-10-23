@@ -193,6 +193,49 @@
                 regParagraphFloat 7.5s ease-in-out 1.2s infinite alternate;
         }
 
+        .registration-account-guide {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            align-items: start;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            padding: 0.9rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.26);
+            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.12);
+            color: #f4fff6;
+            backdrop-filter: blur(8px);
+        }
+
+        .registration-account-guide.hidden {
+            display: none;
+        }
+
+        .registration-account-guide__icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 0.75rem;
+            background: rgba(255, 255, 255, 0.16);
+            color: #e5ffe9;
+            font-size: 1.1rem;
+        }
+
+        .registration-account-guide strong {
+            display: block;
+            margin: 0.1rem 0 0.25rem;
+            font-size: 0.92rem;
+        }
+
+        .registration-account-guide p {
+            margin: 0;
+            font-size: 0.82rem;
+            line-height: 1.55;
+            animation: none;
+        }
+
         .registration-hero > * {
             position: relative;
             z-index: 1;
@@ -2162,6 +2205,14 @@
                         the office keep tracer-ready records and generate reliable employment analytics.
                     </p>
 
+                    <div id="registrationAccountGuide" class="registration-account-guide hidden" aria-hidden="true" aria-live="polite">
+                        <span class="registration-account-guide__icon" aria-hidden="true"><i class="bx bx-key"></i></span>
+                        <div>
+                            <strong>Next: create your password</strong>
+                            <p>Choose a password with at least 8 characters. Keep it and this email address safe; you’ll need both to sign in later.</p>
+                        </div>
+                    </div>
+
                     <div class="registration-hero-showcase" aria-hidden="true">
                         <div class="registration-hero-badge">
                             <span class="registration-hero-badge__mark">
@@ -2342,8 +2393,6 @@
                     </div>
 
                     <div id="accountPasswordFields" class="hidden space-y-6">
-                        <p class="text-sm leading-5 text-gray-600">Create your password to finish setting up your account. Keep this email address and your password safe for future sign-ins.</p>
-
                         <div>
                             <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
                             <div class="relative mt-1">
