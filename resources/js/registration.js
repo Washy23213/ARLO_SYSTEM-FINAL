@@ -94,6 +94,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("multiStepForm");
   const emailInput = document.getElementById("email");
   const birthdateInput = document.getElementById("birthdate");
+  let lastAcceptedBirthdate = birthdateInput?.value || "";
   const passwordInput = document.getElementById("password");
   const passwordHint = document.getElementById("passwordHint");
   const passwordConfirmationInput = document.getElementById("password_confirmation");
@@ -967,25 +968,32 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      const validateCurrent = function () {
+      const validateCurrent = function (event) {
         if (input.disabled) return;
         if (input.type !== "hidden" && input.closest && input.closest(".hidden")) return;
         if (!input.hasAttribute("required")) return;
 
         if (input === birthdateInput) {
           const message = getBirthdateValidationMessage(input);
-          input.setCustomValidity(message);
-          if (message) {
-            markInvalid(input, message);
+          if (message || input.validity.badInput) {
+            input.value = lastAcceptedBirthdate;
+            input.setCustomValidity("");
+            clearInvalid(input);
             return;
+          }
+
+          input.setCustomValidity("");
+          if ((event.type === "change" || event.type === "blur") && input.value) {
+            lastAcceptedBirthdate = input.value;
           }
         }
 
         if (!hasValue(input)) {
-          markInvalid(input, "This field is required.");
-        } else {
           clearInvalid(input);
+          return;
         }
+
+        clearInvalid(input);
       };
 
       input.addEventListener("blur", validateCurrent);
@@ -1006,6 +1014,15 @@ document.addEventListener("DOMContentLoaded", function () {
       if (input.disabled) continue;
       if (input.type !== 'hidden' && input.closest && input.closest('.hidden')) continue;
       if (input.type !== 'hidden' && input.getClientRects && input.getClientRects().length === 0) continue;
+
+      if (input === birthdateInput) {
+        const birthdateMessage = getBirthdateValidationMessage(input);
+        if (birthdateMessage || input.validity.badInput) {
+          input.value = lastAcceptedBirthdate;
+          input.setCustomValidity("");
+        }
+      }
+
       if (!input.hasAttribute("required")) continue;
 
       clearInvalid(input);
@@ -1042,18 +1059,8 @@ document.addEventListener("DOMContentLoaded", function () {
         };
       }
 
-      if (input === birthdateInput) {
-        const birthdateMessage = getBirthdateValidationMessage(input);
-        input.setCustomValidity(birthdateMessage);
-
-        if (birthdateMessage) {
-          markInvalid(input, birthdateMessage);
-          return {
-            ok: false,
-            firstInvalid: input,
-            message: birthdateMessage,
-          };
-        }
+      if (input === birthdateInput && input.value) {
+        lastAcceptedBirthdate = input.value;
       }
     }
 
