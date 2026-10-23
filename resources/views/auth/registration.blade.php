@@ -2406,7 +2406,17 @@
                         </div>
                         <div>
                             <label for="birthdate" class="block text-sm font-medium text-gray-700">Birthdate</label>
-                            <input type="date" id="birthdate" name="birthdate" required max="{{ now()->toDateString() }}" class="mt-1">
+                            <div class="relative mt-1">
+                                <input type="text" id="birthdate" required maxlength="10" inputmode="numeric" autocomplete="bday" placeholder="MM/DD/YYYY" data-max-date="{{ now()->toDateString() }}" aria-label="Birthdate in month, day, year format" class="mt-0 pr-12">
+                                <input type="hidden" id="birthdateValue" name="birthdate">
+                                <input type="date" id="birthdatePicker" max="{{ now()->toDateString() }}" tabindex="-1" aria-hidden="true" class="sr-only">
+                                <button type="button" id="birthdatePickerButton" aria-label="Choose birthdate from calendar" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-700">
+                                    <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                        <rect x="3.5" y="5" width="17" height="15.5" rx="2" />
+                                        <path stroke-linecap="round" d="M7.5 3.5v3M16.5 3.5v3M3.5 9h17" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                         <div>
                             <label for="suffix" class="block text-sm font-medium text-gray-700">Suffix</label>

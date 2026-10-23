@@ -94,7 +94,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("multiStepForm");
   const emailInput = document.getElementById("email");
   const birthdateInput = document.getElementById("birthdate");
-  let lastAcceptedBirthdate = birthdateInput?.value || "";
+  const birthdateValueInput = document.getElementById("birthdateValue");
+  const birthdatePicker = document.getElementById("birthdatePicker");
+  const birthdatePickerButton = document.getElementById("birthdatePickerButton");
   const passwordInput = document.getElementById("password");
   const passwordHint = document.getElementById("passwordHint");
   const passwordConfirmationInput = document.getElementById("password_confirmation");
@@ -880,30 +882,114 @@ document.addEventListener("DOMContentLoaded", function () {
       : "Please enter your full middle name.";
   }
 
-  function getBirthdateValidationMessage(input) {
+  function getBirthdateDetails(input) {
     const value = String(input?.value || "").trim();
-    if (!value) return "";
+    if (!value) return { iso: "", message: "" };
 
-    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+    const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value);
     if (!match) {
-      return "Enter the birth year using four digits.";
+      return { iso: "", message: "Enter a complete birthdate in MM/DD/YYYY format." };
     }
 
-    const year = Number(match[1]);
-    const month = Number(match[2]);
-    const day = Number(match[3]);
+    const month = Number(match[1]);
+    const day = Number(match[2]);
+    const year = Number(match[3]);
+    const iso = `${match[3]}-${match[1]}-${match[2]}`;
     const leapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
     const daysInMonth = [31, leapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
     if (year < 1 || month < 1 || month > 12 || day < 1 || day > daysInMonth[month - 1]) {
-      return "Please enter a valid birthdate using a four-digit year.";
+      return { iso: "", message: "Please enter a valid birthdate using a four-digit year." };
     }
 
-    if ((input.max && value > input.max) || input.validity.rangeOverflow) {
-      return "Birthdate cannot be in the future.";
+    if (input?.dataset?.maxDate && iso > input.dataset.maxDate) {
+      return { iso: "", message: "Birthdate cannot be in the future." };
     }
 
-    return "";
+    return { iso, message: "" };
+  }
+
+  function getBirthdateValidationMessage(input) {
+    return getBirthdateDetails(input).message;
+  }
+
+  function formatBirthdateDigits(digits) {
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+    return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`;
+  }
+
+  function caretPositionAfterDigits(value, digitCount) {
+    if (digitCount <= 0) return 0;
+
+    let seen = 0;
+    for (let index = 0; index < value.length; index += 1) {
+      if (/\d/.test(value[index])) {
+        seen += 1;
+        if (seen === digitCount) return index + 1;
+      }
+    }
+
+    return value.length;
+  }
+
+  function syncBirthdateValue() {
+    if (!birthdateValueInput) return;
+    const { iso, message } = getBirthdateDetails(birthdateInput);
+    birthdateValueInput.value = message ? "" : iso;
+  }
+
+  function setupBirthdateInput() {
+    if (!birthdateInput) return;
+
+    syncBirthdateValue();
+
+    birthdateInput.addEventListener("keydown", function (event) {
+      if (event.key !== "Backspace" || this.selectionStart !== this.selectionEnd) return;
+
+      const cursor = this.selectionStart;
+      if (cursor > 0 && this.value[cursor - 1] === "/") {
+        this.setSelectionRange(cursor - 2, cursor - 1);
+      }
+    });
+
+    birthdateInput.addEventListener("input", function () {
+      const cursor = this.selectionStart ?? this.value.length;
+      const digitsBeforeCursor = this.value.slice(0, cursor).replace(/\D/g, "").length;
+      const digits = this.value.replace(/\D/g, "").slice(0, 8);
+      this.value = formatBirthdateDigits(digits);
+      const nextCursor = caretPositionAfterDigits(this.value, Math.min(digitsBeforeCursor, digits.length));
+      this.setSelectionRange(nextCursor, nextCursor);
+      syncBirthdateValue();
+    });
+
+    if (birthdatePickerButton && birthdatePicker) {
+      birthdatePickerButton.addEventListener("click", function () {
+        const { iso } = getBirthdateDetails(birthdateInput);
+        birthdatePicker.value = iso;
+
+        try {
+          if (typeof birthdatePicker.showPicker === "function") {
+            birthdatePicker.showPicker();
+          } else {
+            birthdatePicker.focus();
+            birthdatePicker.click();
+          }
+        } catch (error) {
+          birthdatePicker.focus();
+          birthdatePicker.click();
+        }
+      });
+
+      birthdatePicker.addEventListener("change", function () {
+        const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(this.value);
+        if (!match) return;
+
+        birthdateInput.value = `${match[2]}/${match[3]}/${match[1]}`;
+        birthdateInput.setSelectionRange(birthdateInput.value.length, birthdateInput.value.length);
+        birthdateInput.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+    }
   }
 
   function normalizeLocationValue(value) {
@@ -968,44 +1054,14 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      const validateCurrent = function (event) {
+      const validateCurrent = function () {
         if (input.disabled) return;
         if (input.type !== "hidden" && input.closest && input.closest(".hidden")) return;
         if (!input.hasAttribute("required")) return;
 
         if (input === birthdateInput) {
-          const message = getBirthdateValidationMessage(input);
-
-          // Let the browser keep a partial date while the user is editing it.
-          // Restoring the previous value on every `input` event makes Backspace
-          // appear broken in native date controls.
-          if (event.type === "input" && (message || input.validity.badInput)) {
-            input.setCustomValidity("");
-            clearInvalid(input);
-            return;
-          }
-
-          // An empty value is an intentional clear. Do not restore the old date.
-          if (!input.value) {
-            input.setCustomValidity("");
-            if (event.type === "change" || event.type === "blur") {
-              lastAcceptedBirthdate = "";
-            }
-            clearInvalid(input);
-            return;
-          }
-
-          if (message || input.validity.badInput) {
-            input.value = lastAcceptedBirthdate;
-            input.setCustomValidity("");
-            clearInvalid(input);
-            return;
-          }
-
+          syncBirthdateValue();
           input.setCustomValidity("");
-          if ((event.type === "change" || event.type === "blur") && input.value) {
-            lastAcceptedBirthdate = input.value;
-          }
         }
 
         if (!hasValue(input)) {
@@ -1036,13 +1092,15 @@ document.addEventListener("DOMContentLoaded", function () {
       if (input.type !== 'hidden' && input.getClientRects && input.getClientRects().length === 0) continue;
 
       if (input === birthdateInput) {
+        syncBirthdateValue();
         const birthdateMessage = getBirthdateValidationMessage(input);
-        if ((birthdateMessage || input.validity.badInput) && input.value) {
-          input.value = lastAcceptedBirthdate;
-          input.setCustomValidity("");
-        } else if (birthdateMessage || input.validity.badInput) {
-          input.value = "";
-          input.setCustomValidity("");
+        if (birthdateMessage) {
+          markInvalid(input, birthdateMessage);
+          return {
+            ok: false,
+            firstInvalid: input,
+            message: birthdateMessage,
+          };
         }
       }
 
@@ -1080,10 +1138,6 @@ document.addEventListener("DOMContentLoaded", function () {
           firstInvalid: input,
           message: "Please fill out all required fields."
         };
-      }
-
-      if (input === birthdateInput && input.value) {
-        lastAcceptedBirthdate = input.value;
       }
     }
 
@@ -2343,7 +2397,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const alumniVerified = await verifyAlumniRecord();
       if (!alumniVerified) {
         const firstVerificationField = verificationFieldNames
-          .map((fieldName) => document.querySelector(`[name="${fieldName}"]`))
+          .map((fieldName) => fieldName === "birthdate"
+            ? birthdateInput
+            : document.querySelector(`[name="${fieldName}"]`))
           .find((input) => !!input);
         if (firstVerificationField) {
           try { firstVerificationField.focus(); } catch (e) {}
@@ -6369,8 +6425,12 @@ document.addEventListener("DOMContentLoaded", function () {
     syncVerificationDegreeOptions(verificationDegreeSelect.value);
   }
 
+  setupBirthdateInput();
+
   verificationFieldNames.forEach((fieldName) => {
-    const field = document.querySelector(`[name="${fieldName}"]`);
+    const field = fieldName === "birthdate"
+      ? birthdateInput
+      : document.querySelector(`[name="${fieldName}"]`);
     if (!field) return;
 
     if (fieldName === "middlename") {
