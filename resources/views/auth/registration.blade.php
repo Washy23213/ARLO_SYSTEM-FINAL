@@ -1130,39 +1130,6 @@
             gap: 0.45rem;
         }
 
-        .registration-email-verify__support {
-            display: grid;
-            gap: 0.2rem;
-            padding: 0.65rem 0.75rem;
-            border: 1px solid #dce8df;
-            border-radius: 0.7rem;
-            background: #f7faf8;
-            color: #43584b;
-            font-size: 0.78rem;
-            line-height: 1.45;
-        }
-
-        .registration-email-verify__support-title {
-            color: #173b26;
-            font-weight: 700;
-        }
-
-        .registration-email-verify__support-link {
-            width: fit-content;
-            text-decoration: underline;
-            text-underline-offset: 0.15em;
-        }
-
-        .registration-email-verify__support-link:hover {
-            color: #0b6b35;
-        }
-
-        .registration-email-verify__support-link:focus-visible {
-            border-radius: 0.15rem;
-            outline: 2px solid #0b6b35;
-            outline-offset: 2px;
-        }
-
         .registration-email-verify__message {
             display: flex;
             align-items: center;
@@ -2375,6 +2342,8 @@
                     </div>
 
                     <div id="accountPasswordFields" class="hidden space-y-6">
+                        <p class="text-sm leading-5 text-gray-600">Create your password to finish setting up your account. Keep this email address and your password safe for future sign-ins.</p>
+
                         <div>
                             <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
                             <div class="relative mt-1">
@@ -2505,9 +2474,6 @@
                             </div>
                         </div>
                         <p id="emailVerificationMessage" class="registration-email-verify__message" aria-live="polite"></p>
-                        <div class="registration-email-verify__support" aria-label="Contact support">
-                            <a class="registration-email-verify__support-title registration-email-verify__support-link" href="mailto:cmuaai@cmu.edu.ph?subject=Alumni%20Portal%20Registration%20Help" aria-label="Email OARL at cmuaai@cmu.edu.ph">Need help? Contact OARL.</a>
-                        </div>
                     </div>
 
                     <input type="hidden" name="newsletter_opt_in" value="0">

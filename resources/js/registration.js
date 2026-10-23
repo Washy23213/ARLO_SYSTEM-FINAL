@@ -1639,28 +1639,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (isCurrentEmailVerified()) {
       setEmailVerificationMiniViewState(false);
-      emailVerificationPanel.classList.remove("hidden");
-      emailVerificationPanel.setAttribute("aria-hidden", "false");
+      emailVerificationPanel.classList.add("hidden");
+      emailVerificationPanel.setAttribute("aria-hidden", "true");
       if (emailVerificationMiniTrigger) {
         emailVerificationMiniTrigger.classList.add("hidden");
         emailVerificationMiniTrigger.setAttribute("aria-hidden", "true");
       }
-      if (emailVerificationTitle) {
-        emailVerificationTitle.textContent = "Email verified";
-      }
-      if (emailVerificationCopy) {
-        emailVerificationCopy.textContent = "You can now set your password.";
-      }
-      if (emailVerificationCodeGroup) {
-        emailVerificationCodeGroup.classList.add("hidden");
-      }
-      if (sendEmailVerificationBtn) {
-        sendEmailVerificationBtn.classList.add("hidden");
-      }
-      if (resendEmailVerificationBtn) {
-        resendEmailVerificationBtn.classList.add("hidden");
-      }
-      setEmailVerificationMessage("verified", "Email verified.");
       syncEmailVerificationTiming();
       syncAccountPasswordGate();
       return;
