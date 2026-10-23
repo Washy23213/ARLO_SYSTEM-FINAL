@@ -304,18 +304,27 @@ class RegisterRequest extends FormRequest
             $country = trim((string) $this->input('country', ''));
             $regionOfOrigin = trim((string) $this->input('regionOfOrigin', ''));
             $municipalityCity = trim((string) $this->input('municipalityCity', ''));
-            $regionXMunicipality = $this->canonicalRegionXMunicipality($municipalityCity);
+            $regionOptions = $this->philippineMunicipalitiesByRegion()[$regionOfOrigin] ?? null;
 
-            if ($country === 'Philippines' && $municipalityCity !== '') {
-                if ($this->isRegionXSelection($regionOfOrigin) && $regionXMunicipality === null) {
-                    $validator->errors()->add('municipalityCity', 'Please choose a municipality or city from Region X - Northern Mindanao.');
-                }
+            if ($country === 'Philippines') {
+                if ($regionOfOrigin !== '' && !is_array($regionOptions)) {
+                    $validator->errors()->add('regionOfOrigin', 'Please select a valid Philippine region.');
+                } elseif ($municipalityCity !== '' && is_array($regionOptions)) {
+                    if ($this->canonicalMunicipalityForRegion($regionOfOrigin, $municipalityCity) === null) {
+                        $matchingRegions = array_values(array_filter(
+                            $this->municipalityRegions($municipalityCity),
+                            fn (string $region): bool => $region !== $regionOfOrigin
+                        ));
 
-                if (!$this->isRegionXSelection($regionOfOrigin) && $regionXMunicipality !== null) {
-                    $validator->errors()->add(
-                        'municipalityCity',
-                        $regionXMunicipality.' belongs to Region X - Northern Mindanao. Please select Region X or enter a municipality from the selected region.'
-                    );
+                        if (count($matchingRegions) === 1) {
+                            $message = $municipalityCity.' is listed in '.$matchingRegions[0]
+                                .'. Please choose a municipality or city in '.$regionOfOrigin.'.';
+                        } else {
+                            $message = 'Please choose a valid municipality or city from '.$regionOfOrigin.'.';
+                        }
+
+                        $validator->errors()->add('municipalityCity', $message);
+                    }
                 }
             }
         });
@@ -333,30 +342,51 @@ class RegisterRequest extends FormRequest
         return count($letters[0] ?? []) >= 2;
     }
 
-    private function isRegionXSelection(?string $value): bool
+    private function normalizeLocationValue(?string $value): string
     {
-        $normalized = $this->normalizeLocationValue($value);
+        $normalized = mb_strtolower(trim((string) $value), 'UTF-8');
 
-        return (bool) preg_match('/\bregion\s*x\b/', $normalized)
-            || (bool) preg_match('/\bregion\s*10\b/', $normalized)
-            || str_contains($normalized, 'northern mindanao')
-            || in_array($normalized, [
-                'bukidnon',
-                'camiguin',
-                'lanao del norte',
-                'misamis occidental',
-                'misamis oriental',
-            ], true);
+        if (function_exists('iconv')) {
+            $ascii = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $normalized);
+            if ($ascii !== false) {
+                $normalized = $ascii;
+            }
+        }
+
+        $normalized = preg_replace('/^(?:city|municipality)\s+of\s+/u', '', $normalized) ?? $normalized;
+        $normalized = preg_replace('/\s+(?:city|municipality)$/u', '', $normalized) ?? $normalized;
+        $normalized = preg_replace('/\b(?:city|municipality)\b/u', '', $normalized) ?? $normalized;
+        $normalized = preg_replace('/[\x{2013}\x{2014}\-.,()]/u', ' ', $normalized) ?? $normalized;
+
+        return trim(preg_replace('/\s+/u', ' ', $normalized) ?? '');
     }
 
-    private function canonicalRegionXMunicipality(?string $value): ?string
+    private function philippineMunicipalitiesByRegion(): array
+    {
+        static $regions = null;
+
+        if ($regions !== null) {
+            return $regions;
+        }
+
+        $path = resource_path('data/philippine_municipalities.json');
+        $contents = is_file($path) ? file_get_contents($path) : false;
+        $data = is_string($contents) ? json_decode($contents, true) : null;
+
+        $regions = is_array($data['regions'] ?? null) ? $data['regions'] : [];
+
+        return $regions;
+    }
+
+    private function canonicalMunicipalityForRegion(?string $region, ?string $value): ?string
     {
         $normalized = $this->normalizeLocationValue($value);
         if ($normalized === '') {
             return null;
         }
 
-        foreach ($this->regionXMunicipalities() as $municipality) {
+        $options = $this->philippineMunicipalitiesByRegion()[$region ?? ''] ?? [];
+        foreach ($options as $municipality) {
             if ($this->normalizeLocationValue($municipality) === $normalized) {
                 return $municipality;
             }
@@ -365,110 +395,24 @@ class RegisterRequest extends FormRequest
         return null;
     }
 
-    private function normalizeLocationValue(?string $value): string
+    private function municipalityRegions(?string $value): array
     {
-        $normalized = mb_strtolower(trim((string) $value));
-        $normalized = preg_replace('/\bcity\b/u', '', $normalized);
-        $normalized = preg_replace('/[–—-]/u', ' ', $normalized);
-        $normalized = preg_replace('/[.,()]/u', ' ', $normalized);
+        $normalized = $this->normalizeLocationValue($value);
+        if ($normalized === '') {
+            return [];
+        }
 
-        return trim(preg_replace('/\s+/u', ' ', $normalized ?? '') ?? '');
+        $matchingRegions = [];
+        foreach ($this->philippineMunicipalitiesByRegion() as $region => $options) {
+            foreach ($options as $municipality) {
+                if ($this->normalizeLocationValue($municipality) === $normalized) {
+                    $matchingRegions[] = $region;
+                    break;
+                }
+            }
+        }
+
+        return $matchingRegions;
     }
 
-    private function regionXMunicipalities(): array
-    {
-        return [
-            'Baungon',
-            'Cabanglasan',
-            'Damulog',
-            'Dangcagan',
-            'Don Carlos',
-            'Impasug-ong',
-            'Kadingilan',
-            'Kalilangan',
-            'Kibawe',
-            'Kitaotao',
-            'Lantapan',
-            'Libona',
-            'Malaybalay City',
-            'Malitbog',
-            'Manolo Fortich',
-            'Maramag',
-            'Pangantucan',
-            'Quezon',
-            'San Fernando',
-            'Sumilao',
-            'Talakag',
-            'Valencia City',
-            'Catarman',
-            'Guinsiliban',
-            'Mahinog',
-            'Mambajao',
-            'Sagay',
-            'Bacolod',
-            'Baloi',
-            'Baroy',
-            'Iligan City',
-            'Kapatagan',
-            'Sultan Naga Dimaporo',
-            'Kauswagan',
-            'Kolambugan',
-            'Lala',
-            'Linamon',
-            'Magsaysay',
-            'Maigo',
-            'Matungao',
-            'Munai',
-            'Nunungan',
-            'Pantao Ragat',
-            'Pantar',
-            'Poona Piagapo',
-            'Salvador',
-            'Sapad',
-            'Tagoloan',
-            'Tangcal',
-            'Tubod',
-            'Aloran',
-            'Baliangao',
-            'Bonifacio',
-            'Calamba',
-            'Clarin',
-            'Concepcion',
-            'Don Victoriano Chiongbian',
-            'Jimenez',
-            'Lopez Jaena',
-            'Oroquieta City',
-            'Ozamiz City',
-            'Panaon',
-            'Plaridel',
-            'Sapang Dalaga',
-            'Sinacaban',
-            'Tangub City',
-            'Tudela',
-            'Alubijid',
-            'Balingasag',
-            'Balingoan',
-            'Binuangan',
-            'Cagayan de Oro City',
-            'Claveria',
-            'El Salvador City',
-            'Gingoog City',
-            'Gitagum',
-            'Initao',
-            'Jasaan',
-            'Kinoguitan',
-            'Lagonglong',
-            'Laguindingan',
-            'Libertad',
-            'Lugait',
-            'Manticao',
-            'Medina',
-            'Naawan',
-            'Opol',
-            'Salay',
-            'Sugbongcogon',
-            'Talisayan',
-            'Villanueva',
-        ];
-    }
 }

@@ -1,3 +1,5 @@
+import philippineMunicipalityData from "../data/philippine_municipalities.json";
+
 document.addEventListener("DOMContentLoaded", function () {
 
   // Ensure checkboxes/radios use neutral accent until checked
@@ -994,27 +996,32 @@ document.addEventListener("DOMContentLoaded", function () {
   function normalizeLocationValue(value) {
     return String(value || "")
       .toLowerCase()
-      .replace(/\bcity\b/g, "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/^(?:city|municipality)\s+of\s+/g, "")
+      .replace(/\s+(?:city|municipality)$/g, "")
+      .replace(/\b(?:city|municipality)\b/g, "")
       .replace(/[–—-]/g, " ")
       .replace(/[.,()]/g, " ")
       .replace(/\s+/g, " ")
       .trim();
   }
 
-  function isRegionXSelection(value) {
+  function getMunicipalityMatchForRegion(value, regionValue) {
     const normalized = normalizeLocationValue(value);
-
-    return /\bregion\s*x\b/.test(normalized)
-      || /\bregion\s*10\b/.test(normalized)
-      || normalized.includes("northern mindanao")
-      || regionXProvinceTokens.has(normalized);
-  }
-
-  function getRegionXMunicipalityMatch(value) {
-    const normalized = normalizeLocationValue(value);
+    const options = philippineMunicipalityData.regions[regionValue] || [];
     if (!normalized) return "";
 
-    return regionXMunicipalityOptions.find((option) => normalizeLocationValue(option) === normalized) || "";
+    return options.find((option) => normalizeLocationValue(option) === normalized) || "";
+  }
+
+  function getMunicipalityRegionMatches(value) {
+    const normalized = normalizeLocationValue(value);
+    if (!normalized) return [];
+
+    return Object.entries(philippineMunicipalityData.regions)
+      .filter(([, options]) => options.some((option) => normalizeLocationValue(option) === normalized))
+      .map(([region]) => region);
   }
 
   function setupLiveRequiredValidation() {
@@ -3080,6 +3087,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "Region IV-B – MIMAROPA",
       "Region V – Bicol Region",
       "Region VI – Western Visayas",
+      "NIR – Negros Island Region",
       "Region VII – Central Visayas",
       "Region VIII – Eastern Visayas",
       "Region IX – Zamboanga Peninsula",
@@ -3092,107 +3100,6 @@ document.addEventListener("DOMContentLoaded", function () {
     ],
     "Select Region"
   );
-
-  const regionXMunicipalityOptions = [
-    "Baungon",
-    "Cabanglasan",
-    "Damulog",
-    "Dangcagan",
-    "Don Carlos",
-    "Impasug-ong",
-    "Kadingilan",
-    "Kalilangan",
-    "Kibawe",
-    "Kitaotao",
-    "Lantapan",
-    "Libona",
-    "Malaybalay City",
-    "Malitbog",
-    "Manolo Fortich",
-    "Maramag",
-    "Pangantucan",
-    "Quezon",
-    "San Fernando",
-    "Sumilao",
-    "Talakag",
-    "Valencia City",
-    "Catarman",
-    "Guinsiliban",
-    "Mahinog",
-    "Mambajao",
-    "Sagay",
-    "Bacolod",
-    "Baloi",
-    "Baroy",
-    "Iligan City",
-    "Kapatagan",
-    "Sultan Naga Dimaporo",
-    "Kauswagan",
-    "Kolambugan",
-    "Lala",
-    "Linamon",
-    "Magsaysay",
-    "Maigo",
-    "Matungao",
-    "Munai",
-    "Nunungan",
-    "Pantao Ragat",
-    "Pantar",
-    "Poona Piagapo",
-    "Salvador",
-    "Sapad",
-    "Tagoloan",
-    "Tangcal",
-    "Tubod",
-    "Aloran",
-    "Baliangao",
-    "Bonifacio",
-    "Calamba",
-    "Clarin",
-    "Concepcion",
-    "Don Victoriano Chiongbian",
-    "Jimenez",
-    "Lopez Jaena",
-    "Oroquieta City",
-    "Ozamiz City",
-    "Panaon",
-    "Plaridel",
-    "Sapang Dalaga",
-    "Sinacaban",
-    "Tangub City",
-    "Tudela",
-    "Alubijid",
-    "Balingasag",
-    "Balingoan",
-    "Binuangan",
-    "Cagayan de Oro City",
-    "Claveria",
-    "El Salvador City",
-    "Gingoog City",
-    "Gitagum",
-    "Initao",
-    "Jasaan",
-    "Kinoguitan",
-    "Lagonglong",
-    "Laguindingan",
-    "Libertad",
-    "Lugait",
-    "Manticao",
-    "Medina",
-    "Naawan",
-    "Opol",
-    "Salay",
-    "Sugbongcogon",
-    "Talisayan",
-    "Villanueva",
-  ];
-  const regionXProvinceTokens = new Set([
-    "bukidnon",
-    "camiguin",
-    "lanao del norte",
-    "misamis occidental",
-    "misamis oriental",
-  ]);
 
   populateDropdown("country", ["Philippines", "Other"]);
   populateDropdown("highschool", [
@@ -4217,14 +4124,14 @@ document.addEventListener("DOMContentLoaded", function () {
     municipalityCityHint.classList.add("text-rose-600");
   }
 
-  function getRegionXMunicipalitySuggestions(value) {
+  function getMunicipalitySuggestions(value, options) {
     const normalized = normalizeLocationValue(value);
     if (!normalized) return [];
 
     const prefixMatches = [];
     const containsMatches = [];
 
-    regionXMunicipalityOptions.forEach((option) => {
+    options.forEach((option) => {
       const normalizedOption = normalizeLocationValue(option);
 
       if (normalizedOption === normalized || normalizedOption.startsWith(normalized)) {
@@ -4249,78 +4156,53 @@ document.addEventListener("DOMContentLoaded", function () {
     const regionValue = (regionOfOriginSelect.value || "").trim();
     const municipalityValue = (municipalityCityInput.value || "").trim();
     const isPhilippines = countryValue === "Philippines";
-    const regionXSelected = isPhilippines && isRegionXSelection(regionValue);
-    const regionXMunicipality = getRegionXMunicipalityMatch(municipalityValue);
+    const regionOptions = philippineMunicipalityData.regions[regionValue];
 
     if (!isPhilippines) {
       setMunicipalityCityHint("");
       clearInvalid(municipalityCityInput);
+      clearInvalid(regionOfOriginSelect);
       return { ok: true, firstInvalid: null, message: "" };
     }
 
-    if (!regionValue) {
-      setMunicipalityCityHint("Select your region of origin first, then enter your municipality or city.");
-      clearInvalid(municipalityCityInput);
+    if (!regionOptions) {
+      const regionMessage = "Select a valid Philippine region to check the municipality or city.";
+
+      if (forceValidation) {
+        markInvalid(regionOfOriginSelect);
+        clearFieldError(regionOfOriginSelect);
+        setMunicipalityCityHint(regionMessage, "invalid");
+        return {
+          ok: false,
+          firstInvalid: regionOfOriginSelect,
+          message: regionMessage,
+        };
+      }
+
+      clearInvalid(regionOfOriginSelect);
+      setMunicipalityCityHint(regionMessage);
       return { ok: true, firstInvalid: null, message: "" };
     }
 
     if (municipalityValue === "") {
-      setMunicipalityCityHint(
-        regionXSelected
-          ? "Only municipalities and cities from Region X - Northern Mindanao are allowed for this selection."
-          : "The municipality or city should match the selected Philippine region."
-      );
+      setMunicipalityCityHint("Choose a municipality or city in " + regionValue + ".");
       clearInvalid(municipalityCityInput);
       return { ok: true, firstInvalid: null, message: "" };
     }
 
-    if (regionXSelected) {
-      if (regionXMunicipality) {
-        if (forceValidation && municipalityCityInput.value !== regionXMunicipality) {
-          municipalityCityInput.value = regionXMunicipality;
-        }
-
-        clearInvalid(municipalityCityInput);
-        setMunicipalityCityHint(
-          `Detected: ${regionXMunicipality} belongs to Region X - Northern Mindanao.`,
-          "valid"
-        );
-
-        return { ok: true, firstInvalid: null, message: "" };
-      }
-
-      const suggestions = getRegionXMunicipalitySuggestions(municipalityValue);
-      if (suggestions.length > 0) {
-        const preview = suggestions.slice(0, 3).join(", ");
-        const suggestionMessage = suggestions.length === 1
-          ? `Possible Region X match detected: ${suggestions[0]}.`
-          : `Possible Region X matches: ${preview}${suggestions.length > 3 ? "..." : ""}`;
-
-        clearInvalid(municipalityCityInput);
-        setMunicipalityCityHint(suggestionMessage);
-        return { ok: true, firstInvalid: null, message: "" };
-      }
-
-      const invalidMessage = "No Region X municipality/city match detected yet. Please choose a valid Region X entry.";
-
-      if (forceValidation || municipalityValue.length >= 3) {
-        markInvalid(municipalityCityInput);
-        clearFieldError(municipalityCityInput);
-        setMunicipalityCityHint(invalidMessage, "invalid");
-        return {
-          ok: false,
-          firstInvalid: municipalityCityInput,
-          message: "Please choose a municipality or city from Region X - Northern Mindanao.",
-        };
-      }
-
+    const matchingMunicipality = getMunicipalityMatchForRegion(municipalityValue, regionValue);
+    if (matchingMunicipality) {
       clearInvalid(municipalityCityInput);
-      setMunicipalityCityHint("Only municipalities and cities from Region X - Northern Mindanao are allowed for this selection.");
+      setMunicipalityCityHint("Detected: " + municipalityValue + " matches " + matchingMunicipality + " in " + regionValue + ".", "valid");
       return { ok: true, firstInvalid: null, message: "" };
     }
 
-    if (regionXMunicipality) {
-      const mismatchMessage = `${regionXMunicipality} is detected under Region X - Northern Mindanao. Please select Region X or enter a municipality from the selected region.`;
+    const matchingRegions = getMunicipalityRegionMatches(municipalityValue)
+      .filter((region) => region !== regionValue);
+
+    if (matchingRegions.length === 1) {
+      const mismatchMessage = municipalityValue + " is listed in " + matchingRegions[0]
+        + ". Please choose a municipality or city in " + regionValue + ".";
       markInvalid(municipalityCityInput);
       clearFieldError(municipalityCityInput);
       setMunicipalityCityHint(mismatchMessage, "invalid");
@@ -4331,8 +4213,34 @@ document.addEventListener("DOMContentLoaded", function () {
       };
     }
 
+    const suggestions = getMunicipalitySuggestions(municipalityValue, regionOptions);
+    if (suggestions.length > 0) {
+      const preview = suggestions.slice(0, 3).join(", ");
+      const suggestionMessage = suggestions.length === 1
+        ? "Possible match in " + regionValue + ": " + suggestions[0] + "."
+        : "Possible matches in " + regionValue + ": " + preview + (suggestions.length > 3 ? "..." : "");
+
+      clearInvalid(municipalityCityInput);
+      setMunicipalityCityHint(suggestionMessage);
+      return { ok: true, firstInvalid: null, message: "" };
+    }
+
+    const invalidMessage = "No municipality/city match detected for " + regionValue
+      + ". Please choose a valid entry from that region.";
+
+    if (forceValidation || municipalityValue.length >= 3) {
+      markInvalid(municipalityCityInput);
+      clearFieldError(municipalityCityInput);
+      setMunicipalityCityHint(invalidMessage, "invalid");
+      return {
+        ok: false,
+        firstInvalid: municipalityCityInput,
+        message: "Please choose a municipality or city from " + regionValue + ".",
+      };
+    }
+
     clearInvalid(municipalityCityInput);
-    setMunicipalityCityHint("The municipality or city should match the selected Philippine region.");
+    setMunicipalityCityHint("Choose a valid municipality or city from " + regionValue + ".");
     return { ok: true, firstInvalid: null, message: "" };
   }
 
@@ -4342,7 +4250,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const countryValue = (countrySelect?.value || "").trim();
     const regionValue = (regionOfOriginSelect?.value || "").trim();
     const isPhilippines = countryValue === "Philippines";
-    const regionXSelected = isPhilippines && isRegionXSelection(regionValue);
+    const regionOptions = philippineMunicipalityData.regions[regionValue];
 
     if (municipalityCityOptions) {
       municipalityCityOptions.innerHTML = "";
@@ -4350,32 +4258,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     municipalityCityInput.placeholder = "Enter municipality/city";
 
-    if (!isPhilippines) {
+    if (!isPhilippines || !regionOptions) {
       municipalityCityInput.removeAttribute("list");
       syncMunicipalityCityLiveDetection();
       return;
     }
 
-    if (regionXSelected) {
-      municipalityCityInput.setAttribute("list", "municipalityCityOptions");
-      municipalityCityInput.placeholder = "Select or type a Region X municipality/city";
+    municipalityCityInput.setAttribute("list", "municipalityCityOptions");
+    municipalityCityInput.placeholder = "Select or type a municipality/city in " + regionValue;
 
-      if (municipalityCityOptions) {
-        regionXMunicipalityOptions.forEach((option) => {
-          const datalistOption = document.createElement("option");
-          datalistOption.value = option;
-          municipalityCityOptions.appendChild(datalistOption);
-        });
-      }
-      syncMunicipalityCityLiveDetection();
-      return;
-    }
-
-    municipalityCityInput.removeAttribute("list");
-
-    if (getRegionXMunicipalityMatch(municipalityCityInput.value)) {
-      syncMunicipalityCityLiveDetection({ forceValidation: true });
-      return;
+    if (municipalityCityOptions) {
+      regionOptions.forEach((option) => {
+        const datalistOption = document.createElement("option");
+        datalistOption.value = option;
+        municipalityCityOptions.appendChild(datalistOption);
+      });
     }
 
     syncMunicipalityCityLiveDetection();
