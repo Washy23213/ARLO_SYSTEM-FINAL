@@ -15,9 +15,8 @@
     <section class="alumni-jobs-summary">
         <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div>
-                <p class="alumni-jobs-summary__kicker">Approved Opportunities</p>
-                <h2 class="alumni-jobs-summary__title">Browse roles shared for CMU alumni</h2>
-                <p class="alumni-jobs-summary__copy">Explore reviewed openings from employers and alumni. New postings still appear in notifications, while this page keeps the full job board in one place.</p>
+                <p class="alumni-jobs-summary__kicker">Career board</p>
+                <h2 class="alumni-jobs-summary__title">Job Opportunities</h2>
             </div>
             <div class="alumni-jobs-summary__metric">
                 <span class="alumni-jobs-summary__metric-icon">
@@ -34,9 +33,7 @@
     <section class="alumni-job-board">
         <div class="alumni-job-board__header">
             <div>
-                <p class="alumni-job-board__kicker">Job Board</p>
-                <h2 data-tooltip="Approved job opportunities available to alumni" class="alumni-job-board__title">Current Job Opportunities</h2>
-                <p class="alumni-job-board__copy">Reviewed job postings available to alumni.</p>
+                <h2 class="alumni-job-board__title">Open roles</h2>
             </div>
             <span class="alumni-job-board__count">
                 <i class='bx bx-list-ul text-lg'></i>

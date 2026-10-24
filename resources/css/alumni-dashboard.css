@@ -160,6 +160,10 @@
     line-height: 1.08;
 }
 
+.alumni-portal .alumni-job-board__title {
+    margin-top: 0;
+}
+
 .alumni-portal .alumni-jobs-summary__copy,
 .alumni-portal .alumni-job-board__copy {
     color: #486256;
@@ -1517,6 +1521,35 @@ body.alumni-dashboard-page .alumni-job-opportunities-section {
     height: 10rem;
     object-fit: cover;
     background: #e8f1eb;
+}
+
+.alumni-portal .alumni-dashboard-news-card__image {
+    transform-origin: center;
+    animation: alumniNewsImageDrift 18s ease-in-out infinite alternate;
+    will-change: transform;
+}
+
+.alumni-portal .alumni-dashboard-news-card:hover .alumni-dashboard-news-card__image,
+.alumni-portal .alumni-dashboard-news-card:focus-visible .alumni-dashboard-news-card__image {
+    animation-play-state: paused;
+}
+
+@keyframes alumniNewsImageDrift {
+    from {
+        transform: scale(1.04) translate3d(0, 0, 0);
+    }
+
+    to {
+        transform: scale(1.12) translate3d(-1.2%, 0.5%, 0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .alumni-portal .alumni-dashboard-news-card__image {
+        animation: none;
+        transform: none;
+        will-change: auto;
+    }
 }
 
 .alumni-portal .alumni-profile-reminder {

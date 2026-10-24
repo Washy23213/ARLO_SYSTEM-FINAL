@@ -76,9 +76,9 @@
 
     if ($dashboardNewsCards->isEmpty()) {
         $dashboardNewsCards = collect([
-            ['category' => 'Community', 'title' => 'Alumni community spotlight', 'summary' => 'A sample preview for alumni stories, milestones, and achievements shared by CMU OARL.', 'image' => asset('images/features/profile.jpg'), 'date' => 'Portal preview', 'expires' => null, 'url' => route('notifications.index'), 'sample' => true],
-            ['category' => 'Career update', 'title' => 'Career connections and opportunities', 'summary' => 'A sample preview for career resources and opportunities shared with CMU alumni.', 'image' => asset('images/features/jobs.jpg'), 'date' => 'Portal preview', 'expires' => null, 'url' => route('notifications.index'), 'sample' => true],
-            ['category' => 'Campus news', 'title' => 'News from the CMU community', 'summary' => 'A sample preview for announcements, events, and updates from the university community.', 'image' => asset('images/features/notifications.jpg'), 'date' => 'Portal preview', 'expires' => null, 'url' => route('notifications.index'), 'sample' => true],
+            ['category' => 'Community', 'title' => 'Alumni community spotlight', 'summary' => 'Alumni stories and achievements from across CMU.', 'image' => asset('images/features/profile.jpg'), 'date' => null, 'expires' => null, 'url' => route('notifications.index'), 'sample' => true],
+            ['category' => 'Career update', 'title' => 'Career connections and opportunities', 'summary' => 'Career resources and opportunities for CMU alumni.', 'image' => asset('images/features/jobs.jpg'), 'date' => null, 'expires' => null, 'url' => route('notifications.index'), 'sample' => true],
+            ['category' => 'Campus news', 'title' => 'News from the CMU community', 'summary' => 'University announcements and events.', 'image' => asset('images/features/notifications.jpg'), 'date' => null, 'expires' => null, 'url' => route('notifications.index'), 'sample' => true],
         ]);
     }
     $checklistTargets = [
@@ -321,8 +321,8 @@
         <div class="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-3">
             @if($dashboardNewsCards->isNotEmpty())
                 @foreach($dashboardNewsCards as $newsCard)
-                    <a href="{{ $newsCard['url'] }}" class="alumni-dashboard-feature-card group overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-300">
-                        <img src="{{ $newsCard['image'] }}" alt="" class="alumni-dashboard-feature-card__image">
+                    <a href="{{ $newsCard['url'] }}" class="alumni-dashboard-feature-card alumni-dashboard-news-card group overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-300">
+                        <img src="{{ $newsCard['image'] }}" alt="" class="alumni-dashboard-feature-card__image alumni-dashboard-news-card__image">
                         <span class="block p-4">
                             <span class="flex items-center justify-between gap-2">
                                 <span class="text-xs font-semibold text-slate-500">{{ $newsCard['category'] }}</span>
@@ -334,7 +334,9 @@
                             </span>
                             <span class="mt-2 block line-clamp-2 text-base font-extrabold leading-snug text-slate-950 group-hover:text-emerald-900">{{ $newsCard['title'] }}</span>
                             <span class="mt-2 block line-clamp-2 min-h-10 text-sm leading-5 text-slate-600">{{ $newsCard['summary'] }}</span>
-                            <span class="mt-4 block border-t border-slate-100 pt-3 text-xs font-medium text-slate-500">{{ $newsCard['date'] }}</span>
+                            @if($newsCard['date'])
+                                <span class="mt-4 block border-t border-slate-100 pt-3 text-xs font-medium text-slate-500">{{ $newsCard['date'] }}</span>
+                            @endif
                         </span>
                     </a>
                 @endforeach
@@ -343,7 +345,7 @@
             @endif
         </div>
         @if($dashboardNewsCards->contains(fn ($newsCard) => $newsCard['sample']))
-            <p class="px-5 pb-5 text-xs text-slate-500">Sample cards are for preview only. Official announcements will replace them when published.</p>
+            <p class="px-5 pb-5 text-xs text-slate-500">Sample previews. Official updates appear here when published.</p>
         @endif
     </section>
 
