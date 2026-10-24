@@ -2,6 +2,7 @@ import './bootstrap';
 import 'boxicons/css/boxicons.min.css';
 import './login';
 import './registration';
+import './portal-quick-search';
 import Chart from 'chart.js/auto';
 
 window.Chart = Chart;

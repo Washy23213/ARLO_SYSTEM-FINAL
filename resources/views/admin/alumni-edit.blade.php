@@ -125,16 +125,16 @@
                         @endfor
                     </select>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Employment Status</label>
+                <div class="tracer-guide-field" data-tracer-guide="Choose the alumni's latest known employment status." data-admin-employment-guide data-guide-active="Choose the alumni's latest known employment status." data-guide-locked="When set to unemployed, employment detail fields are disabled.">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Employment Status <i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i></label>
                     <select id="alumni_edit_employment_status_select" name="employed_after_grad" class="pretty-select w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                         <option value="">Unknown</option>
                         <option value="Yes" {{ old('employed_after_grad', $alumni->employed_after_grad) === 'Yes' ? 'selected' : '' }}>Employed</option>
                         <option value="No" {{ old('employed_after_grad', $alumni->employed_after_grad) === 'No' ? 'selected' : '' }}>Unemployed</option>
                     </select>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Industry</label>
+                <div class="tracer-guide-field" data-tracer-guide="Select the industry that best matches the alumni's current work." data-admin-employment-guide data-guide-active="Select the industry that best matches the alumni's current work." data-guide-locked="Industry is unavailable while the employment status is unemployed.">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Industry <i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i></label>
                     <select id="alumni_edit_industry_select" name="industry" class="pretty-select w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                         <option value="">Select Industry</option>
                         @foreach($industryOptions as $option)
@@ -142,23 +142,23 @@
                         @endforeach
                     </select>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Current Position</label>
+                <div class="tracer-guide-field" data-tracer-guide="Enter the alumni's current job title." data-admin-employment-guide data-guide-active="Enter the alumni's current job title." data-guide-locked="Current position is unavailable while the employment status is unemployed.">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Current Position <i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i></label>
                     <input id="alumni_edit_current_position_input" type="text" name="current_position" value="{{ old('current_position', $alumni->current_position) }}" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Current Company / Business</label>
+                <div class="tracer-guide-field" data-tracer-guide="Enter the alumni's current employer or business." data-admin-employment-guide data-guide-active="Enter the alumni's current employer or business." data-guide-locked="Employer details are unavailable while the employment status is unemployed.">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Current Company / Business <i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i></label>
                     <input id="alumni_edit_company_input" type="text" name="company" value="{{ old('company', $alumni->company) }}" placeholder="Enter company or business name" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Further Education</label>
+                <div id="alumni_edit_further_education_group" class="tracer-guide-field" data-tracer-guide="Choose whether the alumni continued with further education or training." data-guide-yes="Further education is recorded. Select the highest level in the field below." data-guide-no="Choose Yes to add a further education or training level.">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Further Education <i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i></label>
                     <select id="alumni_edit_further_education_select" name="further_education" class="pretty-select w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                         <option value="0" {{ (string) $furtherEducationValue === '0' ? 'selected' : '' }}>No</option>
                         <option value="1" {{ (string) $furtherEducationValue === '1' ? 'selected' : '' }}>Yes</option>
                     </select>
                 </div>
-                <div id="alumni_edit_education_level_group" class="{{ (string) $furtherEducationValue === '1' ? '' : 'hidden' }}">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Education Level</label>
+                <div id="alumni_edit_education_level_group" class="tracer-guide-field {{ (string) $furtherEducationValue === '1' ? '' : 'hidden' }}" data-tracer-guide="Select the highest further education or training level completed.">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Education Level <i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i></label>
                     <select id="alumni_edit_education_level_select" name="education_level" class="pretty-select w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                         <option value="">Select Education Level</option>
                         @foreach($educationOptions as $option)
@@ -166,8 +166,8 @@
                         @endforeach
                     </select>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <div class="tracer-guide-field" data-tracer-guide="Select where the alumni's current work is based." data-admin-employment-guide data-guide-active="Select where the alumni's current work is based." data-guide-locked="Work location is unavailable while the employment status is unemployed.">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Location <i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i></label>
                     <select id="alumni_edit_location_select" name="location" class="pretty-select w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                         <option value="">Select Location</option>
                         @foreach($locationOptions as $option)
@@ -179,8 +179,8 @@
                         <input id="alumni_edit_specific_location_input" type="text" name="specific_location" value="{{ $specificLocation }}" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter specific location">
                     </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Salary Range</label>
+                <div class="tracer-guide-field" data-tracer-guide="Select the alumni's current monthly salary range." data-admin-employment-guide data-guide-active="Select the alumni's current monthly salary range." data-guide-locked="Salary range is unavailable while the employment status is unemployed.">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Salary Range <i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i></label>
                     <select id="alumni_edit_salary_range_select" name="salary_range" class="pretty-select w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                         <option value="">Select Salary Range</option>
                         @foreach($salaryOptions as $option)
@@ -248,6 +248,7 @@
         const returnLinks = document.querySelectorAll('[data-alumni-return-link]');
         const form = document.querySelector('form[data-admin-ajax-kind="alumni"]');
         const furtherEducationSelect = document.getElementById('alumni_edit_further_education_select');
+        const furtherEducationGuide = document.getElementById('alumni_edit_further_education_group');
         const educationLevelGroup = document.getElementById('alumni_edit_education_level_group');
         const educationLevelSelect = document.getElementById('alumni_edit_education_level_select');
 
@@ -264,6 +265,13 @@
             const hasFurtherEducation = String(furtherEducationSelect?.value || '0') === '1';
 
             educationLevelGroup?.classList.toggle('hidden', !hasFurtherEducation);
+            if (furtherEducationGuide) {
+                const guideMessage = hasFurtherEducation ? furtherEducationGuide.dataset.guideYes : furtherEducationGuide.dataset.guideNo;
+                if (guideMessage) {
+                    furtherEducationGuide.dataset.tracerGuide = guideMessage;
+                    furtherEducationSelect?.setAttribute('aria-description', guideMessage);
+                }
+            }
 
             if (educationLevelSelect) {
                 educationLevelSelect.disabled = !hasFurtherEducation;

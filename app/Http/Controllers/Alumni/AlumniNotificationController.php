@@ -26,6 +26,9 @@ class AlumniNotificationController extends Controller
     )
     {
         $status = strtolower(trim((string) $request->query('status', 'all')));
+        $search = trim((string) $request->query('search', ''));
+        $from = $this->normalizeDateFilter($request->query('from'));
+        $to = $this->normalizeDateFilter($request->query('to'));
 
         if (!in_array($status, ['all', 'unread', 'read'], true)) {
             $status = 'all';
@@ -40,7 +43,7 @@ class AlumniNotificationController extends Controller
         $readNotifications = 0;
 
         $mergedItems = $activityFeedService->activityItemsFor($request->user());
-        $filteredItems = $this->filterActivityItems($mergedItems, $status);
+        $filteredItems = $this->filterActivityItems($mergedItems, $status, $search, $from, $to);
         $activityItems = $this->paginateActivityItems($filteredItems, $request);
         $totalNotifications = $mergedItems->count();
         $unreadNotifications = $mergedItems->where('is_unread', true)->count();
@@ -55,6 +58,9 @@ class AlumniNotificationController extends Controller
         return view('notifications', compact(
             'activityItems',
             'status',
+            'search',
+            'from',
+            'to',
             'totalNotifications',
             'unreadNotifications',
             'readNotifications'
@@ -286,20 +292,60 @@ class AlumniNotificationController extends Controller
             || str_starts_with($path, '/notifications/');
     }
 
-    protected function filterActivityItems(Collection $items, string $status): Collection
+    protected function filterActivityItems(Collection $items, string $status, string $search, ?string $from, ?string $to): Collection
     {
-        return match ($status) {
+        $fromTimestamp = $from !== null ? Carbon::parse($from)->timestamp : null;
+        $toTimestamp = $to !== null ? Carbon::parse($to)->endOfMinute()->timestamp : null;
+
+        return (match ($status) {
             'unread' => $items->where('is_unread', true)->values(),
             'read' => $items->where('is_unread', false)->values(),
             default => $items->values(),
-        };
+        })->filter(function (array $item) use ($search, $fromTimestamp, $toTimestamp): bool {
+            $itemTimestamp = (int) ($item['sort_timestamp'] ?? 0);
+
+            if ($fromTimestamp !== null && $itemTimestamp < $fromTimestamp) {
+                return false;
+            }
+
+            if ($toTimestamp !== null && $itemTimestamp > $toTimestamp) {
+                return false;
+            }
+
+            if ($search === '') {
+                return true;
+            }
+
+            $searchableText = implode(' ', [
+                (string) ($item['title'] ?? ''),
+                (string) ($item['summary'] ?? ''),
+                (string) ($item['category'] ?? ''),
+                (string) ($item['region'] ?? ''),
+                (string) ($item['priority'] ?? ''),
+            ]);
+
+            return str_contains(mb_strtolower($searchableText), mb_strtolower($search));
+        })->values();
+    }
+
+    protected function normalizeDateFilter(mixed $value): ?string
+    {
+        if (! is_string($value) || trim($value) === '') {
+            return null;
+        }
+
+        try {
+            return Carbon::parse($value)->format('Y-m-d H:i:s');
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     protected function paginateActivityItems(Collection $items, Request $request, int $perPage = 10): LengthAwarePaginator
     {
         $page = max(1, (int) $request->query('page', 1));
 
-        return new LengthAwarePaginator(
+        return (new LengthAwarePaginator(
             $items->forPage($page, $perPage)->values(),
             $items->count(),
             $perPage,
@@ -308,6 +354,6 @@ class AlumniNotificationController extends Controller
                 'path' => $request->url(),
                 'pageName' => 'page',
             ]
-        );
+        ))->appends($request->query());
     }
 }

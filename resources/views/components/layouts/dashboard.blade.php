@@ -76,6 +76,50 @@
             'badge' => null,
         ],
     ];
+    $quickSearchItems = array_map(static function (array $item): array {
+        $aliases = match ($item['label']) {
+            'Dashboard' => 'home overview recent activity',
+            'Profile' => 'personal information contact phone email birthdate college degree education address',
+            'Tracer' => 'tracer survey employment work company salary graduate employment education',
+            'Job Opportunities' => 'job board jobs openings career employer posting',
+            'Feedback' => 'comments suggestions teaching facilities experience survey',
+            'Settings' => 'account security password devices sessions privacy delete account',
+            'Help Desk' => 'help support guide frequently asked questions',
+            default => '',
+        };
+        $item['terms'] = trim(($item['description'] ?? '').' '.$item['label'].' '.$aliases);
+        return $item;
+    }, $navigationItems);
+    array_unshift($quickSearchItems, [
+        'label' => 'Notifications',
+        'description' => 'Updates and unread notices',
+        'route' => route('notifications.index'),
+        'icon' => 'bx-bell',
+        'terms' => 'notification alerts announcements unread updates news',
+    ]);
+    $quickSearchItems = array_merge($quickSearchItems, [
+        [
+            'label' => 'Change password',
+            'description' => 'Account security',
+            'route' => route('settings').'#password-settings',
+            'icon' => 'bx-lock-alt',
+            'terms' => 'settings password change reset security',
+        ],
+        [
+            'label' => 'Signed-in devices',
+            'description' => 'Manage active sessions',
+            'route' => route('settings').'#device-sessions',
+            'icon' => 'bx-devices',
+            'terms' => 'settings devices sessions login browser sign out',
+        ],
+        [
+            'label' => 'Close account',
+            'description' => 'Account closure settings',
+            'route' => route('settings').'#danger-zone',
+            'icon' => 'bx-user-x',
+            'terms' => 'settings delete account close account danger zone',
+        ],
+    ]);
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -560,6 +604,10 @@
                         @endif
                     </a>
                 @endforeach
+            </div>
+
+            <div class="alumni-primary-nav__quick-search">
+                @include('components.portal-quick-search', ['items' => $quickSearchItems])
             </div>
 
             <div class="alumni-primary-nav__tools" aria-label="Account tools">

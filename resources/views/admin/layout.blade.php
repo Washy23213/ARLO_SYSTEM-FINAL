@@ -119,6 +119,28 @@
             fn (array $item): bool => empty($item['permission']) || $canAccessAdminPermission($item['permission'])
         ));
     }
+    $quickSearchItems = array_map(static function (array $item): array {
+        $aliases = match ($item['label']) {
+            'Alumni' => 'graduates users roster records profile tracer',
+            'Jobs' => 'job opportunities openings postings career',
+            'Feedback' => 'suggestions comments responses',
+            'Analytics' => 'reports charts employment statistics',
+            'Audit Logs' => 'history actions activity security logs',
+            'Admin Accounts' => 'superadmin administrators users permissions',
+            default => '',
+        };
+        $item['terms'] = trim(($item['description'] ?? '').' '.$item['label'].' '.$aliases);
+        return $item;
+    }, $navigationItems);
+    if ($canAccessAdminNotifications) {
+        $quickSearchItems[] = [
+            'label' => 'Notifications',
+            'description' => 'Announcements and updates',
+            'route' => route('admin.announcements'),
+            'icon' => 'bx-bell',
+            'terms' => 'notifications announcement announcements publish update facebook news',
+        ];
+    }
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -599,6 +621,7 @@
                         </div>
                     </div>
                     <div class="alumni-topbar__toolbar">
+                        @include('components.portal-quick-search', ['items' => $quickSearchItems])
                         <div class="alumni-topbar__actions">
                             @if($isSuperAdminConsole)
                                 <a href="{{ route('super-admin.admin-accounts.index') }}" class="alumni-topbar-notice">

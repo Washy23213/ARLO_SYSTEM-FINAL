@@ -147,6 +147,16 @@
             const locked = isEmploymentLocked();
             const fieldIds = Array.isArray(config.employmentFieldIds) ? config.employmentFieldIds : [];
 
+            document.querySelectorAll('[data-admin-employment-guide]').forEach((guideField) => {
+                const message = locked ? guideField.dataset.guideLocked : guideField.dataset.guideActive;
+                const control = guideField.querySelector('input, select, textarea');
+
+                if (message) {
+                    guideField.dataset.tracerGuide = message;
+                    control?.setAttribute('aria-description', message);
+                }
+            });
+
             fieldIds.forEach((fieldId) => {
                 const field = getField(fieldId);
 

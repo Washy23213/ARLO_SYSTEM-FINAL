@@ -97,6 +97,7 @@ class AlumniNotificationFeedService
                 'category' => $category,
                 'title' => data_get($notification->data, 'title', 'System update'),
                 'summary' => data_get($notification->data, 'summary', 'There is a new update waiting in your portal.'),
+                'region' => data_get($notification->data, 'region', data_get($notification->data, 'location')),
                 'priority' => data_get($notification->data, 'priority'),
                 'status' => data_get($notification->data, 'status'),
                 'icon' => $this->resolveActivityIcon($category, $type, $isFacebookAnnouncement),
@@ -116,6 +117,13 @@ class AlumniNotificationFeedService
                 $normalizedCreatedAt = $this->normalizeDateTime($createdAt);
                 $isFacebookAnnouncement = filled($announcement->facebook_post_id ?? null) || filled($announcement->facebook_post_url ?? null);
                 $announcementId = (string) ($announcement->id ?? '');
+                $region = trim((string) ($announcement->event_location ?? ''));
+
+                if ($region === '' && filled($announcement->target_department ?? null)) {
+                    $region = 'Department: '.(string) $announcement->target_department;
+                } elseif ($region === '' && filled($announcement->target_audience ?? null) && $announcement->target_audience !== 'All') {
+                    $region = 'Audience: '.(string) $announcement->target_audience;
+                }
 
                 return [
                     'key' => 'announcement:' . $announcement->id,
@@ -123,6 +131,7 @@ class AlumniNotificationFeedService
                     'category' => 'Announcement',
                     'title' => $announcement->title,
                     'summary' => Str::limit((string) ($announcement->content ?? 'A new alumni announcement has been published.'), 140),
+                    'region' => $region !== '' ? $region : null,
                     'priority' => $announcement->priority ?? null,
                     'status' => null,
                     'icon' => $this->resolveActivityIcon('Announcement', (string) ($announcement->type ?? ''), $isFacebookAnnouncement),
@@ -150,6 +159,7 @@ class AlumniNotificationFeedService
                 'category' => 'Job Opportunity',
                 'title' => $job->title,
                 'summary' => implode(' | ', $summaryParts) ?: 'A new job opportunity is available in the portal.',
+                'region' => $job->location ?? null,
                 'priority' => $job->type ?? null,
                 'status' => null,
                 'icon' => $this->resolveActivityIcon('Job Opportunity'),

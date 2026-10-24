@@ -9,6 +9,8 @@
     $targetDepartmentOptions = $targetDepartmentOptions ?? [];
     $targetGraduationYearOptions = $targetGraduationYearOptions ?? [];
     $announcementCreateModalOpen = request()->boolean('create') || ($errors->any() && old('title') !== null);
+    $filterFrom = $from ? \Carbon\Carbon::parse($from)->format('Y-m-d\\TH:i') : '';
+    $filterTo = $to ? \Carbon\Carbon::parse($to)->format('Y-m-d\\TH:i') : '';
 @endphp
 <div class="space-y-6">
     <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
@@ -36,89 +38,49 @@
         </button>
     </div>
 
-    {{-- Statistics --}}
-    <div class="portal-stat-grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-        <div data-tooltip="All saved notification announcement records" data-portal-card-link="{{ route('admin.announcements') }}#notification-records" role="link" tabindex="0" aria-label="Open notification records" class="portal-stat-card portal-stat-card--blue">
-            <div class="portal-stat-card__layout">
-                <span class="portal-stat-card__icon"><i class='bx bx-bell text-2xl'></i></span>
-                <div class="portal-stat-card__content">
-                    <p class="portal-stat-card__kicker">Notification Records</p>
-                    <p class="portal-stat-card__value">{{ $notificationRecordsCount }}</p>
-                    <p class="portal-stat-card__meta">Saved announcements</p>
-                </div>
-            </div>
-        </div>
-        <div data-tooltip="Published notifications that are not expired and can be seen by alumni" data-portal-card-link="{{ route('admin.announcements', ['status' => 'published']) }}#notification-records" role="link" tabindex="0" aria-label="Show published notifications" class="portal-stat-card portal-stat-card--green">
-            <div class="portal-stat-card__layout">
-                <span class="portal-stat-card__icon"><i class='bx bx-check-circle text-2xl'></i></span>
-                <div class="portal-stat-card__content">
-                    <p class="portal-stat-card__kicker">Visible to Alumni</p>
-                    <p class="portal-stat-card__value">{{ $activeAnnouncements }}</p>
-                    <p class="portal-stat-card__meta">Published and current</p>
-                </div>
-            </div>
-        </div>
-        <div data-tooltip="Published High or Urgent notifications that alumni can currently see" data-portal-card-link="{{ route('admin.announcements', ['priority' => 'High']) }}#notification-records" role="link" tabindex="0" aria-label="Show priority notifications" class="portal-stat-card portal-stat-card--purple">
-            <div class="portal-stat-card__layout">
-                <span class="portal-stat-card__icon"><i class='bx bx-error-circle text-2xl'></i></span>
-                <div class="portal-stat-card__content">
-                    <p class="portal-stat-card__kicker">Priority Notices</p>
-                    <p class="portal-stat-card__value">{{ $priorityNoticeCount }}</p>
-                    <p class="portal-stat-card__meta">High or urgent</p>
-                </div>
-            </div>
-        </div>
-        <div data-tooltip="Notification records imported from or linked to Facebook posts" data-portal-card-link="{{ route('admin.announcements') }}#notification-records" role="link" tabindex="0" aria-label="Open Facebook synced notification records" class="portal-stat-card portal-stat-card--orange">
-            <div class="portal-stat-card__layout">
-                <span class="portal-stat-card__icon"><i class='bx bxl-facebook-circle text-2xl'></i></span>
-                <div class="portal-stat-card__content">
-                    <p class="portal-stat-card__kicker">Facebook Synced</p>
-                    <p class="portal-stat-card__value">{{ $facebookSyncedCount }}</p>
-                    <p class="portal-stat-card__meta">Linked FB posts</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
     {{-- Filters and Search --}}
-    <div data-tooltip="Use filters to find announcements faster" class="mb-6 overflow-hidden rounded-[1.5rem] border border-gray-200 bg-white shadow-sm">
-        <div class="border-b border-slate-200 bg-gradient-to-r from-white via-slate-50 to-white px-5 py-4">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Filter Notifications</p>
-            <p class="mt-1 text-sm text-slate-600">Search and narrow the notification records list.</p>
-        </div>
-        <form method="GET" action="{{ route('admin.announcements') }}" data-portal-preserve-scroll="true" data-portal-skip-animation="true" class="space-y-5 px-5 py-5">
-            <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(180px,0.8fr)_minmax(180px,0.8fr)_minmax(180px,0.8fr)]">
+    <div class="mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <form method="GET" action="{{ route('admin.announcements') }}" data-portal-preserve-scroll="true" data-portal-skip-animation="true" class="space-y-4 p-4">
+            <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-[minmax(220px,1.5fr)_minmax(175px,1fr)_minmax(175px,1fr)_minmax(140px,0.8fr)_minmax(140px,0.8fr)_minmax(140px,0.8fr)]">
                 <div class="space-y-2">
-                    <label for="announcementFilterSearch" class="block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Keyword</label>
+                    <label for="announcementFilterSearch" class="sr-only">Filter notifications by keyword</label>
                     <input
                         id="announcementFilterSearch"
-                        type="text"
+                        type="search"
                         name="search"
                         value="{{ $search ?? '' }}"
-                        placeholder="Search announcements, content, or type"
-                        class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition-all duration-200 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100"
+                        placeholder="Filter notifications"
+                        class="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-700 shadow-sm placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100"
                     >
                 </div>
-                <div class="space-y-2">
-                    <label for="announcementFilterType" class="block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Type</label>
-                    <select id="announcementFilterType" name="type" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition-all duration-200 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100">
+                <div>
+                    <label for="announcementFilterFrom" class="sr-only">From date and time</label>
+                    <input id="announcementFilterFrom" type="datetime-local" name="from" value="{{ $filterFrom }}" aria-label="From date and time" class="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-700 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100">
+                </div>
+                <div>
+                    <label for="announcementFilterTo" class="sr-only">To date and time</label>
+                    <input id="announcementFilterTo" type="datetime-local" name="to" value="{{ $filterTo }}" aria-label="To date and time" class="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-700 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100">
+                </div>
+                <div>
+                    <label for="announcementFilterType" class="sr-only">Notification type</label>
+                    <select id="announcementFilterType" name="type" aria-label="Notification type" class="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-700 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100">
                         <option value="">All Types</option>
                         @foreach(($typeOptions ?? collect()) as $type)
                             <option value="{{ $type }}" {{ ($selectedType ?? '') === $type ? 'selected' : '' }}>{{ $type }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="space-y-2">
-                    <label for="announcementFilterStatus" class="block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Status</label>
-                    <select id="announcementFilterStatus" name="status" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition-all duration-200 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100">
+                <div>
+                    <label for="announcementFilterStatus" class="sr-only">Notification status</label>
+                    <select id="announcementFilterStatus" name="status" aria-label="Notification status" class="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-700 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100">
                         <option value="">All Status</option>
                         <option value="published" {{ ($selectedStatus ?? '') === 'published' ? 'selected' : '' }}>Published</option>
                         <option value="draft" {{ ($selectedStatus ?? '') === 'draft' ? 'selected' : '' }}>Draft</option>
                     </select>
                 </div>
-                <div class="space-y-2">
-                    <label for="announcementFilterPriority" class="block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Priority</label>
-                    <select id="announcementFilterPriority" name="priority" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition-all duration-200 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100">
+                <div>
+                    <label for="announcementFilterPriority" class="sr-only">Notification priority</label>
+                    <select id="announcementFilterPriority" name="priority" aria-label="Notification priority" class="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-700 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100">
                         <option value="">All Priority</option>
                         @foreach(($priorityOptions ?? collect()) as $priority)
                             <option value="{{ $priority }}" {{ ($selectedPriority ?? '') === $priority ? 'selected' : '' }}>{{ $priority }}</option>
@@ -126,16 +88,14 @@
                     </select>
                 </div>
             </div>
-            <div class="flex flex-col gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:items-center sm:justify-between">
-                <p class="text-sm text-slate-500">Use one or more filters to refine the notification records table.</p>
+            <div class="flex flex-col gap-3 border-t border-slate-200 pt-3 sm:flex-row sm:items-center sm:justify-between">
+                <span class="text-sm text-slate-500">Filter notifications</span>
                 <div class="flex flex-col gap-3 sm:flex-row">
-                    <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-700">
-                        <i class='bx bx-filter-alt text-base'></i>
-                        Apply Filters
+                    <button type="submit" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-emerald-800 px-4 text-sm font-semibold text-white transition-colors hover:bg-emerald-900">
+                        <i class='bx bx-filter-alt text-base'></i>Filter
                     </button>
-                    <a href="{{ route('admin.announcements') }}" data-portal-preserve-scroll="true" data-portal-skip-animation="true" class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50">
-                        <i class='bx bx-reset text-base'></i>
-                        Reset
+                    <a href="{{ route('admin.announcements') }}" data-portal-preserve-scroll="true" data-portal-skip-animation="true" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50">
+                        <i class='bx bx-reset text-base'></i>Reset
                     </a>
                 </div>
             </div>
@@ -144,33 +104,34 @@
 
     {{-- Notifications Table --}}
     <div id="notification-records" class="scroll-mt-6 overflow-hidden rounded-[1.75rem] border border-emerald-950/10 bg-white/95 shadow-[0_24px_60px_rgba(7,24,14,0.13)]">
-        <div class="flex flex-col gap-4 border-b border-emerald-950/10 bg-gradient-to-r from-white via-emerald-50/80 to-amber-50/50 px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex flex-col gap-4 border-b border-slate-200 bg-white px-5 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
-                <p class="text-xs font-bold uppercase tracking-[0.2em] text-emerald-700/80">Notification Records</p>
-                <h2 class="mt-1 text-2xl font-extrabold tracking-normal text-slate-950">Notifications</h2>
+                <h2 class="text-lg font-bold text-slate-950">Notifications <span class="font-semibold text-slate-500">({{ number_format($announcements->total()) }})</span></h2>
+                <p class="mt-0.5 text-sm text-slate-500">{{ number_format($activeAnnouncements) }} published</p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
-                <span class="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white px-3.5 py-2 text-sm font-semibold text-emerald-800 shadow-sm">
-                    <i class='bx bx-list-ul text-lg'></i>
-                    {{ number_format($announcements->total()) }} records
-                </span>
-                <span class="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3.5 py-2 text-sm font-semibold text-amber-800 shadow-sm">
-                    <i class='bx bxl-facebook-circle text-lg text-[#1877F2]'></i>
-                    Facebook synced
-                </span>
+                <a href="{{ route('admin.announcements', request()->query()) }}" class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50" aria-label="Refresh notifications" title="Refresh"><i class='bx bx-refresh text-xl'></i></a>
+                <details class="relative">
+                    <summary class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50" aria-label="Notification table settings" title="Table settings"><i class='bx bx-cog text-xl'></i></summary>
+                    <div class="absolute right-0 top-12 z-20 w-52 rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
+                        <p class="px-2 pb-2 text-xs font-bold uppercase tracking-wide text-slate-500">Visible columns</p>
+                        @foreach (['title' => 'Title', 'message' => 'Message', 'region' => 'Region', 'service' => 'Service name', 'timestamp' => 'Timestamp', 'manage' => 'Actions'] as $column => $label)
+                            <label class="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-2 text-sm text-slate-700 hover:bg-slate-50"><input type="checkbox" checked data-notification-column-toggle="{{ $column }}" class="rounded border-slate-300 text-emerald-700 focus:ring-emerald-600">{{ $label }}</label>
+                        @endforeach
+                    </div>
+                </details>
             </div>
         </div>
         <div class="overflow-x-auto">
-            <table class="min-w-full border-separate border-spacing-0">
-                <thead class="bg-[#f3f7f3]">
-                    <tr>
-                        <th class="w-[46%] px-7 py-4 text-left text-[0.68rem] font-bold uppercase tracking-[0.22em] text-emerald-950/70">Announcement</th>
-                        <th class="px-5 py-4 text-left text-[0.68rem] font-bold uppercase tracking-[0.22em] text-emerald-950/70">Type</th>
-                        <th class="px-5 py-4 text-left text-[0.68rem] font-bold uppercase tracking-[0.22em] text-emerald-950/70">Priority</th>
-                        <th class="px-5 py-4 text-left text-[0.68rem] font-bold uppercase tracking-[0.22em] text-emerald-950/70">Published</th>
-                        <th class="px-5 py-4 text-left text-[0.68rem] font-bold uppercase tracking-[0.22em] text-emerald-950/70">Views</th>
-                        <th class="px-5 py-4 text-left text-[0.68rem] font-bold uppercase tracking-[0.22em] text-emerald-950/70">Status</th>
-                        <th class="px-7 py-4 text-right text-[0.68rem] font-bold uppercase tracking-[0.22em] text-emerald-950/70">Manage</th>
+            <table class="min-w-[980px] w-full border-collapse text-left text-sm">
+                <thead class="bg-slate-50 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-slate-600">
+                    <tr class="border-b border-slate-200">
+                        <th scope="col" data-notification-column="title" class="w-[23%] px-5 py-3">Title</th>
+                        <th scope="col" data-notification-column="message" class="w-[32%] px-5 py-3">Message</th>
+                        <th scope="col" data-notification-column="region" class="w-[15%] px-5 py-3">Region</th>
+                        <th scope="col" data-notification-column="service" class="w-[12%] px-5 py-3">Service name</th>
+                        <th scope="col" data-notification-column="timestamp" class="w-[14%] px-5 py-3">Timestamp</th>
+                        <th scope="col" data-notification-column="manage" class="px-5 py-3 text-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-emerald-950/10 bg-white/80">
@@ -197,18 +158,25 @@
                         $previewText = trim((string) preg_replace('/Original Facebook post:\s*https?:\/\/\S+/i', '', $rawContent));
                         $previewText = $previewText !== '' ? \Illuminate\Support\Str::limit($previewText, 170) : 'No message provided.';
                         $publishedAt = $announcement->published_at ?? $announcement->created_at ?? null;
+                        $regionLabel = trim((string) ($announcement->event_location ?? ''));
+                        if ($regionLabel === '' && filled($announcement->target_department ?? null)) {
+                            $regionLabel = 'Department: '.(string) $announcement->target_department;
+                        }
+                        if ($regionLabel === '' && filled($announcement->target_audience ?? null) && $announcement->target_audience !== 'All') {
+                            $regionLabel = 'Audience: '.(string) $announcement->target_audience;
+                        }
+                        $regionLabel = $regionLabel !== '' ? $regionLabel : '—';
+                        $serviceLabel = $isFacebookPost ? 'Facebook' : 'CMU OARL';
                         $statusText = ($announcement->is_published ?? true) ? 'Published' : 'Draft';
                         $statusBadgeClasses = match ($statusText) {
                             'Published' => 'bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200',
                             default => 'bg-slate-100 text-slate-700 ring-1 ring-slate-200',
                         };
                         $isRead = (bool) ($announcement->is_read ?? false);
-                        $rowTone = $isRead
-                            ? 'bg-white/80 hover:bg-slate-50/80'
-                            : 'bg-emerald-50/70 shadow-[inset_4px_0_0_rgba(5,150,105,0.75)] hover:bg-emerald-50';
+                        $rowTone = $isRead ? 'bg-white hover:bg-slate-50' : 'bg-emerald-50/50 hover:bg-emerald-50';
                         $titleTone = $isRead ? 'font-bold text-slate-800' : 'font-black text-slate-950';
                         $previewTone = $isRead ? 'font-medium text-slate-500' : 'font-semibold text-slate-800';
-                        $metaTone = $isRead ? 'font-semibold text-slate-600' : 'font-extrabold text-slate-900';
+                        $metaTone = $isRead ? 'font-medium text-slate-600' : 'font-semibold text-slate-800';
                         $iconTone = $isFacebookPost
                             ? 'border-blue-100 bg-white text-[#1877F2] ring-1 ring-blue-100 shadow-sm'
                             : ($isRead
@@ -223,70 +191,37 @@
                         onclick="window.location='{{ $detailRoute }}'"
                         onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); window.location='{{ $detailRoute }}'; }"
                     >
-                        <td class="px-7 py-5 align-top">
-                            <div class="flex min-w-[28rem] items-start gap-4">
-                                <span class="mt-0.5 hidden h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl border text-xl transition-all sm:inline-flex {{ $iconTone }}">
-                                    <i class='bx {{ $isFacebookPost ? 'bxl-facebook-circle' : 'bxs-megaphone' }}'></i>
-                                </span>
+                        <td data-notification-column="title" class="px-5 py-4 align-top">
+                            <div class="flex min-w-0 items-start gap-3">
+                                <span class="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border text-lg {{ $iconTone }}"><i class='bx {{ $isFacebookPost ? 'bxl-facebook-circle' : 'bxs-megaphone' }}'></i></span>
                                 <div class="min-w-0">
-                                    <div class="flex flex-wrap items-center gap-2">
-                                        <h3 class="max-w-2xl text-base leading-snug tracking-normal {{ $titleTone }}">
-                                            {{ $announcement->title ?? 'N/A' }}
-                                        </h3>
-                                        @if($isFacebookPost)
-                                            <span class="inline-flex items-center gap-1.5 rounded-full border border-blue-100 bg-blue-50 px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.14em] text-blue-700">
-                                                <i class='bx bxl-facebook-circle text-sm text-[#1877F2]'></i>
-                                                Facebook
-                                            </span>
-                                        @endif
-                                        @unless($isRead)
-                                            <span class="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.14em] text-emerald-800">
-                                                <i class='bx bxs-envelope text-sm'></i>
-                                                Unread
-                                            </span>
-                                        @endunless
+                                    <h3 class="text-sm leading-5 {{ $titleTone }}">{{ $announcement->title ?? 'N/A' }}</h3>
+                                    <div class="mt-1.5 flex flex-wrap items-center gap-1.5">
+                                        <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[0.67rem] font-semibold text-slate-600">{{ $announcement->type ?? 'Update' }}</span>
+                                        <span class="rounded-full px-2 py-0.5 text-[0.67rem] font-semibold {{ $priorityBadgeClasses }}">{{ $announcementPriority }}</span>
+                                        <span class="rounded-full px-2 py-0.5 text-[0.67rem] font-semibold {{ $statusBadgeClasses }}">{{ $statusText }}</span>
+                                        @unless($isRead)<span class="rounded-full bg-emerald-100 px-2 py-0.5 text-[0.67rem] font-semibold text-emerald-800">Unread</span>@endunless
                                     </div>
-                                    <p class="mt-2 max-w-3xl text-sm leading-relaxed {{ $previewTone }}">
-                                        {{ $previewText }}
-                                    </p>
-                                    @if($sourceUrl !== '')
-                                        <a
-                                            href="{{ $sourceUrl }}"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            onclick="event.stopPropagation()"
-                                            onkeydown="event.stopPropagation()"
-                                            class="mt-3 inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800 transition-colors hover:bg-emerald-100"
-                                        >
-                                            <i class='bx bx-link-external text-sm'></i>
-                                            Original post
-                                        </a>
-                                    @endif
                                 </div>
                             </div>
                         </td>
-                        <td class="px-5 py-5 align-top text-sm {{ $metaTone }}">
-                            {{ $announcement->type ?? 'N/A' }}
+                        <td data-notification-column="message" class="px-5 py-4 align-top text-sm leading-5 {{ $previewTone }}">
+                            {{ $previewText }}
+                            @if($sourceUrl !== '')
+                                <a href="{{ $sourceUrl }}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()" class="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-blue-700 hover:underline"><i class='bx bx-link-external'></i>Original post</a>
+                            @endif
                         </td>
-                        <td class="px-5 py-5 align-top">
-                            <span class="inline-flex rounded-full px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-[0.14em] {{ $priorityBadgeClasses }}">
-                                {{ $announcementPriority }}
-                            </span>
+                        <td data-notification-column="region" class="px-5 py-4 align-top text-sm {{ $metaTone }}">
+                            {{ $regionLabel }}
                         </td>
-                        <td class="px-5 py-5 align-top text-sm {{ $metaTone }}">
-                            {{ !empty($publishedAt) ? \Carbon\Carbon::parse($publishedAt)->format('M d, Y') : 'N/A' }}
+                        <td data-notification-column="service" class="px-5 py-4 align-top text-sm {{ $metaTone }}">
+                            {{ $serviceLabel }}
                         </td>
-                        <td class="px-5 py-5 align-top">
-                            <span class="inline-flex h-9 min-w-9 items-center justify-center rounded-full bg-slate-100 px-3 text-sm font-bold text-slate-700">
-                                {{ number_format((int) ($announcement->views_count ?? 0)) }}
-                            </span>
+                        <td data-notification-column="timestamp" class="whitespace-nowrap px-5 py-4 align-top text-sm {{ $metaTone }}">
+                            <time datetime="{{ $publishedAt ? \Carbon\Carbon::parse($publishedAt)->toIso8601String() : '' }}">{{ $publishedAt ? \Carbon\Carbon::parse($publishedAt)->format('M d, Y') : 'N/A' }}</time>
+                            @if($publishedAt)<span class="mt-1 block text-xs font-medium text-slate-500">{{ \Carbon\Carbon::parse($publishedAt)->format('g:i A') }}</span>@endif
                         </td>
-                        <td class="px-5 py-5 align-top">
-                            <span class="inline-flex rounded-full px-3 py-1.5 text-xs font-bold {{ $statusBadgeClasses }}">
-                                {{ $statusText }}
-                            </span>
-                        </td>
-                        <td class="portal-row-actions px-7 py-5 align-top" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()">
+                        <td data-notification-column="manage" class="portal-row-actions px-5 py-4 align-top" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()">
                             <div class="flex items-center justify-end gap-2">
                                 <a
                                     href="{{ route('admin.announcements.edit', $announcement->id) }}"
@@ -317,7 +252,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="px-6 py-10">
+                        <td colspan="6" class="px-6 py-10">
                             <div class="empty-state-card mx-auto max-w-lg">
                                 <span class="empty-state-card__icon">
                                     <i class='bx bxs-megaphone'></i>

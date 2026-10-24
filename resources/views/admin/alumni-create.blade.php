@@ -138,16 +138,16 @@
                         @endfor
                     </select>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Employment Status</label>
+                <div class="tracer-guide-field" data-tracer-guide="Choose the alumni's latest known employment status." data-admin-employment-guide data-guide-active="Choose the alumni's latest known employment status." data-guide-locked="When set to unemployed, employment detail fields are disabled.">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Employment Status <i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i></label>
                     <select id="alumni_create_employment_status_select" name="employed_after_grad" class="pretty-select w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                         <option value="">Unknown</option>
                         <option value="Yes" {{ old('employed_after_grad') === 'Yes' ? 'selected' : '' }}>Employed</option>
                         <option value="No" {{ old('employed_after_grad') === 'No' ? 'selected' : '' }}>Unemployed</option>
                     </select>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Industry</label>
+                <div class="tracer-guide-field" data-tracer-guide="Select the industry that best matches the alumni's current work." data-admin-employment-guide data-guide-active="Select the industry that best matches the alumni's current work." data-guide-locked="Industry is unavailable while the employment status is unemployed.">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Industry <i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i></label>
                     <select id="alumni_create_industry_select" name="industry" class="pretty-select w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                         <option value="">Select Industry</option>
                         @foreach($industryOptions as $option)
@@ -155,16 +155,16 @@
                         @endforeach
                     </select>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Current Position</label>
+                <div class="tracer-guide-field" data-tracer-guide="Enter the alumni's current job title." data-admin-employment-guide data-guide-active="Enter the alumni's current job title." data-guide-locked="Current position is unavailable while the employment status is unemployed.">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Current Position <i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i></label>
                     <input id="alumni_create_current_position_input" type="text" name="current_position" value="{{ old('current_position') }}" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Current Company / Business</label>
+                <div class="tracer-guide-field" data-tracer-guide="Enter the alumni's current employer or business." data-admin-employment-guide data-guide-active="Enter the alumni's current employer or business." data-guide-locked="Employer details are unavailable while the employment status is unemployed.">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Current Company / Business <i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i></label>
                     <input id="alumni_create_company_input" type="text" name="company" value="{{ old('company') }}" placeholder="Enter company or business name" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <div class="tracer-guide-field" data-tracer-guide="Select where the alumni's current work is based." data-admin-employment-guide data-guide-active="Select where the alumni's current work is based." data-guide-locked="Work location is unavailable while the employment status is unemployed.">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Location <i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i></label>
                     <select id="alumni_create_location_select" name="location" class="pretty-select w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                         <option value="">Select Location</option>
                         @foreach($locationOptions as $option)
@@ -176,8 +176,8 @@
                         <input id="alumni_create_specific_location_input" type="text" name="specific_location" value="{{ old('specific_location') }}" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter specific location">
                     </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Salary Range</label>
+                <div class="tracer-guide-field" data-tracer-guide="Select the alumni's current monthly salary range." data-admin-employment-guide data-guide-active="Select the alumni's current monthly salary range." data-guide-locked="Salary range is unavailable while the employment status is unemployed.">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Salary Range <i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i></label>
                     <select id="alumni_create_salary_range_select" name="salary_range" class="pretty-select w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                         <option value="">Select Salary Range</option>
                         @foreach($salaryOptions as $option)

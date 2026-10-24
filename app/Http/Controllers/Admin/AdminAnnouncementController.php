@@ -14,6 +14,7 @@ use App\Services\FacebookPagePublisher;
 use App\Services\FacebookPostUrlResolver;
 use App\Support\PortalIndicatorState;
 use App\Support\SystemOptions;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -44,6 +45,8 @@ class AdminAnnouncementController extends Controller
         $selectedType = trim((string) $request->query('type', ''));
         $selectedStatus = strtolower(trim((string) $request->query('status', '')));
         $selectedPriority = trim((string) $request->query('priority', ''));
+        $from = $this->normalizeDateFilter($request->query('from'));
+        $to = $this->normalizeDateFilter($request->query('to'));
         $selectedStatus = in_array($selectedStatus, ['published', 'draft'], true) ? $selectedStatus : '';
 
         if ($this->tableExists('announcements')) {
@@ -59,6 +62,11 @@ class AdminAnnouncementController extends Controller
             }
             if ($this->columnExists('announcements', 'published_at')) {
                 $announcementColumns[] = 'published_at';
+            }
+            foreach (['event_location', 'target_audience', 'target_department'] as $optionalColumn) {
+                if ($this->columnExists('announcements', $optionalColumn)) {
+                    $announcementColumns[] = $optionalColumn;
+                }
             }
             if ($this->columnExists('announcements', 'facebook_post_url')) {
                 $announcementColumns[] = 'facebook_post_url';
@@ -83,6 +91,16 @@ class AdminAnnouncementController extends Controller
 
             if ($selectedPriority !== '') {
                 $query->where('priority', $selectedPriority);
+            }
+
+            $timestampExpression = $this->columnExists('announcements', 'published_at')
+                ? 'COALESCE(published_at, created_at)'
+                : 'created_at';
+            if ($from !== null) {
+                $query->whereRaw($timestampExpression.' >= ?', [$from]);
+            }
+            if ($to !== null) {
+                $query->whereRaw($timestampExpression.' <= ?', [$to]);
             }
 
             if ($this->columnExists('announcements', 'archived_at')) {
@@ -179,9 +197,24 @@ class AdminAnnouncementController extends Controller
             'selectedType',
             'selectedStatus',
             'selectedPriority',
+            'from',
+            'to',
             'typeOptions',
             'priorityOptions'
         ), $this->targetingOptions()));
+    }
+
+    protected function normalizeDateFilter(mixed $value): ?string
+    {
+        if (! is_string($value) || trim($value) === '') {
+            return null;
+        }
+
+        try {
+            return Carbon::parse($value)->format('Y-m-d H:i:s');
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     public function announcementCreate()
