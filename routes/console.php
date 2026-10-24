@@ -364,7 +364,7 @@ Artisan::command('mail:test {email}', function (string $email) {
     return Command::SUCCESS;
 })->purpose('Send a test email using the configured mailer');
 
-Artisan::command('demo:accounts', function () {
+Artisan::command('demo:accounts {--reset-admin-password : Generate a new temporary password for the demo admin}', function () {
     if (! app()->environment('production')) {
         $this->error('This command only creates demo accounts in the production environment.');
 
@@ -415,7 +415,20 @@ Artisan::command('demo:accounts', function () {
         || SuperAdmin::query()->whereRaw('LOWER(email) = ?', [$adminEmail])->exists();
 
     if ($adminExists) {
-        $this->warn("Skipped {$adminEmail}; that admin account already exists.");
+        if ($this->option('reset-admin-password')) {
+            $adminPassword = Str::random(24);
+
+            Admin::query()
+                ->whereRaw('LOWER(email) = ?', [$adminEmail])
+                ->firstOrFail()
+                ->forceFill(['password' => $adminPassword])
+                ->save();
+
+            $accounts[] = ['Administrator', $adminEmail, $adminPassword];
+            $this->info("Generated a new temporary password for {$adminEmail}.");
+        } else {
+            $this->warn("Skipped {$adminEmail}; use --reset-admin-password to generate a new temporary password.");
+        }
     } elseif ($emailUsedByOtherAccount) {
         $this->error("Cannot create {$adminEmail}; another account already uses that email.");
     } else {
@@ -441,7 +454,7 @@ Artisan::command('demo:accounts', function () {
 
     $this->newLine();
     $this->table(['Account', 'Email', 'Password'], $accounts);
-    $this->warn('The demo01 password is reset to "password" each time. The admin password is shown only when the admin account is first created.');
+    $this->warn('The demo01 password is reset to "password" each time. The admin password is shown when the account is created or explicitly reset. Save it before leaving the shell.');
 
     return Command::SUCCESS;
 })->purpose('Create demo alumni and admin preview accounts in production');
