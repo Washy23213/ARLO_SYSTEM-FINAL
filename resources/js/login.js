@@ -1,9 +1,12 @@
-document.addEventListener("DOMContentLoaded", () => {
+const initializeLoginForm = () => {
   const form = document.querySelector("#loginForm");
-  const emailInput = document.querySelector('input[name="email"]');
-  const passwordInput = document.querySelector('input[name="password"]');
+  const emailInput = form?.querySelector('input[name="email"]');
+  const passwordInput = form?.querySelector('input[name="password"]');
   const passwordToggle = document.querySelector("#loginPasswordToggle");
-  const submitBtn = document.querySelector(".submit-btn");
+  const submitBtn = form?.querySelector(".submit-btn");
+
+  if (!form || form.dataset.loginInitialized === "true") return;
+  form.dataset.loginInitialized = "true";
 
   const addFocusStyle = (input) => {
     if (!input) return;
@@ -30,6 +33,8 @@ document.addEventListener("DOMContentLoaded", () => {
     passwordToggle.addEventListener("click", () => {
       const isHidden = passwordInput.type === "password";
       const toggleIcon = passwordToggle.querySelector("i");
+      const selectionStart = passwordInput.selectionStart;
+      const selectionEnd = passwordInput.selectionEnd;
 
       passwordInput.type = isHidden ? "text" : "password";
       passwordToggle.setAttribute("aria-label", isHidden ? "Hide password" : "Show password");
@@ -41,11 +46,21 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       passwordToggle.classList.toggle("text-[#003300]", isHidden);
+      passwordInput.focus({ preventScroll: true });
+
+      if (selectionStart !== null && selectionEnd !== null) {
+        try {
+          passwordInput.setSelectionRange(selectionStart, selectionEnd);
+        } catch {
+          // Some mobile browsers do not support selection ranges for password fields.
+        }
+      }
     });
   }
 
   if (form) {
     form.addEventListener("submit", () => {
+      if (emailInput) emailInput.value = emailInput.value.trim();
       if (!submitBtn) return;
 
       submitBtn.disabled = true;
@@ -59,4 +74,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-});
+};
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeLoginForm, { once: true });
+} else {
+  initializeLoginForm();
+}

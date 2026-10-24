@@ -13,6 +13,10 @@ class LoginRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        if (is_string($email = $this->input('email'))) {
+            $this->merge(['email' => trim($email)]);
+        }
+
         if ($this->input('remember') === 'on') {
             $this->merge(['remember' => '1']);
         }

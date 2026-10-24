@@ -463,7 +463,7 @@
 
     <div class="login-shell flex items-center justify-center p-5">
         <div class="login-wrap">
-            <form id="loginForm" action="{{ route('login.submit') }}" method="POST" autocomplete="on" class="login-form-panel">
+            <form id="loginForm" action="{{ route('login.submit') }}" method="POST" autocomplete="on" novalidate class="login-form-panel">
                 @csrf
 
                 <div class="login-brand" aria-label="CMU OARL">
@@ -497,32 +497,38 @@
                         type="email"
                         name="email"
                         value="{{ old('email') }}"
-                        placeholder="Username or email"
-                        autocomplete="username"
+                        placeholder="Email address"
+                        autocomplete="email"
+                        inputmode="email"
                         autocapitalize="none"
+                        autocorrect="off"
                         spellcheck="false"
+                        enterkeyhint="next"
+                        maxlength="255"
                         required
                         class="login-input"
                     >
                 </label>
 
-                <label class="login-field" for="loginPassword">
+                <div class="login-field">
                     <span class="login-field__icon" aria-hidden="true">
                         <i class='bx bx-lock-alt'></i>
                     </span>
+                    <label class="sr-only" for="loginPassword">Password</label>
                     <input
                         id="loginPassword"
                         type="password"
                         name="password"
                         placeholder="Password"
                         autocomplete="current-password"
+                        enterkeyhint="go"
                         required
                         class="login-input"
                     >
-                    <button type="button" id="loginPasswordToggle" class="login-toggle" aria-label="Show password" aria-pressed="false">
+                    <button type="button" id="loginPasswordToggle" class="login-toggle" aria-label="Show password" aria-controls="loginPassword" aria-pressed="false">
                         <i class='bx bx-show text-xl' aria-hidden="true"></i>
                     </button>
-                </label>
+                </div>
 
                 <div class="login-options">
                     <label for="remember" class="login-check">
