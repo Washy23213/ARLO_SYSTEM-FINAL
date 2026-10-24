@@ -446,6 +446,42 @@
     </aside>
 
     <div class="dashboard-shell min-h-screen flex flex-col">
+        <nav class="alumni-primary-nav" aria-label="Primary navigation">
+            <a href="{{ route('dashboard') }}" class="alumni-primary-nav__brand" aria-label="CMU OARL Alumni Portal home">
+                <span class="alumni-primary-nav__brand-mark">
+                    <img src="{{ asset('images/cmu-sidebar.png') }}" alt="">
+                </span>
+                <span class="alumni-primary-nav__brand-copy">
+                    <strong>CMU OARL</strong>
+                    <small>Alumni Portal</small>
+                </span>
+            </a>
+
+            <div class="alumni-primary-nav__links">
+                @foreach ($navigationItems as $item)
+                    <a
+                        href="{{ $item['route'] }}"
+                        class="alumni-primary-nav__link {{ $item['active'] ? 'is-active' : '' }}"
+                        title="{{ $item['description'] }}"
+                        @if ($item['active']) aria-current="page" @endif
+                    >
+                        <i class="bx {{ $item['icon'] }}" aria-hidden="true"></i>
+                        <span>{{ $item['label'] }}</span>
+                        @if ($item['badge'])
+                            <span class="alumni-primary-nav__badge">{{ $item['badge'] }}</span>
+                        @endif
+                    </a>
+                @endforeach
+            </div>
+
+            <form method="POST" action="{{ route('logout') }}" class="alumni-primary-nav__logout-form">
+                @csrf
+                <button type="submit" class="alumni-primary-nav__logout" aria-label="Sign out" title="Sign out">
+                    <i class="bx bx-log-out" aria-hidden="true"></i>
+                </button>
+            </form>
+        </nav>
+
         <header class="px-6 pt-6">
             <div class="alumni-topbar">
                 <div class="alumni-topbar__shell">

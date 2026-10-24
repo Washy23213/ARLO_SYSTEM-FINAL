@@ -1,4 +1,5 @@
 @import './alumni-dashboard.css';
+@import './alumni-navigation.css';
 
 @tailwind base;
 @tailwind components;
