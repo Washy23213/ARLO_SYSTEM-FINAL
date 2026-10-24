@@ -299,29 +299,14 @@
                     </a>
                 @endforeach
             @else
-                @foreach([
-                    ['title' => 'Junior Software Developer', 'company' => 'Sample CMU Alumni Partner', 'location' => 'Cagayan de Oro', 'type' => 'Full-time'],
-                    ['title' => 'Data Analyst', 'company' => 'Sample Regional Employer', 'location' => 'Northern Mindanao', 'type' => 'Full-time'],
-                    ['title' => 'Marketing Associate', 'company' => 'Sample Local Organization', 'location' => 'Hybrid', 'type' => 'Entry-level'],
-                ] as $sampleJob)
-                    <article class="alumni-dashboard-feature-card overflow-hidden rounded-2xl border border-slate-200 bg-white">
-                        <img src="{{ asset('images/features/jobs.jpg') }}" alt="" class="alumni-dashboard-feature-card__image">
-                        <div class="p-4">
-                            <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-slate-700 ring-1 ring-slate-200">Sample listing</span>
-                            <h3 class="mt-3 line-clamp-2 text-base font-extrabold leading-snug text-slate-950">{{ $sampleJob['title'] }}</h3>
-                            <p class="mt-1 truncate text-sm font-semibold text-slate-600">{{ $sampleJob['company'] }}</p>
-                            <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600">
-                                <span><i class='bx bx-map mr-1 text-emerald-800' aria-hidden="true"></i>{{ $sampleJob['location'] }}</span>
-                                <span class="rounded-full bg-emerald-50 px-2 py-1 font-semibold text-emerald-800">{{ $sampleJob['type'] }}</span>
-                            </div>
-                        </div>
-                    </article>
-                @endforeach
+                <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 px-5 py-6 text-center sm:col-span-2 lg:col-span-3">
+                    <span class="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-800 ring-1 ring-emerald-100"><i class='bx bx-briefcase-alt-2 text-2xl' aria-hidden="true"></i></span>
+                    <h3 class="mt-3 text-base font-bold text-slate-900">No job opportunities available</h3>
+                    <p class="mx-auto mt-1 max-w-xl text-sm leading-6 text-slate-600">Approved job opportunities will appear here once OARL publishes them.</p>
+                    <a href="{{ route('jobs') }}" class="mt-4 inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-white px-4 py-2 text-sm font-bold text-emerald-900 transition hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-300">Open job board <i class='bx bx-right-arrow-alt text-lg' aria-hidden="true"></i></a>
+                </div>
             @endif
         </div>
-        @if($jobOpportunityListings->isEmpty())
-            <p class="px-5 pb-5 text-xs text-slate-500">Sample cards are for preview only. Check the job board for actual approved openings.</p>
-        @endif
     </section>
 
     <section class="surface-card overflow-hidden border border-slate-200 p-0" aria-labelledby="dashboard-news-title">
@@ -362,20 +347,20 @@
         @endif
     </section>
 
-    @if(session('show_latest_notification_preview', false))
-        <dialog class="alumni-job-reminder" data-job-reminder aria-labelledby="job-reminder-title" aria-describedby="job-reminder-copy">
-            <div class="alumni-job-reminder__card">
+    @if(session('show_profile_completion_reminder', false) && $profilePercent < 100 && $firstMissingItem && $firstMissingTarget)
+        <dialog class="alumni-profile-reminder" data-profile-reminder aria-labelledby="profile-reminder-title" aria-describedby="profile-reminder-copy">
+            <div class="alumni-profile-reminder__card">
                 <div class="flex items-start justify-between gap-4">
-                    <span class="alumni-job-reminder__icon" aria-hidden="true"><i class='bx bx-briefcase-alt-2'></i></span>
-                    <button type="button" data-job-reminder-close class="alumni-job-reminder__close" aria-label="Dismiss job opportunities reminder"><i class='bx bx-x text-xl' aria-hidden="true"></i></button>
+                    <span class="alumni-profile-reminder__icon" aria-hidden="true"><i class='bx bx-id-card'></i></span>
+                    <button type="button" data-profile-reminder-close class="alumni-profile-reminder__close" aria-label="Dismiss profile completion reminder"><i class='bx bx-x text-xl' aria-hidden="true"></i></button>
                 </div>
-                <p class="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-emerald-800">A reminder for you</p>
-                <h2 id="job-reminder-title" class="mt-2 text-2xl font-black text-slate-950">Explore Job Opportunities</h2>
-                <p id="job-reminder-copy" class="mt-2 text-sm leading-6 text-slate-600">Browse openings shared with CMU alumni or post an opportunity for OARL review. You can find this feature in the Job Opportunities menu.</p>
-                <a href="{{ route('jobs') }}" class="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-emerald-800 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-300">
-                    Open Job Opportunities <i class='bx bx-right-arrow-alt text-lg' aria-hidden="true"></i>
+                <p class="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-amber-700">Profile completion reminder</p>
+                <h2 id="profile-reminder-title" class="mt-2 text-2xl font-black text-slate-950">Complete your alumni profile</h2>
+                <p id="profile-reminder-copy" class="mt-2 text-sm leading-6 text-slate-600">Your profile is {{ $profilePercent }}% complete. The next item to update is <strong class="text-slate-900">{{ $firstMissingItem }}</strong>. Completing your profile helps CMU OARL keep your alumni record current.</p>
+                <a href="{{ $firstMissingTarget['url'] }}" class="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-emerald-800 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-300">
+                    {{ $firstMissingTarget['page'] === 'Profile' ? 'Complete profile' : 'Update tracer details' }} <i class='bx bx-right-arrow-alt text-lg' aria-hidden="true"></i>
                 </a>
-                <button type="button" data-job-reminder-close class="mt-3 min-h-10 w-full rounded-xl px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-300">Dismiss reminder</button>
+                <button type="button" data-profile-reminder-close class="mt-3 min-h-10 w-full rounded-xl px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-300">Remind me later</button>
             </div>
         </dialog>
     @endif

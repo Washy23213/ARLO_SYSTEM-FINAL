@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Alumni;
 use App\Http\Controllers\Controller;
 use App\Services\AlumniNotificationFeedService;
 use App\Services\AlumniFeedService;
+use App\Services\AlumniJobOpportunityService;
 use App\Services\AlumniProfileSummaryService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +18,8 @@ class AlumniDashboardController extends Controller
         Request $request,
         AlumniProfileSummaryService $profileSummaryService,
         AlumniNotificationFeedService $notificationFeedService,
-        AlumniFeedService $feedService
+        AlumniFeedService $feedService,
+        AlumniJobOpportunityService $jobOpportunityService
     )
     {
         $user = $request->user();
@@ -35,7 +37,7 @@ class AlumniDashboardController extends Controller
             'profilePercent' => $profileSummary['profilePercent'],
             'tracerStatus' => $this->tracerStatus($latestTracer),
             'jobOpportunitySummary' => $this->jobOpportunitySummaryFor($user),
-            'jobOpportunityListings' => $this->jobOpportunityListings(),
+            'jobOpportunityListings' => $jobOpportunityService->latest(),
             'dashboardNews' => $feedService->latestAnnouncements(3, $user),
             'recentUpdates' => $notificationFeedService->activityItemsFor($user)->take(3),
         ]);
@@ -112,41 +114,6 @@ class AlumniDashboardController extends Controller
         }
 
         return $summary;
-    }
-
-    protected function jobOpportunityListings()
-    {
-        if (!Schema::hasTable('jobs')) {
-            return collect();
-        }
-
-        $selectColumns = [
-            'id',
-            'title',
-            'company',
-            'type',
-            'location',
-            'created_at',
-        ];
-
-        if (Schema::hasColumn('jobs', 'application_deadline')) {
-            $selectColumns[] = 'application_deadline';
-        }
-
-        $query = DB::table('jobs')->select($selectColumns);
-
-        if (Schema::hasColumn('jobs', 'archived_at')) {
-            $query->whereNull('archived_at');
-        }
-
-        if (Schema::hasColumn('jobs', 'is_active')) {
-            $query->where('is_active', true);
-        }
-
-        return $query
-            ->orderByDesc('created_at')
-            ->limit(3)
-            ->get();
     }
 
     protected function normalizeDate(mixed $value): ?Carbon

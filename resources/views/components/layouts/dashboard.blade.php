@@ -16,7 +16,7 @@
         ? 'Open updates center, ' . $notificationBadgeCount . ' new ' . \Illuminate\Support\Str::plural('update', $notificationBadgeCount)
         : 'Open updates center';
     $notificationLiveSummaryUrl = route('notifications.live-summary');
-    $showLatestNotificationPreviewOnLogin = (bool) session('show_latest_notification_preview', false);
+    $showProfileCompletionReminderOnLogin = (bool) session('show_profile_completion_reminder', false);
     $jobsBadge = ($sidebarAlumniReviewedJobSubmissionsCount ?? 0) > 0 ? (($sidebarAlumniReviewedJobSubmissionsCount ?? 0) > 9 ? '9+' : (string) ($sidebarAlumniReviewedJobSubmissionsCount ?? 0)) : null;
     $navigationItems = [
         [
@@ -452,7 +452,7 @@
         }
     </style>
 </head>
-<body class="portal-page alumni-portal font-['Plus_Jakarta_Sans'] text-slate-900 {{ request()->routeIs('dashboard') ? 'alumni-dashboard-page' : '' }}" data-sidebar-storage-key="cmu-arlo-sidebar-collapsed-{{ $sidebarStorageUserKey }}" data-live-notification-preview-on-login="{{ $showLatestNotificationPreviewOnLogin ? 'true' : 'false' }}">
+<body class="portal-page alumni-portal font-['Plus_Jakarta_Sans'] text-slate-900 {{ request()->routeIs('dashboard') ? 'alumni-dashboard-page' : '' }}" data-sidebar-storage-key="cmu-arlo-sidebar-collapsed-{{ $sidebarStorageUserKey }}" data-profile-reminder-on-login="{{ $showProfileCompletionReminderOnLogin ? 'true' : 'false' }}">
     <div class="portal-flash-overlay fixed right-3 top-3 z-[100] sm:right-6 sm:top-6">
         @include('components.flash-messages')
     </div>
@@ -503,7 +503,7 @@
                 </div>
                 <div class="alumni-nav-group">
                     @foreach ($navigationItems as $item)
-                        <a data-tooltip="{{ $item['description'] }}" href="{{ $item['route'] }}" class="alumni-sidebar-link {{ $item['active'] ? 'is-active' : '' }} {{ $showLatestNotificationPreviewOnLogin && $item['label'] === 'Job Opportunities' ? 'is-reminder-target' : '' }}">
+                        <a data-tooltip="{{ $item['description'] }}" href="{{ $item['route'] }}" class="alumni-sidebar-link {{ $item['active'] ? 'is-active' : '' }} {{ $showProfileCompletionReminderOnLogin && $item['label'] === 'Profile' ? 'is-reminder-target' : '' }}">
                             <span class="alumni-sidebar-link__icon">
                                 <i class='bx {{ $item['icon'] }} text-xl'></i>
                             </span>
@@ -549,7 +549,7 @@
                     @endif
                     <a
                         href="{{ $item['route'] }}"
-                        class="alumni-primary-nav__link {{ $item['active'] ? 'is-active' : '' }} {{ $showLatestNotificationPreviewOnLogin && $item['label'] === 'Job Opportunities' ? 'is-reminder-target' : '' }}"
+                        class="alumni-primary-nav__link {{ $item['active'] ? 'is-active' : '' }} {{ $showProfileCompletionReminderOnLogin && $item['label'] === 'Profile' ? 'is-reminder-target' : '' }}"
                         title="{{ $item['description'] }}"
                         @if ($item['active']) aria-current="page" @endif
                     >

@@ -2080,14 +2080,14 @@ document.addEventListener('DOMContentLoaded', () => {
     initSharedPortalUi();
     initPortalShellNavigation();
 
-    document.querySelectorAll('[data-job-reminder]').forEach((dialog) => {
+    document.querySelectorAll('[data-profile-reminder]').forEach((dialog) => {
         if (!(dialog instanceof HTMLDialogElement) || dialog.open) {
             return;
         }
 
         dialog.showModal();
-        dialog.querySelector('[data-job-reminder-close]')?.focus();
-        dialog.querySelectorAll('[data-job-reminder-close]').forEach((button) => {
+        dialog.querySelector('[data-profile-reminder-close]')?.focus();
+        dialog.querySelectorAll('[data-profile-reminder-close]').forEach((button) => {
             button.addEventListener('click', () => dialog.close());
         });
         dialog.addEventListener('click', (event) => {

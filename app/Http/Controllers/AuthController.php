@@ -13,6 +13,7 @@ use App\Models\TracerRecord;
 use App\Models\User;
 use App\Notifications\RegistrationEmailVerificationCode;
 use App\Services\AlumniRecordVerificationService;
+use App\Services\AlumniProfileSummaryService;
 use App\Services\AuditLogService;
 use App\Services\EmploymentProofReviewNotificationService;
 use App\Support\EmploymentProofStorage;
@@ -43,7 +44,7 @@ class AuthController extends Controller
         return view('auth.login'); // your login Blade
     }
 
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request, AlumniProfileSummaryService $profileSummaryService)
     {
         $throttleKey = $this->throttleKey($request);
 
@@ -104,6 +105,8 @@ class AuthController extends Controller
             Auth::shouldUse('web');
 
             $user = Auth::guard('web')->user();
+            $showProfileCompletionReminder = $user !== null
+                && $profileSummaryService->summaryFor($user)['profilePercent'] < 100;
             if ($user) {
                 app(AuditLogService::class)->log(
                     (string) $user->id,
@@ -116,7 +119,7 @@ class AuthController extends Controller
             return redirect()
                 ->route('dashboard')
                 ->with('success', 'You are logged in to your alumni account.')
-                ->with('show_latest_notification_preview', true);
+                ->with('show_profile_completion_reminder', $showProfileCompletionReminder);
         }
 
         RateLimiter::hit($throttleKey, 60);

@@ -1519,7 +1519,7 @@ body.alumni-dashboard-page .alumni-job-opportunities-section {
     background: #e8f1eb;
 }
 
-.alumni-portal .alumni-job-reminder {
+.alumni-portal .alumni-profile-reminder {
     width: min(31rem, calc(100vw - 2rem));
     max-width: none;
     max-height: min(90vh, 42rem);
@@ -1532,13 +1532,13 @@ body.alumni-dashboard-page .alumni-job-opportunities-section {
     box-shadow: 0 30px 90px rgba(4, 23, 12, 0.28);
 }
 
-.alumni-portal .alumni-job-reminder::backdrop {
+.alumni-portal .alumni-profile-reminder::backdrop {
     background: rgba(4, 20, 11, 0.58);
     -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px);
 }
 
-.alumni-portal .alumni-job-reminder__card {
+.alumni-portal .alumni-profile-reminder__card {
     padding: clamp(1.25rem, 5vw, 2rem);
     border: 1px solid rgba(20, 87, 38, 0.16);
     border-radius: inherit;
@@ -1547,8 +1547,8 @@ body.alumni-dashboard-page .alumni-job-opportunities-section {
         linear-gradient(145deg, #fff, #f5faf6);
 }
 
-.alumni-portal .alumni-job-reminder__icon,
-.alumni-portal .alumni-job-reminder__close {
+.alumni-portal .alumni-profile-reminder__icon,
+.alumni-portal .alumni-profile-reminder__close {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1561,11 +1561,11 @@ body.alumni-dashboard-page .alumni-job-opportunities-section {
     color: #0b5b1f;
 }
 
-.alumni-portal .alumni-job-reminder__icon {
+.alumni-portal .alumni-profile-reminder__icon {
     font-size: 1.4rem;
 }
 
-.alumni-portal .alumni-job-reminder__close {
+.alumni-portal .alumni-profile-reminder__close {
     width: 2.4rem;
     height: 2.4rem;
     border-radius: 999px;
@@ -1573,11 +1573,11 @@ body.alumni-dashboard-page .alumni-job-opportunities-section {
     cursor: pointer;
 }
 
-.alumni-portal .alumni-job-reminder__close:hover {
+.alumni-portal .alumni-profile-reminder__close:hover {
     background: #f1f5f9;
 }
 
-.alumni-portal .alumni-job-reminder :focus-visible {
+.alumni-portal .alumni-profile-reminder :focus-visible {
     outline: 3px solid rgba(200, 154, 45, 0.72);
     outline-offset: 3px;
 }
@@ -1587,10 +1587,10 @@ body.alumni-dashboard-page .alumni-job-opportunities-section {
     outline: 2px solid #e6b300;
     outline-offset: 2px;
     box-shadow: 0 0 0 5px rgba(230, 179, 0, 0.15);
-    animation: dashboardJobsReminderPulse 1.8s ease-in-out 3;
+    animation: dashboardProfileReminderPulse 1.8s ease-in-out 3;
 }
 
-@keyframes dashboardJobsReminderPulse {
+@keyframes dashboardProfileReminderPulse {
     50% {
         box-shadow: 0 0 0 8px rgba(230, 179, 0, 0.24);
     }
