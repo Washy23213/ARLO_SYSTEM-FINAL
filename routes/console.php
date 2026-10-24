@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Command\Command;
@@ -370,18 +371,30 @@ Artisan::command('demo:accounts', function () {
         return Command::FAILURE;
     }
 
+    if (! Schema::hasTable('admins')) {
+        $this->error('The admin account table is missing. Run the production database migrations first.');
+
+        return Command::FAILURE;
+    }
+
     $accounts = [];
 
     foreach (range(1, 5) as $number) {
         $email = sprintf('arlo.demo%02d@example.test', $number);
+        $password = $number === 1 ? 'password' : Str::random(24);
+        $user = User::query()->whereRaw('LOWER(email) = ?', [$email])->first();
 
-        if (User::query()->where('email', $email)->exists()) {
-            $this->warn("Skipped {$email}; that account already exists.");
+        if ($user !== null) {
+            if ($number === 1) {
+                $user->forceFill(['password' => $password])->save();
+                $accounts[] = ['Alumni', $email, $password];
+                $this->info("Reset the demo password for {$email}.");
+            } else {
+                $this->warn("Skipped {$email}; that account already exists.");
+            }
 
             continue;
         }
-
-        $password = Str::random(24);
 
         User::query()->create([
             'firstname' => 'Demo',
@@ -393,21 +406,45 @@ Artisan::command('demo:accounts', function () {
             'is_admin' => false,
         ]);
 
-        $accounts[] = [$email, $password];
+        $accounts[] = ['Alumni', $email, $password];
+    }
+
+    $adminEmail = 'arlo.admin.demo@example.test';
+    $adminExists = Admin::query()->whereRaw('LOWER(email) = ?', [$adminEmail])->exists();
+    $emailUsedByOtherAccount = User::query()->whereRaw('LOWER(email) = ?', [$adminEmail])->exists()
+        || SuperAdmin::query()->whereRaw('LOWER(email) = ?', [$adminEmail])->exists();
+
+    if ($adminExists) {
+        $this->warn("Skipped {$adminEmail}; that admin account already exists.");
+    } elseif ($emailUsedByOtherAccount) {
+        $this->error("Cannot create {$adminEmail}; another account already uses that email.");
+    } else {
+        $adminPassword = Str::random(24);
+
+        Admin::query()->create([
+            'firstname' => 'Demo',
+            'lastname' => 'Administrator',
+            'email' => $adminEmail,
+            'password' => $adminPassword,
+            'role' => Admin::ROLE_ADMIN,
+            'email_verified_at' => now(),
+        ]);
+
+        $accounts[] = ['Administrator', $adminEmail, $adminPassword];
     }
 
     if ($accounts === []) {
-        $this->warn('No new demo accounts were created. Existing passwords cannot be recovered.');
+        $this->warn('No account credentials were changed or created.');
 
         return Command::SUCCESS;
     }
 
     $this->newLine();
-    $this->table(['Email', 'Temporary password'], $accounts);
-    $this->warn('Save these passwords now. They are shown only when each account is created.');
+    $this->table(['Account', 'Email', 'Password'], $accounts);
+    $this->warn('The demo01 password is reset to "password" each time. The admin password is shown only when the admin account is first created.');
 
     return Command::SUCCESS;
-})->purpose('Create five verified demo alumni accounts in production');
+})->purpose('Create demo alumni and admin preview accounts in production');
 
 Artisan::command('employment-proof:mark-overdue', function () {
     $cutoff = now()->subWeek();
