@@ -2,9 +2,8 @@
     $pageTitle = trim($__env->yieldContent('title', 'Alumni Portal'));
     $pageTitle = $pageTitle !== '' ? $pageTitle : 'Alumni Portal';
     $currentUser = Auth::user();
-    $firstName = trim((string) ($currentUser?->firstname ?? 'Alumni'));
     $userName = trim((string) ($currentUser?->firstname ?? 'Alumni') . ' ' . (string) ($currentUser?->lastname ?? 'Member'));
-    $displayPageTitle = $pageTitle === 'Dashboard' ? 'Welcome, ' . $firstName : $pageTitle;
+    $displayPageTitle = $pageTitle;
     $degreeLabel = $currentUser?->degree ?: 'Complete your alumni profile';
     $departmentLabel = $currentUser?->department ?: 'CMU Alumni';
     $classLabel = $currentUser?->year_graduated ? 'Batch ' . $currentUser->year_graduated : 'Alumni';
@@ -327,6 +326,128 @@
             .alumni-portal .alumni-topbar__spotlight {
                 padding: 1.15rem 1.1rem;
                 border-radius: 1.3rem;
+            }
+        }
+
+        body.alumni-dashboard-page .alumni-topbar {
+            padding: 0.8rem 1rem;
+            border-radius: 1.1rem;
+        }
+
+        body.alumni-dashboard-page .alumni-topbar__shell {
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 0.75rem 1rem;
+        }
+
+        body.alumni-dashboard-page .alumni-topbar__main {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        body.alumni-dashboard-page .alumni-topbar__eyebrow {
+            font-size: 0.62rem;
+            letter-spacing: 0.18em;
+        }
+
+        body.alumni-dashboard-page .alumni-topbar__title {
+            max-width: none;
+            font-size: 1.35rem;
+            line-height: 1.2;
+        }
+
+        body.alumni-dashboard-page .alumni-topbar__meta {
+            justify-content: flex-end;
+            gap: 0.4rem;
+        }
+
+        body.alumni-dashboard-page .alumni-topbar__meta-chip {
+            gap: 0.4rem;
+            padding: 0.35rem 0.6rem;
+            font-size: 0.7rem;
+        }
+
+        body.alumni-dashboard-page .alumni-topbar__meta-chip i {
+            width: 1.5rem;
+            height: 1.5rem;
+            font-size: 0.85rem;
+        }
+
+        body.alumni-dashboard-page .alumni-topbar__spotlight {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            align-items: center;
+            gap: 0 0.65rem;
+            min-height: 0;
+            padding: 0.6rem 0.8rem;
+            border-radius: 0.9rem;
+            box-shadow: 0 8px 18px rgba(6, 21, 13, 0.16);
+        }
+
+        body.alumni-dashboard-page .alumni-topbar__spotlight-header {
+            grid-column: 1;
+            grid-row: 1 / span 2;
+        }
+
+        body.alumni-dashboard-page .alumni-topbar__spotlight-label {
+            display: none;
+        }
+
+        body.alumni-dashboard-page .alumni-topbar__spotlight-icon {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 0.7rem;
+            font-size: 1.15rem;
+        }
+
+        body.alumni-dashboard-page .alumni-topbar__spotlight-name {
+            grid-column: 2;
+            grid-row: 1;
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.2;
+        }
+
+        body.alumni-dashboard-page .alumni-topbar__spotlight-detail {
+            grid-column: 2;
+            grid-row: 2;
+            margin: 0.15rem 0 0;
+            font-size: 0.72rem;
+            line-height: 1.3;
+        }
+
+        @media (max-width: 767px) {
+            body.alumni-dashboard-page .alumni-topbar__shell,
+            body.alumni-dashboard-page .alumni-topbar__main {
+                grid-template-columns: minmax(0, 1fr);
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            body.alumni-dashboard-page .alumni-topbar__lead {
+                align-items: center;
+            }
+
+            body.alumni-dashboard-page .alumni-topbar__meta {
+                justify-content: flex-start;
+            }
+
+            body.alumni-dashboard-page .alumni-topbar__meta-chip {
+                width: auto;
+                border-radius: 999px;
+            }
+
+            body.alumni-dashboard-page .alumni-topbar__spotlight {
+                align-self: flex-start;
+                min-width: min(100%, 18rem);
+            }
+        }
+
+        @media (max-width: 480px) {
+            body.alumni-dashboard-page .alumni-topbar__meta-chip:nth-child(n + 2) {
+                display: none;
             }
         }
     </style>

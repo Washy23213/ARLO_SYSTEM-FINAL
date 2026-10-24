@@ -10,15 +10,11 @@
     $profilePercent = $profilePercent ?? 0;
     $profileCompleted = $profileCompleted ?? collect($profileChecklist)->filter()->count();
     $profileTotal = count($profileChecklist);
-    $missingCount = max(0, $profileTotal - $profileCompleted);
     $missingProfileItems = collect($profileChecklist)
         ->reject(fn ($done) => (bool) $done)
         ->keys()
         ->values();
-    $profileNextItems = $missingProfileItems->take(2)->implode(', ');
-    $profileNextLabel = $missingCount > 0
-        ? 'Next: ' . $profileNextItems . ($missingCount > 2 ? ' +' . ($missingCount - 2) . ' more' : '')
-        : 'Profile ready for alumni records.';
+    $firstMissingItem = $missingProfileItems->first();
     $employmentStatus = $employmentStatus ?? 'Unknown';
     $tracerStatus = $tracerStatus ?? ['label' => 'Not submitted', 'tone' => 'amber', 'detail' => '', 'date_label' => 'No submission yet'];
     $tracerCardCopy = ($tracerStatus['tone'] ?? 'amber') === 'emerald'
@@ -51,12 +47,9 @@
     $tracerBadgeClasses = ($tracerStatus['tone'] ?? 'amber') === 'emerald'
         ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200'
         : 'bg-amber-100 text-amber-700 ring-1 ring-amber-200';
-    $profileCardClasses = $profilePercent >= 100
-        ? 'border-emerald-200 bg-gradient-to-br from-white via-emerald-50/60 to-emerald-100/50'
-        : 'border-amber-200 bg-gradient-to-br from-white via-amber-50/60 to-amber-100/50';
-    $tracerCardClasses = ($tracerStatus['tone'] ?? 'amber') === 'emerald'
-        ? 'border-emerald-200 bg-gradient-to-br from-emerald-50/90 via-white to-emerald-100/50'
-        : 'border-amber-200 bg-gradient-to-br from-amber-50/90 via-white to-orange-100/45';
+    $profileCardState = $profilePercent >= 100 ? 'is-complete' : 'is-pending';
+    $tracerCardState = ($tracerStatus['tone'] ?? 'amber') === 'emerald' ? 'is-complete' : 'is-pending';
+    $jobPostsCardState = $jobPostsTotal > 0 ? 'has-posts' : 'is-empty';
     $checklistTargets = [
         'Phone number' => [
             'url' => route('profile', ['from' => 'overview', 'focus_field' => 'phone']) . '#profile-phone-field',
@@ -91,12 +84,13 @@
             'page' => 'Tracer',
         ],
     ];
+    $firstMissingTarget = $firstMissingItem ? ($checklistTargets[$firstMissingItem] ?? null) : null;
 
 @endphp
 
-<div class="alumni-overview -mt-2 space-y-6">
+<div class="alumni-overview -mt-2 space-y-4">
     <section class="surface-card overflow-hidden border border-emerald-950/10 bg-gradient-to-r from-white via-emerald-50/60 to-amber-50/50 p-0">
-        <div class="grid gap-5 p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+        <div class="grid gap-4 p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
             <div>
                 <p class="text-xs font-bold uppercase tracking-[0.2em] text-amber-700">CMU OARL Alumni Portal</p>
                 <h2 class="mt-2 text-3xl font-black tracking-tight text-emerald-950">Welcome back, {{ $user->firstname }}.</h2>
@@ -125,8 +119,8 @@
         </div>
     </section>
 
-    <div class="alumni-overview-stats grid grid-cols-1 gap-4 md:grid-cols-3">
-        <section class="alumni-overview-stat alumni-overview-stat--profile surface-card overflow-hidden border p-5 {{ $profileCardClasses }}">
+    <div class="alumni-overview-stats grid grid-cols-1 gap-3 md:grid-cols-3">
+        <section class="alumni-overview-stat alumni-overview-stat--profile surface-card overflow-hidden border p-4 {{ $profileCardState }}">
             <div class="flex items-start justify-between gap-4">
                 <div>
                     <p class="alumni-overview-stat__eyebrow text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Profile Completion</p>
@@ -136,14 +130,23 @@
                     <i class='bx bx-id-card text-2xl'></i>
                 </span>
             </div>
-            <p class="alumni-overview-stat__copy mt-3 text-sm text-slate-600">{{ $profileCompleted }} of {{ $profileTotal }} key profile fields complete.</p>
+            <p class="alumni-overview-stat__copy mt-3 text-sm text-slate-600">{{ $profileCompleted }} of {{ $profileTotal }} profile items complete.</p>
             <div class="alumni-overview-stat__progress mt-4 h-2.5 overflow-hidden rounded-full bg-white/80 ring-1 ring-black/5">
-                <div class="alumni-overview-stat__progress-fill h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-500" style="width: {{ $profilePercent }}%"></div>
+                <div class="alumni-overview-stat__progress-fill h-full rounded-full bg-gradient-to-r {{ $profilePercent >= 100 ? 'from-emerald-500 to-teal-500' : 'from-amber-400 to-amber-500' }}" role="progressbar" aria-label="Profile completion" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ $profilePercent }}" style="width: {{ $profilePercent }}%"></div>
             </div>
-            <p class="alumni-overview-stat__meta mt-3 text-xs font-medium text-slate-500">{{ $profileNextLabel }}</p>
+            @if($firstMissingItem && $firstMissingTarget)
+                <div class="mt-3 flex flex-wrap items-center justify-between gap-2">
+                    <p class="text-xs font-medium text-slate-600">First up: <span class="font-bold text-slate-800">{{ $firstMissingItem }}</span></p>
+                    <a href="{{ $firstMissingTarget['url'] }}" class="inline-flex min-h-9 items-center gap-1 rounded-lg bg-emerald-800 px-3 py-2 text-xs font-bold text-white transition hover:bg-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-300">
+                        {{ $firstMissingTarget['page'] === 'Profile' ? 'Complete profile' : 'Complete tracer' }} <i class='bx bx-right-arrow-alt text-base' aria-hidden="true"></i>
+                    </a>
+                </div>
+            @else
+                <p class="alumni-overview-stat__meta mt-3 text-xs font-medium text-emerald-800">All profile items are complete.</p>
+            @endif
         </section>
 
-        <section class="alumni-overview-stat alumni-overview-stat--tracer surface-card overflow-hidden border p-5 {{ $tracerCardClasses }}">
+        <section class="alumni-overview-stat alumni-overview-stat--tracer surface-card overflow-hidden border p-4 {{ $tracerCardState }}">
             <div class="flex items-start justify-between gap-4">
                 <div>
                     <p class="alumni-overview-stat__eyebrow text-xs font-semibold uppercase tracking-[0.18em] {{ ($tracerStatus['tone'] ?? 'amber') === 'emerald' ? 'text-emerald-700' : 'text-amber-700' }}">Tracer Status</p>
@@ -159,7 +162,7 @@
             </div>
         </section>
 
-        <section class="alumni-overview-stat alumni-overview-stat--jobs surface-card overflow-hidden border border-slate-200 bg-gradient-to-br from-white via-slate-50/80 to-slate-100/60 p-5">
+        <section class="alumni-overview-stat alumni-overview-stat--jobs surface-card overflow-hidden border border-slate-200 bg-gradient-to-br from-white via-slate-50/80 to-slate-100/60 p-4 {{ $jobPostsCardState }}">
             <div class="flex items-start justify-between gap-4">
                 <div>
                     <p class="alumni-overview-stat__eyebrow text-xs font-semibold uppercase tracking-[0.18em] text-slate-700">My Job Posts</p>
@@ -191,10 +194,10 @@
 
     </div>
 
-    <div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.12fr)_minmax(320px,0.88fr)]">
-        <div class="space-y-6">
+    <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.12fr)_minmax(320px,0.88fr)]">
+        <div class="space-y-4">
             <section class="alumni-overview-panel alumni-overview-panel--employment surface-card overflow-hidden p-0">
-                <div class="alumni-overview-panel__mast border-b border-slate-200/80 bg-gradient-to-r from-slate-900 via-[#133824] to-[#184d32] px-6 py-6 text-white">
+                <div class="alumni-overview-panel__mast border-b border-slate-200/80 bg-gradient-to-r from-slate-900 via-[#133824] to-[#184d32] px-5 py-4 text-white">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-[0.2em] text-white/65">Employment Snapshot</p>
                         <h2 class="mt-2 text-2xl font-black">My Latest Employment Record</h2>
@@ -202,7 +205,7 @@
                     </div>
                 </div>
 
-                <div class="p-6">
+                <div class="p-5">
                     @if ($latestTracer)
                         <div class="alumni-overview-highlight rounded-[1.7rem] border border-emerald-100 bg-gradient-to-r from-emerald-50/90 via-white to-sky-50/70 p-5 shadow-[0_18px_34px_rgba(15,23,42,0.06)]">
                             <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
@@ -264,9 +267,9 @@
 
         </div>
 
-        <div class="space-y-6">
+        <div class="space-y-4">
             <section class="alumni-overview-panel alumni-overview-panel--checklist surface-card overflow-hidden p-0">
-                <div class="alumni-overview-panel__mast border-b border-slate-200/80 bg-gradient-to-r from-white via-emerald-50/70 to-white px-6 py-5">
+                <div class="alumni-overview-panel__mast border-b border-slate-200/80 bg-gradient-to-r from-white via-emerald-50/70 to-white px-5 py-4">
                     <div class="flex items-start justify-between gap-4">
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Readiness</p>
@@ -277,9 +280,9 @@
                     </div>
                 </div>
 
-                <div class="p-5">
+                <div class="p-4">
                     <div class="h-3 overflow-hidden rounded-full bg-slate-100">
-                        <div class="h-full rounded-full bg-gradient-to-r from-emerald-500 via-teal-500 to-sky-500" style="width: {{ $profilePercent }}%"></div>
+                        <div class="h-full rounded-full bg-gradient-to-r from-emerald-500 via-teal-500 to-sky-500" role="progressbar" aria-label="Profile completion" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ $profilePercent }}" style="width: {{ $profilePercent }}%"></div>
                     </div>
 
                     <div class="mt-5 space-y-2">
