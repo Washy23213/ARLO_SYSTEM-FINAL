@@ -363,6 +363,52 @@ Artisan::command('mail:test {email}', function (string $email) {
     return Command::SUCCESS;
 })->purpose('Send a test email using the configured mailer');
 
+Artisan::command('demo:accounts', function () {
+    if (! app()->environment('production')) {
+        $this->error('This command only creates demo accounts in the production environment.');
+
+        return Command::FAILURE;
+    }
+
+    $accounts = [];
+
+    foreach (range(1, 5) as $number) {
+        $email = sprintf('arlo.demo%02d@example.test', $number);
+
+        if (User::query()->where('email', $email)->exists()) {
+            $this->warn("Skipped {$email}; that account already exists.");
+
+            continue;
+        }
+
+        $password = Str::random(24);
+
+        User::query()->create([
+            'firstname' => 'Demo',
+            'lastname' => 'Alumni '.$number,
+            'email' => $email,
+            'email_verified_at' => now(),
+            'password' => $password,
+            'role' => User::ROLE_ALUMNI,
+            'is_admin' => false,
+        ]);
+
+        $accounts[] = [$email, $password];
+    }
+
+    if ($accounts === []) {
+        $this->warn('No new demo accounts were created. Existing passwords cannot be recovered.');
+
+        return Command::SUCCESS;
+    }
+
+    $this->newLine();
+    $this->table(['Email', 'Temporary password'], $accounts);
+    $this->warn('Save these passwords now. They are shown only when each account is created.');
+
+    return Command::SUCCESS;
+})->purpose('Create five verified demo alumni accounts in production');
+
 Artisan::command('employment-proof:mark-overdue', function () {
     $cutoff = now()->subWeek();
     $updated = 0;
