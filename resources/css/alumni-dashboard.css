@@ -67,8 +67,14 @@
 }
 
 .alumni-portal .alumni-job-action--post {
-    background: linear-gradient(135deg, #862633, #a93646) !important;
-    box-shadow: 0 14px 28px rgba(134, 38, 51, 0.18) !important;
+    background: linear-gradient(135deg, #0b3b1f, #1e7a34) !important;
+    border-color: rgba(11, 59, 31, 0.24) !important;
+    color: #fff !important;
+    box-shadow: 0 14px 28px rgba(11, 59, 31, 0.18) !important;
+}
+
+.alumni-portal .alumni-job-action--post:hover {
+    background: linear-gradient(135deg, #072714, #145726) !important;
 }
 
 .alumni-portal .alumni-job-opening-card {

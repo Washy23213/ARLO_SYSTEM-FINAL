@@ -3135,7 +3135,6 @@ body.alumni-portal {
     background: linear-gradient(90deg, var(--cmu-logo-dark-green), var(--cmu-logo-green), var(--cmu-logo-gold)) !important;
 }
 
-.alumni-job-action--post,
 .alumni-job-submit-panel__button,
 [class*="bg-[#862633]"] {
     background: var(--cmu-logo-gold) !important;

@@ -343,7 +343,7 @@
                     <i class='bx bx-briefcase-alt-2 mr-2 text-lg'></i>
                     View Opportunities
                 </a>
-                <a href="{{ route('jobs') }}" class="alumni-job-action alumni-job-action--post inline-flex items-center justify-center rounded-xl bg-[#862633] px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#701f2a]">
+                <a href="{{ route('jobs') }}" class="alumni-job-action alumni-job-action--post inline-flex items-center justify-center rounded-xl bg-emerald-800 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-300">
                     <i class='bx bx-plus-circle mr-2 text-lg'></i>
                     Post Opportunity
                 </a>
@@ -385,7 +385,8 @@
                             <p class="mt-1 text-sm leading-6 text-slate-600">You can still post a job opportunity for OARL review.</p>
                         </div>
                     </div>
-                    <a href="{{ route('jobs') }}" class="inline-flex items-center justify-center rounded-xl bg-[#862633] px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#701f2a]">
+                    <a href="{{ route('jobs') }}" class="alumni-job-action alumni-job-action--post inline-flex items-center justify-center rounded-xl bg-emerald-800 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-300">
+                        <i class='bx bx-plus-circle mr-2 text-lg' aria-hidden="true"></i>
                         Post Opportunity
                     </a>
                 </div>
