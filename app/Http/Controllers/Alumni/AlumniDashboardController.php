@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Alumni;
 
 use App\Http\Controllers\Controller;
 use App\Services\AlumniNotificationFeedService;
+use App\Services\AlumniFeedService;
 use App\Services\AlumniProfileSummaryService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,8 @@ class AlumniDashboardController extends Controller
     public function index(
         Request $request,
         AlumniProfileSummaryService $profileSummaryService,
-        AlumniNotificationFeedService $notificationFeedService
+        AlumniNotificationFeedService $notificationFeedService,
+        AlumniFeedService $feedService
     )
     {
         $user = $request->user();
@@ -28,14 +30,13 @@ class AlumniDashboardController extends Controller
 
         return view('alumni-dashboard', [
             'user' => $user,
-            'latestTracer' => $latestTracer,
             'profileChecklist' => $profileChecklist,
             'profileCompleted' => $profileCompleted,
             'profilePercent' => $profileSummary['profilePercent'],
-            'employmentStatus' => $profileSummary['employmentStatus'],
             'tracerStatus' => $this->tracerStatus($latestTracer),
             'jobOpportunitySummary' => $this->jobOpportunitySummaryFor($user),
             'jobOpportunityListings' => $this->jobOpportunityListings(),
+            'dashboardNews' => $feedService->latestAnnouncements(3, $user),
             'recentUpdates' => $notificationFeedService->activityItemsFor($user)->take(3),
         ]);
     }

@@ -503,7 +503,7 @@
                 </div>
                 <div class="alumni-nav-group">
                     @foreach ($navigationItems as $item)
-                        <a data-tooltip="{{ $item['description'] }}" href="{{ $item['route'] }}" class="alumni-sidebar-link {{ $item['active'] ? 'is-active' : '' }}">
+                        <a data-tooltip="{{ $item['description'] }}" href="{{ $item['route'] }}" class="alumni-sidebar-link {{ $item['active'] ? 'is-active' : '' }} {{ $showLatestNotificationPreviewOnLogin && $item['label'] === 'Job Opportunities' ? 'is-reminder-target' : '' }}">
                             <span class="alumni-sidebar-link__icon">
                                 <i class='bx {{ $item['icon'] }} text-xl'></i>
                             </span>
@@ -549,7 +549,7 @@
                     @endif
                     <a
                         href="{{ $item['route'] }}"
-                        class="alumni-primary-nav__link {{ $item['active'] ? 'is-active' : '' }}"
+                        class="alumni-primary-nav__link {{ $item['active'] ? 'is-active' : '' }} {{ $showLatestNotificationPreviewOnLogin && $item['label'] === 'Job Opportunities' ? 'is-reminder-target' : '' }}"
                         title="{{ $item['description'] }}"
                         @if ($item['active']) aria-current="page" @endif
                     >

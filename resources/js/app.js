@@ -2080,6 +2080,23 @@ document.addEventListener('DOMContentLoaded', () => {
     initSharedPortalUi();
     initPortalShellNavigation();
 
+    document.querySelectorAll('[data-job-reminder]').forEach((dialog) => {
+        if (!(dialog instanceof HTMLDialogElement) || dialog.open) {
+            return;
+        }
+
+        dialog.showModal();
+        dialog.querySelector('[data-job-reminder-close]')?.focus();
+        dialog.querySelectorAll('[data-job-reminder-close]').forEach((button) => {
+            button.addEventListener('click', () => dialog.close());
+        });
+        dialog.addEventListener('click', (event) => {
+            if (event.target === dialog) {
+                dialog.close();
+            }
+        });
+    });
+
     const mode = getActivePortalMode();
     if (mode) {
         dispatchPortalPageReady(mode, {
