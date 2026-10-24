@@ -331,45 +331,9 @@
         }
     </style>
 </head>
-<body class="portal-page alumni-portal font-['Plus_Jakarta_Sans'] text-slate-900" data-sidebar-storage-key="cmu-arlo-sidebar-collapsed-{{ $sidebarStorageUserKey }}" data-live-notification-preview-on-login="{{ $showLatestNotificationPreviewOnLogin ? 'true' : 'false' }}">
+<body class="portal-page alumni-portal font-['Plus_Jakarta_Sans'] text-slate-900 {{ request()->routeIs('dashboard') ? 'alumni-dashboard-page' : '' }}" data-sidebar-storage-key="cmu-arlo-sidebar-collapsed-{{ $sidebarStorageUserKey }}" data-live-notification-preview-on-login="{{ $showLatestNotificationPreviewOnLogin ? 'true' : 'false' }}">
     <div class="portal-flash-overlay fixed right-3 top-3 z-[100] sm:right-6 sm:top-6">
         @include('components.flash-messages')
-    </div>
-
-    <div class="alumni-notification-dock">
-        <a
-            href="{{ route('notifications.index') }}"
-            class="alumni-live-bell alumni-notification-dock__bell {{ $notificationBadge ? 'has-unread' : '' }}"
-            aria-label="{{ $notificationBellLabel }}"
-            data-tooltip="Notifications"
-            data-live-notification-endpoint="{{ $notificationLiveSummaryUrl }}"
-            data-live-notification-button
-        >
-            <span class="alumni-live-bell__icon">
-                <i class='bx {{ $notificationBellIcon }} text-2xl' data-live-notification-icon></i>
-            </span>
-            <span class="alumni-live-bell__badge {{ $notificationBadge ? '' : 'hidden' }}" data-live-notification-badge>{{ $notificationBadge }}</span>
-            <span class="sr-only">Open updates center</span>
-        </a>
-        <a
-            href="{{ route('notifications.index') }}"
-            class="alumni-notification-preview hidden"
-            data-live-notification-preview
-            data-live-notification-preview-link
-            aria-live="polite"
-        >
-            <span class="alumni-notification-preview__icon" aria-hidden="true">
-                <i class="bx bx-bell" data-live-notification-preview-icon></i>
-            </span>
-            <span class="alumni-notification-preview__body">
-                <span class="alumni-notification-preview__meta">
-                    <span data-live-notification-preview-category>Latest update</span>
-                    <span data-live-notification-preview-time>Just now</span>
-                </span>
-                <span class="alumni-notification-preview__title" data-live-notification-preview-title>Open notifications</span>
-                <span class="alumni-notification-preview__summary" data-live-notification-preview-summary>See the newest update in your portal.</span>
-            </span>
-        </a>
     </div>
 
     <div id="mobileSidebarOverlay" class="alumni-sidebar-overlay lg:hidden"></div>
@@ -459,6 +423,9 @@
 
             <div class="alumni-primary-nav__links">
                 @foreach ($navigationItems as $item)
+                    @if (in_array($item['label'], ['Profile', 'Help Desk'], true))
+                        @continue
+                    @endif
                     <a
                         href="{{ $item['route'] }}"
                         class="alumni-primary-nav__link {{ $item['active'] ? 'is-active' : '' }}"
@@ -474,12 +441,58 @@
                 @endforeach
             </div>
 
-            <form method="POST" action="{{ route('logout') }}" class="alumni-primary-nav__logout-form">
-                @csrf
-                <button type="submit" class="alumni-primary-nav__logout" aria-label="Sign out" title="Sign out">
-                    <i class="bx bx-log-out" aria-hidden="true"></i>
-                </button>
-            </form>
+            <div class="alumni-primary-nav__tools" aria-label="Account tools">
+                <div class="alumni-notification-dock">
+                    <a
+                        href="{{ route('notifications.index') }}"
+                        class="alumni-live-bell alumni-notification-dock__bell {{ $notificationBadge ? 'has-unread' : '' }}"
+                        aria-label="{{ $notificationBellLabel }}"
+                        title="Notifications"
+                        data-live-notification-endpoint="{{ $notificationLiveSummaryUrl }}"
+                        data-live-notification-button
+                    >
+                        <span class="alumni-live-bell__icon">
+                            <i class='bx {{ $notificationBellIcon }} text-2xl' data-live-notification-icon></i>
+                        </span>
+                        <span class="alumni-live-bell__badge {{ $notificationBadge ? '' : 'hidden' }}" data-live-notification-badge>{{ $notificationBadge }}</span>
+                        <span class="sr-only">Open updates center</span>
+                    </a>
+                    <a
+                        href="{{ route('notifications.index') }}"
+                        class="alumni-notification-preview hidden"
+                        data-live-notification-preview
+                        data-live-notification-preview-link
+                        aria-live="polite"
+                    >
+                        <span class="alumni-notification-preview__icon" aria-hidden="true">
+                            <i class="bx bx-bell" data-live-notification-preview-icon></i>
+                        </span>
+                        <span class="alumni-notification-preview__body">
+                            <span class="alumni-notification-preview__meta">
+                                <span data-live-notification-preview-category>Latest update</span>
+                                <span data-live-notification-preview-time>Just now</span>
+                            </span>
+                            <span class="alumni-notification-preview__title" data-live-notification-preview-title>Open notifications</span>
+                            <span class="alumni-notification-preview__summary" data-live-notification-preview-summary>See the newest update in your portal.</span>
+                        </span>
+                    </a>
+                </div>
+
+                <a href="{{ route('help-desk') }}" class="alumni-primary-nav__tool" aria-label="Help Desk" title="Help Desk">
+                    <i class="bx bx-help-circle" aria-hidden="true"></i>
+                </a>
+
+                <a href="{{ route('profile') }}" class="alumni-primary-nav__profile {{ request()->routeIs('profile') ? 'is-active' : '' }}" aria-label="Profile: {{ $userName }}" title="Profile" @if (request()->routeIs('profile')) aria-current="page" @endif>
+                    {{ strtoupper(substr((string) ($currentUser?->firstname ?? 'A'), 0, 1) . substr((string) ($currentUser?->lastname ?? 'M'), 0, 1)) }}
+                </a>
+
+                <form method="POST" action="{{ route('logout') }}" class="alumni-primary-nav__logout-form">
+                    @csrf
+                    <button type="submit" class="alumni-primary-nav__tool" aria-label="Sign out" title="Sign out">
+                        <i class="bx bx-log-out" aria-hidden="true"></i>
+                    </button>
+                </form>
+            </div>
         </nav>
 
         <header class="px-6 pt-6">
