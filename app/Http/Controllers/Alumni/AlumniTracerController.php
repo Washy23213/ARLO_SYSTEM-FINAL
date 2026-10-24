@@ -11,8 +11,12 @@ use App\Services\EmploymentProofReviewNotificationService;
 use App\Support\EmploymentProofStorage;
 use App\Support\SystemOptions;
 use App\Support\TracerHistoryPresenter;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
 class AlumniTracerController extends Controller
@@ -31,6 +35,131 @@ class AlumniTracerController extends Controller
             $request->query('edit'),
             $suppressEditAutoscroll
         ));
+    }
+
+    public function showDraft(Request $request)
+    {
+        $user = $request->user();
+        abort_if(!$user, 403);
+
+        if (!Schema::hasTable('tracer_drafts')) {
+            return response()->json(['draft' => null, 'available' => false], 503);
+        }
+
+        $draft = DB::table('tracer_drafts')->where('user_id', $user->id)->first();
+        if (!$draft) {
+            return response()->json(['draft' => null]);
+        }
+
+        try {
+            $data = json_decode(Crypt::decryptString($draft->payload), true, 512, JSON_THROW_ON_ERROR);
+        } catch (DecryptException|\JsonException) {
+            DB::table('tracer_drafts')->where('user_id', $user->id)->delete();
+
+            return response()->json(['draft' => null]);
+        }
+
+        return response()->json([
+            'draft' => [
+                'data' => is_array($data) ? $data : [],
+                'step' => max(1, min(5, (int) $draft->current_step)),
+                'saved_at' => $draft->updated_at,
+                'consented' => $draft->consented_at !== null,
+            ],
+        ]);
+    }
+
+    public function saveDraft(Request $request)
+    {
+        $user = $request->user();
+        abort_if(!$user, 403);
+
+        if (!Schema::hasTable('tracer_drafts')) {
+            return response()->json(['message' => 'Draft saving is not available until the database update is applied.'], 503);
+        }
+
+        $validated = $request->validate([
+            'step' => ['required', 'integer', 'between:1,5'],
+            'consent' => ['accepted'],
+            'data' => ['required', 'array'],
+        ]);
+
+        $allowedFields = array_diff((new TracerRecord())->getFillable(), [
+            'tracer_number',
+            'user_id',
+            'tracer_date',
+            'is_employed',
+            'employment_proof_path',
+            'employment_proof_disk',
+            'employment_proof_original_name',
+            'employment_proof_mime_type',
+            'employment_proof_size_bytes',
+            'employment_proof_uploaded_at',
+            'employment_proof_status',
+            'employment_proof_reviewed_by_guard',
+            'employment_proof_reviewed_by_id',
+            'employment_proof_reviewed_at',
+            'employment_proof_rejection_note',
+            'contact_permission',
+        ]);
+        $draftData = [];
+
+        foreach ($validated['data'] as $field => $value) {
+            if (!in_array($field, $allowedFields, true)) {
+                continue;
+            }
+
+            if (is_array($value)) {
+                if (count($value) > 40 || collect($value)->contains(fn ($item) => !is_scalar($item) && $item !== null)) {
+                    continue;
+                }
+                $value = array_map(static fn ($item) => is_string($item) ? mb_substr($item, 0, 10000) : $item, $value);
+            } elseif (is_string($value)) {
+                $value = mb_substr($value, 0, 10000);
+            } elseif (!is_scalar($value) && $value !== null) {
+                continue;
+            }
+
+            $draftData[$field] = $value;
+        }
+
+        $encryptedPayload = Crypt::encryptString(json_encode($draftData, JSON_THROW_ON_ERROR));
+        if (strlen($encryptedPayload) > 90000) {
+            return response()->json(['message' => 'This draft is too large to save. Please shorten the longer answers and try again.'], 413);
+        }
+
+        $now = now();
+        $existingDraft = DB::table('tracer_drafts')->where('user_id', $user->id)->exists();
+        $values = [
+            'payload' => $encryptedPayload,
+            'current_step' => (int) $validated['step'],
+            'consented_at' => $now,
+            'updated_at' => $now,
+        ];
+
+        if ($existingDraft) {
+            DB::table('tracer_drafts')->where('user_id', $user->id)->update($values);
+        } else {
+            DB::table('tracer_drafts')->insert([
+                'user_id' => $user->id,
+                ...$values,
+                'created_at' => $now,
+            ]);
+        }
+
+        return response()->json(['message' => 'Draft saved securely.', 'saved_at' => $now->toIso8601String()]);
+    }
+
+    public function deleteDraft(Request $request)
+    {
+        $user = $request->user();
+        abort_if(!$user, 403);
+
+        if (Schema::hasTable('tracer_drafts')) {
+            DB::table('tracer_drafts')->where('user_id', $user->id)->delete();
+        }
+
+        return response()->json(['message' => 'Saved draft deleted.']);
     }
 
     public function store(StoreTracerRecordRequest $request)
@@ -257,6 +386,10 @@ class AlumniTracerController extends Controller
             ),
             $request
         );
+
+        if (Schema::hasTable('tracer_drafts')) {
+            DB::table('tracer_drafts')->where('user_id', $user->id)->delete();
+        }
 
         $message = $uploadedEmploymentProof
             ? 'Saved. Your employment proof PDF is pending admin review before your account displays as employed.'

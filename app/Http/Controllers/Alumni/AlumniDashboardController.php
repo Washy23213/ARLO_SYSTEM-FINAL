@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Alumni;
 
 use App\Http\Controllers\Controller;
+use App\Services\AlumniNotificationFeedService;
 use App\Services\AlumniProfileSummaryService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +14,8 @@ class AlumniDashboardController extends Controller
 {
     public function index(
         Request $request,
-        AlumniProfileSummaryService $profileSummaryService
+        AlumniProfileSummaryService $profileSummaryService,
+        AlumniNotificationFeedService $notificationFeedService
     )
     {
         $user = $request->user();
@@ -34,6 +36,7 @@ class AlumniDashboardController extends Controller
             'tracerStatus' => $this->tracerStatus($latestTracer),
             'jobOpportunitySummary' => $this->jobOpportunitySummaryFor($user),
             'jobOpportunityListings' => $this->jobOpportunityListings(),
+            'recentUpdates' => $notificationFeedService->activityItemsFor($user)->take(3),
         ]);
     }
 

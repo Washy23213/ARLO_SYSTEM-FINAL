@@ -41,6 +41,7 @@
         ? 'Latest: ' . \Illuminate\Support\Str::limit($latestJobPostTitle !== '' ? $latestJobPostTitle : 'Job opportunity', 34) . ($latestJobPostStatus !== '' ? ' - ' . $latestJobPostStatus : '')
         : 'No submitted job opportunities yet.';
     $jobOpportunityListings = collect($jobOpportunityListings ?? []);
+    $recentUpdates = collect($recentUpdates ?? []);
     $statusBadgeClasses = match ($employmentStatus) {
         'Employed' => 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200',
         'Self-Employed' => 'bg-amber-100 text-amber-700 ring-1 ring-amber-200',
@@ -94,6 +95,36 @@
 @endphp
 
 <div class="alumni-overview -mt-2 space-y-6">
+    <section class="surface-card overflow-hidden border border-emerald-950/10 bg-gradient-to-r from-white via-emerald-50/60 to-amber-50/50 p-0">
+        <div class="grid gap-5 p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-[0.2em] text-amber-700">CMU OARL Alumni Portal</p>
+                <h2 class="mt-2 text-3xl font-black tracking-tight text-emerald-950">Welcome back, {{ $user->firstname }}.</h2>
+                <p class="mt-2 text-sm leading-6 text-slate-600">
+                    {{ $user->degree ?: 'Your CMU alumni profile' }}
+                    @if($user->year_graduated)
+                        <span class="px-1 text-slate-400">·</span> Class of {{ $user->year_graduated }}
+                    @endif
+                    @if($user->department)
+                        <span class="px-1 text-slate-400">·</span> {{ $user->department }}
+                    @endif
+                </p>
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <span class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 ring-1 ring-emerald-100">
+                        <i class='bx bx-id-card text-emerald-700'></i> Profile {{ $profilePercent }}% complete
+                    </span>
+                    <span class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 ring-1 ring-emerald-100">
+                        <i class='bx bx-spreadsheet text-emerald-700'></i> Tracer {{ $tracerStatus['label'] ?? 'Not submitted' }}
+                    </span>
+                </div>
+            </div>
+            <a href="{{ route('tracer.index') }}#tracer-form" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-emerald-800 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-300">
+                {{ ($tracerStatus['tone'] ?? 'amber') === 'emerald' ? 'Update Tracer Survey' : 'Continue Tracer Survey' }}
+                <i class='bx bx-right-arrow-alt text-lg'></i>
+            </a>
+        </div>
+    </section>
+
     <div class="alumni-overview-stats grid grid-cols-1 gap-4 md:grid-cols-3">
         <section class="alumni-overview-stat alumni-overview-stat--profile surface-card overflow-hidden border p-5 {{ $profileCardClasses }}">
             <div class="flex items-start justify-between gap-4">
@@ -356,6 +387,34 @@
                     </a>
                 </div>
             @endif
+        </div>
+    </section>
+
+    <section class="surface-card overflow-hidden border border-slate-200 p-0" aria-labelledby="dashboard-recent-updates-title">
+        <div class="flex flex-col gap-3 border-b border-slate-200/80 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">For you</p>
+                <h2 id="dashboard-recent-updates-title" class="mt-1 text-xl font-bold text-slate-900">Recent updates</h2>
+            </div>
+            <a href="{{ route('notifications.index') }}" class="inline-flex items-center gap-1 text-sm font-semibold text-emerald-800 hover:text-emerald-950">View all updates <i class='bx bx-right-arrow-alt text-lg'></i></a>
+        </div>
+        <div class="grid gap-3 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-3">
+            @forelse($recentUpdates as $update)
+                <a href="{{ $update['open_url'] ?? route('notifications.index') }}" class="group rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-emerald-200 hover:bg-emerald-50/40 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                    <div class="flex items-start gap-3">
+                        <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-800 ring-1 ring-emerald-100"><i class='bx {{ $update['icon'] ?? 'bx-bell' }} text-xl'></i></span>
+                        <div class="min-w-0">
+                            <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-700">{{ $update['category'] ?? 'Update' }} <span class="px-1 text-slate-400">·</span> {{ $update['time_label'] ?? 'Recently' }}</p>
+                            <h3 class="mt-1 line-clamp-2 text-sm font-bold text-slate-900 group-hover:text-emerald-900">{{ $update['title'] ?? 'Portal update' }}</h3>
+                            <p class="mt-1 line-clamp-2 text-xs leading-5 text-slate-600">{{ $update['summary'] ?? 'Open this update to see more.' }}</p>
+                        </div>
+                    </div>
+                </a>
+            @empty
+                <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 px-4 py-5 text-sm text-slate-600 sm:col-span-2 lg:col-span-3">
+                    You’re all caught up. New announcements and job opportunities will appear here.
+                </div>
+            @endforelse
         </div>
     </section>
 </div>

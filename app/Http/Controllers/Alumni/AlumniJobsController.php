@@ -33,7 +33,15 @@ class AlumniJobsController extends Controller
             $request->user()?->getAuthIdentifier()
         );
 
-        return view('jobs', compact('jobOpportunities', 'mySubmissions'));
+        return view('jobs', [
+            'jobOpportunities' => $jobOpportunities,
+            'mySubmissions' => $mySubmissions,
+            'jobSearch' => mb_substr(trim((string) $request->query('q', '')), 0, 120),
+            'jobTypeFilter' => trim((string) $request->query('type', '')),
+            'jobLocationFilter' => trim((string) $request->query('location', '')),
+            'jobTypeOptions' => SystemOptions::jobTypes(),
+            'jobLocationOptions' => SystemOptions::locations(),
+        ]);
     }
 
     public function submitJob(SubmitJobRequest $request)
@@ -176,6 +184,26 @@ class AlumniJobsController extends Controller
 
         if (Schema::hasColumn('jobs', 'is_active')) {
             $query->where('is_active', true);
+        }
+
+        $search = mb_substr(trim((string) $request->query('q', '')), 0, 120);
+        if ($search !== '') {
+            $pattern = '%' . mb_strtolower($search) . '%';
+            $query->where(function ($builder) use ($pattern) {
+                foreach (['title', 'company', 'location', 'type', 'description'] as $column) {
+                    $builder->orWhereRaw('LOWER(' . $column . ') LIKE ?', [$pattern]);
+                }
+            });
+        }
+
+        $type = trim((string) $request->query('type', ''));
+        if (in_array($type, SystemOptions::jobTypes(), true)) {
+            $query->where('type', $type);
+        }
+
+        $location = trim((string) $request->query('location', ''));
+        if (in_array($location, SystemOptions::locations(), true)) {
+            $query->where('location', $location);
         }
 
         return $query

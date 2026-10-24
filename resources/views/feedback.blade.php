@@ -10,6 +10,13 @@
         ?? (($feedbackCategories ?? [])[0] ?? null);
 @endphp
 <div class="space-y-6">
+    @if(session('feedback_reference'))
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-950" role="status">
+            <p class="font-semibold">{{ session('success') }}</p>
+            <p class="mt-1">Reference number: <span class="font-bold tracking-wide">{{ session('feedback_reference') }}</span></p>
+        </div>
+    @endif
+
     <div class="surface-card overflow-hidden p-6">
         <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
@@ -137,6 +144,40 @@
             </div>
         </form>
     </div>
+
+    <section class="surface-card overflow-hidden p-0" aria-labelledby="feedback-history-title">
+        <div class="flex flex-col gap-2 border-b border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">Your requests</p>
+                <h2 id="feedback-history-title" class="mt-1 text-xl font-bold text-slate-900">Feedback history</h2>
+            </div>
+            <p class="text-xs text-slate-500">Latest 10 submissions and their current OARL status</p>
+        </div>
+        @if(($feedbackHistory ?? collect())->isNotEmpty())
+            <div class="divide-y divide-slate-100">
+                @foreach($feedbackHistory as $item)
+                    @php
+                        $reference = 'FB-' . strtoupper(substr(str_replace('-', '', (string) $item->id), 0, 8));
+                        $status = (string) ($item->status ?: 'Open');
+                        $statusClass = in_array(strtolower($status), ['resolved', 'closed'], true)
+                            ? 'bg-emerald-50 text-emerald-800 ring-emerald-200'
+                            : (in_array(strtolower($status), ['in progress', 'under review'], true)
+                                ? 'bg-sky-50 text-sky-800 ring-sky-200'
+                                : 'bg-amber-50 text-amber-800 ring-amber-200');
+                    @endphp
+                    <article class="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                        <div class="min-w-0">
+                            <h3 class="truncate text-sm font-semibold text-slate-900">{{ $item->subject }}</h3>
+                            <p class="mt-1 text-xs text-slate-500">{{ $item->type ?: 'Feedback' }} <span class="px-1">·</span> {{ $reference }} <span class="px-1">·</span> Submitted {{ \Carbon\Carbon::parse($item->created_at)->format('M j, Y') }}</p>
+                        </div>
+                        <span class="inline-flex w-fit shrink-0 rounded-full px-3 py-1 text-xs font-semibold ring-1 {{ $statusClass }}">{{ $status }}</span>
+                    </article>
+                @endforeach
+            </div>
+        @else
+            <div class="px-5 py-8 text-center text-sm text-slate-600">Your feedback submissions and their review status will appear here.</div>
+        @endif
+    </section>
 </div>
 
 <script>

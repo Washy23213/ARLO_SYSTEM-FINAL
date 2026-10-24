@@ -323,11 +323,34 @@
                 </div>
             </div>
 
-            <form action="{{ route('tracer.store') }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 gap-4 md:grid-cols-2" data-tracer-entry-form>
+            <form
+                action="{{ route('tracer.store') }}"
+                method="POST"
+                enctype="multipart/form-data"
+                class="grid grid-cols-1 gap-4 md:grid-cols-2"
+                data-tracer-entry-form
+                data-tracer-draft-url="{{ route('tracer.draft.show') }}"
+                data-tracer-draft-save-url="{{ route('tracer.draft.save') }}"
+                data-tracer-draft-enabled="{{ $editingTracer ? 'false' : 'true' }}"
+                data-tracer-dashboard-url="{{ route('dashboard') }}"
+            >
                 @csrf
                 @if($editingTracer)
                     <input type="hidden" name="record_id" value="{{ $editingTracer->id }}">
                 @endif
+                @unless($editingTracer)
+                    <div class="md:col-span-2 rounded-2xl border border-emerald-100 bg-emerald-50/70 px-4 py-4" data-tracer-education-summary>
+                        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-800">Your CMU education</p>
+                        <p class="mt-2 text-sm font-medium text-slate-800">
+                            {{ auth()->user()?->department ?: 'College not added' }}
+                            <span class="px-1 text-slate-400">·</span>
+                            {{ auth()->user()?->degree ?: 'Degree not added' }}
+                            <span class="px-1 text-slate-400">·</span>
+                            Class of {{ auth()->user()?->year_graduated ?: 'year not added' }}
+                        </p>
+                        <p class="mt-1 text-xs text-slate-600">These details come from your profile. The questions below focus on your first job and career after graduation.</p>
+                    </div>
+                @endunless
                 <div data-tracer-field-anchor="employment_type">
                     <label class="mb-1 block text-sm font-medium text-slate-700">Employment Type</label>
                     <span class="tracer-select-wrap">
@@ -2211,6 +2234,12 @@
                 return;
             }
 
+            const wizardStep = anchor.closest('[data-tracer-wizard-step]');
+            const form = anchor.closest('form[data-tracer-entry-form]');
+            if (wizardStep instanceof HTMLElement && form instanceof HTMLFormElement) {
+                setTracerWizardStep(form, Number(wizardStep.dataset.tracerWizardStep), false);
+            }
+
             anchor.scrollIntoView({
                 behavior: prefersReducedMotion ? 'auto' : 'smooth',
                 block: 'center',
@@ -2594,6 +2623,7 @@
             syncSuggestionToggle(form, 'has_employability_suggestions', '#tracer_employability_suggestions_group');
             syncSuggestionToggle(form, 'has_facility_suggestions', '#tracer_facility_suggestions_group');
             syncTracerRequiredFields(form);
+            setTracerWizardStep(form, 0, false);
 
             const firstFocusableField = form.querySelector('input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled])');
             if (firstFocusableField instanceof HTMLElement) {
@@ -2654,6 +2684,559 @@
             setScholarshipEditorState(card, false, false);
         }
 
+        const tracerWizardSteps = [
+            { title: 'Education & first job', shortTitle: 'First job', icon: 'bx-book-open' },
+            { title: 'Employment & career', shortTitle: 'Career', icon: 'bx-briefcase' },
+            { title: 'Employment details', shortTitle: 'Details', icon: 'bx-building' },
+            { title: 'University feedback', shortTitle: 'Feedback', icon: 'bx-message-square-detail' },
+            { title: 'Review & submit', shortTitle: 'Review', icon: 'bx-check-shield' },
+        ];
+
+        function getTracerDirectCard(form, title) {
+            return Array.from(form.children).find((child) => (
+                child instanceof HTMLElement
+                && child.querySelector('h3')?.textContent.trim() === title
+            )) ?? null;
+        }
+
+        function createTracerWizard(form) {
+            if (form._tracerWizard) {
+                return form._tracerWizard;
+            }
+
+            const directChildren = Array.from(form.children);
+            const firstJobCard = getTracerDirectCard(form, 'Employment Data');
+            const employmentDetailsCard = getTracerDirectCard(form, 'Employment Status Details');
+            const feedbackCard = getTracerDirectCard(form, 'Comments and Suggestions');
+
+            if (!firstJobCard || !employmentDetailsCard || !feedbackCard) {
+                return null;
+            }
+
+            const firstJobIndex = directChildren.indexOf(firstJobCard);
+            const detailsIndex = directChildren.indexOf(employmentDetailsCard);
+            const feedbackIndex = directChildren.indexOf(feedbackCard);
+            const educationSummary = directChildren.find((child) => child.matches?.('[data-tracer-education-summary]')) ?? null;
+            const isHiddenInput = (node) => node instanceof HTMLInputElement && node.type === 'hidden';
+            const isWizardContent = (node) => !isHiddenInput(node);
+            const educationAndFirstJob = [educationSummary, firstJobCard].filter(Boolean);
+            const careerFields = directChildren
+                .slice(0, firstJobIndex)
+                .filter((node) => isWizardContent(node) && node !== educationSummary);
+            const employmentDetails = [employmentDetailsCard];
+            const universityFeedback = [feedbackCard];
+            const reviewAndSubmit = directChildren
+                .slice(feedbackIndex + 1)
+                .filter(isWizardContent);
+
+            const header = document.createElement('section');
+            header.className = 'md:col-span-2 rounded-3xl border border-emerald-100 bg-gradient-to-br from-white via-emerald-50/50 to-white p-5 shadow-sm';
+            header.dataset.tracerWizardHeader = '';
+
+            const intro = document.createElement('div');
+            intro.className = 'flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between';
+            const introCopy = document.createElement('div');
+            const heading = document.createElement('h3');
+            heading.className = 'text-lg font-bold text-slate-900';
+            heading.textContent = 'Graduate Tracer Survey';
+            const description = document.createElement('p');
+            description.className = 'mt-1 text-sm leading-6 text-slate-600';
+            description.textContent = 'Tell us about your journey after graduating from CMU. Your answers are grouped into short sections, and you can review everything before submitting.';
+            introCopy.append(heading, description);
+
+            const progressLabel = document.createElement('span');
+            progressLabel.className = 'shrink-0 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-emerald-800 ring-1 ring-emerald-100';
+            progressLabel.dataset.tracerWizardProgressLabel = '';
+            intro.append(introCopy, progressLabel);
+
+            const progressTrack = document.createElement('div');
+            progressTrack.className = 'mt-4 h-2 overflow-hidden rounded-full bg-slate-200';
+            const progressFill = document.createElement('div');
+            progressFill.className = 'h-full rounded-full bg-emerald-600 transition-all duration-300';
+            progressFill.dataset.tracerWizardProgressFill = '';
+            progressFill.style.width = '20%';
+            progressTrack.append(progressFill);
+
+            const stepNav = document.createElement('nav');
+            stepNav.className = 'mt-4 grid grid-cols-2 gap-2 sm:grid-cols-5';
+            stepNav.setAttribute('aria-label', 'Tracer survey sections');
+            const stepPanels = [];
+            const stepButtons = [];
+
+            tracerWizardSteps.forEach((step, index) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-left text-xs font-semibold text-slate-600 transition hover:border-emerald-300 hover:text-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-200';
+                button.dataset.tracerWizardJump = String(index);
+                button.setAttribute('aria-label', `Go to section ${index + 1}: ${step.title}`);
+
+                const number = document.createElement('span');
+                number.className = 'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600';
+                number.dataset.tracerWizardNumber = '';
+                number.textContent = String(index + 1);
+                const label = document.createElement('span');
+                label.className = 'min-w-0 leading-tight';
+                label.textContent = step.shortTitle;
+                button.append(number, label);
+                button.addEventListener('click', () => setTracerWizardStep(form, index, true));
+                stepNav.append(button);
+                stepButtons.push(button);
+
+                const panel = document.createElement('section');
+                panel.className = 'md:col-span-2 grid grid-cols-1 gap-4 md:grid-cols-2';
+                panel.dataset.tracerWizardStep = String(index);
+                panel.setAttribute('aria-label', `Section ${index + 1}: ${step.title}`);
+                stepPanels.push(panel);
+            });
+
+            const draftArea = document.createElement('div');
+            draftArea.className = 'mt-4 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white/90 p-4 sm:flex-row sm:items-center sm:justify-between';
+            draftArea.dataset.tracerDraftArea = '';
+            const draftCopy = document.createElement('div');
+            draftCopy.className = 'min-w-0';
+            const draftConsentLabel = document.createElement('label');
+            draftConsentLabel.className = 'flex items-start gap-2 text-sm font-medium text-slate-800';
+            const draftConsent = document.createElement('input');
+            draftConsent.type = 'checkbox';
+            draftConsent.className = 'mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-emerald-700 focus:ring-emerald-500';
+            draftConsent.dataset.tracerDraftConsent = '';
+            const consentCopy = document.createElement('span');
+            consentCopy.textContent = 'Allow this survey to be saved as an encrypted draft in my account.';
+            draftConsentLabel.append(draftConsent, consentCopy);
+            const draftStatus = document.createElement('p');
+            draftStatus.className = 'mt-1 pl-6 text-xs leading-5 text-slate-500';
+            draftStatus.dataset.tracerDraftStatus = '';
+            draftStatus.setAttribute('role', 'status');
+            draftStatus.textContent = 'Drafts are private to your account and are removed when you submit or delete them.';
+            draftCopy.append(draftConsentLabel, draftStatus);
+
+            const draftActions = document.createElement('div');
+            draftActions.className = 'flex shrink-0 flex-wrap gap-2';
+            const saveDraftButton = document.createElement('button');
+            saveDraftButton.type = 'button';
+            saveDraftButton.className = 'inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100';
+            saveDraftButton.dataset.tracerDraftSave = '';
+            saveDraftButton.innerHTML = '<i class="bx bx-save" aria-hidden="true"></i><span>Save draft & exit</span>';
+            const deleteDraftButton = document.createElement('button');
+            deleteDraftButton.type = 'button';
+            deleteDraftButton.className = 'inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700';
+            deleteDraftButton.dataset.tracerDraftDelete = '';
+            deleteDraftButton.hidden = true;
+            deleteDraftButton.textContent = 'Delete saved draft';
+            draftActions.append(saveDraftButton, deleteDraftButton);
+            draftArea.append(draftCopy, draftActions);
+            if (form.dataset.tracerDraftEnabled !== 'true') {
+                draftArea.hidden = true;
+            }
+            header.append(intro, progressTrack, stepNav, draftArea);
+
+            const footer = document.createElement('div');
+            footer.className = 'md:col-span-2 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4';
+            footer.dataset.tracerWizardFooter = '';
+            const previousButton = document.createElement('button');
+            previousButton.type = 'button';
+            previousButton.className = 'inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50';
+            previousButton.dataset.tracerWizardPrevious = '';
+            previousButton.innerHTML = '<i class="bx bx-left-arrow-alt text-lg" aria-hidden="true"></i><span>Previous section</span>';
+            previousButton.addEventListener('click', () => setTracerWizardStep(form, Number(form.dataset.tracerWizardCurrent || 0) - 1, true));
+            const nextButton = document.createElement('button');
+            nextButton.type = 'button';
+            nextButton.className = 'inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-300';
+            nextButton.dataset.tracerWizardNext = '';
+            nextButton.innerHTML = '<span>Continue</span><i class="bx bx-right-arrow-alt text-lg" aria-hidden="true"></i>';
+            nextButton.addEventListener('click', () => setTracerWizardStep(form, Number(form.dataset.tracerWizardCurrent || 0) + 1, true));
+            footer.append(previousButton, nextButton);
+
+            const reviewPanel = document.createElement('div');
+            reviewPanel.className = 'md:col-span-2 rounded-2xl border border-emerald-100 bg-white p-5';
+            reviewPanel.dataset.tracerReviewSummary = '';
+            reviewPanel.innerHTML = '<h3 class="text-base font-semibold text-slate-900">Review your answers</h3><p class="mt-1 text-sm text-slate-600">Check your responses before submitting. Use the section buttons above to make changes.</p><div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2" data-tracer-review-items></div>';
+            stepPanels[4].prepend(reviewPanel);
+
+            const groups = [educationAndFirstJob, careerFields, employmentDetails, universityFeedback, reviewAndSubmit];
+            groups.forEach((nodes, index) => {
+                nodes.forEach((node) => stepPanels[index].append(node));
+            });
+
+            form.append(header, ...stepPanels, footer);
+            const wizard = {
+                header,
+                panels: stepPanels,
+                buttons: stepButtons,
+                title: introCopy.querySelector('h3'),
+                progressLabel,
+                progressFill,
+                previousButton,
+                nextButton,
+                draftConsent,
+                draftStatus,
+                saveDraftButton,
+                deleteDraftButton,
+                reviewItems: reviewPanel.querySelector('[data-tracer-review-items]'),
+                draftSaved: false,
+                saveTimer: null,
+                saving: false,
+            };
+            form._tracerWizard = wizard;
+
+            setTracerWizardStep(form, 0, false);
+            saveDraftButton.addEventListener('click', () => saveTracerDraft(form, true));
+            deleteDraftButton.addEventListener('click', () => deleteTracerDraft(form));
+            draftConsent.addEventListener('change', () => {
+                if (draftConsent.checked) {
+                    queueTracerDraftSave(form);
+                }
+            });
+
+            return wizard;
+        }
+
+        function setTracerWizardStep(form, index, shouldFocus = false) {
+            const wizard = form?._tracerWizard;
+            if (!wizard) {
+                return;
+            }
+
+            const boundedIndex = Math.max(0, Math.min(tracerWizardSteps.length - 1, Number(index) || 0));
+            form.dataset.tracerWizardCurrent = String(boundedIndex);
+            wizard.panels.forEach((panel, panelIndex) => {
+                const active = panelIndex === boundedIndex;
+                panel.hidden = !active;
+                panel.classList.toggle('hidden', !active);
+            });
+            wizard.buttons.forEach((button, buttonIndex) => {
+                const active = buttonIndex === boundedIndex;
+                button.setAttribute('aria-current', active ? 'step' : 'false');
+                button.classList.toggle('border-emerald-300', active);
+                button.classList.toggle('bg-emerald-50', active);
+                button.classList.toggle('text-emerald-900', active);
+                const number = button.querySelector('[data-tracer-wizard-number]');
+                number?.classList.toggle('bg-emerald-700', active);
+                number?.classList.toggle('text-white', active);
+                number?.classList.toggle('bg-slate-100', !active);
+                number?.classList.toggle('text-slate-600', !active);
+            });
+            wizard.title.textContent = tracerWizardSteps[boundedIndex].title;
+            wizard.progressLabel.textContent = `Step ${boundedIndex + 1} of ${tracerWizardSteps.length}`;
+            wizard.progressFill.style.width = `${((boundedIndex + 1) / tracerWizardSteps.length) * 100}%`;
+            wizard.previousButton.hidden = boundedIndex === 0;
+            wizard.nextButton.hidden = boundedIndex === tracerWizardSteps.length - 1;
+            if (boundedIndex === tracerWizardSteps.length - 1) {
+                updateTracerReviewSummary(form);
+            }
+            updateTracerWizardCompletion(form);
+            queueTracerDraftSave(form);
+
+            if (shouldFocus) {
+                wizard.header.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' });
+            }
+        }
+
+        function updateTracerWizardCompletion(form) {
+            const wizard = form?._tracerWizard;
+            if (!wizard) {
+                return;
+            }
+
+            wizard.panels.forEach((panel, index) => {
+                const requiredFields = Array.from(panel.querySelectorAll('input:required, select:required, textarea:required'))
+                    .filter((field) => !field.disabled && !field.closest('[hidden]'));
+                const hasAnswers = Array.from(panel.querySelectorAll('input:not([type="hidden"]):not([type="file"]), select, textarea'))
+                    .some((field) => field instanceof HTMLInputElement && ['checkbox', 'radio'].includes(field.type)
+                        ? field.checked
+                        : String(field.value ?? '').trim() !== '');
+                const complete = requiredFields.length > 0 && requiredFields.every((field) => field.checkValidity());
+                const status = complete ? 'Ready' : (hasAnswers ? 'In progress' : 'Not started');
+                const button = wizard.buttons[index];
+                const label = button?.querySelector('span:last-child');
+                if (label) {
+                    label.textContent = `${tracerWizardSteps[index].shortTitle} · ${status}`;
+                }
+                button?.setAttribute('data-tracer-step-status', status.toLowerCase().replaceAll(' ', '-'));
+            });
+        }
+
+        function updateTracerReviewSummary(form) {
+            const wizard = form?._tracerWizard;
+            if (!wizard?.reviewItems) {
+                return;
+            }
+
+            wizard.reviewItems.replaceChildren();
+            const ignored = new Set(['_token', 'record_id', 'contact_permission', 'information_attestation', 'data_privacy_consent', 'employment_proof']);
+            const controls = Array.from(form.elements).filter((field) => (
+                field instanceof HTMLElement
+                && field.name
+                && !ignored.has(field.name.replace(/\[\]$/, ''))
+                && !(field instanceof HTMLInputElement && ['hidden', 'file', 'submit', 'button'].includes(field.type))
+                && !field.closest('[hidden]')
+            ));
+            const visited = new Set();
+
+            controls.forEach((field) => {
+                const key = field.name;
+                if (visited.has(key)) {
+                    return;
+                }
+                visited.add(key);
+                const sameName = controls.filter((candidate) => candidate.name === key);
+                let answer = '';
+                if (sameName.every((candidate) => candidate instanceof HTMLInputElement && candidate.type === 'radio')) {
+                    const selected = sameName.find((candidate) => candidate.checked);
+                    answer = selected?.closest('label')?.textContent.trim() || selected?.value || '';
+                } else if (sameName.every((candidate) => candidate instanceof HTMLInputElement && candidate.type === 'checkbox')) {
+                    answer = sameName.filter((candidate) => candidate.checked)
+                        .map((candidate) => candidate.closest('label')?.textContent.trim() || candidate.value)
+                        .join(', ');
+                } else if (field instanceof HTMLSelectElement) {
+                    answer = field.value ? (field.selectedOptions[0]?.textContent.trim() ?? '') : '';
+                } else if (field instanceof HTMLInputElement && field.type === 'checkbox') {
+                    answer = field.checked ? (field.closest('label')?.textContent.trim() || 'Yes') : '';
+                } else {
+                    answer = String(field.value ?? '').trim();
+                }
+
+                if (!answer) {
+                    return;
+                }
+
+                const anchor = field.closest('[data-tracer-field-anchor]');
+                const label = anchor?.querySelector('label, p')?.textContent.trim()
+                    || field.closest('label')?.textContent.trim()
+                    || key.replace(/\[\]$/, '').replaceAll('_', ' ');
+                const item = document.createElement('div');
+                item.className = 'rounded-xl border border-slate-200 bg-slate-50 px-3 py-3';
+                const labelNode = document.createElement('p');
+                labelNode.className = 'text-xs font-semibold uppercase tracking-wide text-slate-500';
+                labelNode.textContent = label;
+                const answerNode = document.createElement('p');
+                answerNode.className = 'mt-1 whitespace-pre-wrap break-words text-sm text-slate-800';
+                answerNode.textContent = answer;
+                item.append(labelNode, answerNode);
+                wizard.reviewItems.append(item);
+            });
+
+            if (!wizard.reviewItems.children.length) {
+                const empty = document.createElement('p');
+                empty.className = 'text-sm text-slate-500';
+                empty.textContent = 'Your answers will appear here as you complete the survey.';
+                wizard.reviewItems.append(empty);
+            }
+        }
+
+        function collectTracerDraftData(form) {
+            const ignored = new Set(['_token', 'record_id', 'contact_permission', 'information_attestation', 'data_privacy_consent', 'employment_proof']);
+            const grouped = new Map();
+            Array.from(form.elements).forEach((field) => {
+                if (!(field instanceof HTMLElement) || !field.name || ignored.has(field.name.replace(/\[\]$/, ''))) {
+                    return;
+                }
+                if (field instanceof HTMLInputElement && ['hidden', 'file', 'submit', 'button'].includes(field.type)) {
+                    return;
+                }
+                const group = grouped.get(field.name) ?? [];
+                group.push(field);
+                grouped.set(field.name, group);
+            });
+
+            const data = {};
+            grouped.forEach((fields, name) => {
+                if (fields.every((field) => field instanceof HTMLInputElement && field.type === 'radio')) {
+                    data[name] = fields.find((field) => field.checked)?.value ?? '';
+                } else if (fields.every((field) => field instanceof HTMLInputElement && field.type === 'checkbox')) {
+                    data[name] = fields.filter((field) => field.checked).map((field) => field.value);
+                } else if (fields[0] instanceof HTMLSelectElement && fields[0].multiple) {
+                    data[name] = Array.from(fields[0].selectedOptions).map((option) => option.value);
+                } else {
+                    data[name] = fields[0].value ?? '';
+                }
+            });
+
+            return data;
+        }
+
+        function restoreTracerDraftData(form, data) {
+            if (!data || typeof data !== 'object') {
+                return;
+            }
+
+            Object.entries(data).forEach(([name, savedValue]) => {
+                const fields = Array.from(form.elements).filter((field) => field instanceof HTMLElement && field.name === name);
+                if (!fields.length) {
+                    return;
+                }
+                const values = Array.isArray(savedValue) ? savedValue.map(String) : null;
+
+                if (fields.every((field) => field instanceof HTMLInputElement && field.type === 'radio')) {
+                    fields.forEach((field) => {
+                        field.checked = String(field.value) === String(savedValue);
+                        field.defaultChecked = field.checked;
+                    });
+                } else if (fields.every((field) => field instanceof HTMLInputElement && field.type === 'checkbox')) {
+                    const selectedValues = values ?? (savedValue ? [String(savedValue)] : []);
+                    fields.forEach((field) => {
+                        field.checked = selectedValues.includes(String(field.value));
+                        field.defaultChecked = field.checked;
+                    });
+                } else if (fields[0] instanceof HTMLSelectElement && fields[0].multiple) {
+                    const selectedValues = values ?? [String(savedValue)];
+                    Array.from(fields[0].options).forEach((option) => {
+                        option.selected = selectedValues.includes(option.value);
+                        option.defaultSelected = option.selected;
+                    });
+                } else if (fields[0] instanceof HTMLInputElement || fields[0] instanceof HTMLTextAreaElement || fields[0] instanceof HTMLSelectElement) {
+                    const value = Array.isArray(savedValue) ? (savedValue[0] ?? '') : String(savedValue ?? '');
+                    fields[0].value = value;
+                    if (fields[0] instanceof HTMLSelectElement) {
+                        Array.from(fields[0].options).forEach((option) => { option.defaultSelected = option.selected; });
+                    } else {
+                        fields[0].defaultValue = value;
+                    }
+                }
+            });
+        }
+
+        function tracerDraftHeaders(form) {
+            return {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': form.querySelector('input[name="_token"]')?.value ?? '',
+            };
+        }
+
+        async function loadTracerDraft(form) {
+            const wizard = form?._tracerWizard;
+            if (!wizard || form.dataset.tracerDraftEnabled !== 'true') {
+                return;
+            }
+
+            try {
+                const response = await fetch(form.dataset.tracerDraftUrl, {
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                    credentials: 'same-origin',
+                });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok) {
+                    if (response.status === 503) {
+                        wizard.draftStatus.textContent = result?.message || 'Secure draft saving is waiting for the database update.';
+                    }
+                    return;
+                }
+
+                const draft = result?.draft;
+                if (!draft || !draft.consented) {
+                    return;
+                }
+
+                restoreTracerDraftData(form, draft.data);
+                wizard.draftConsent.checked = true;
+                wizard.draftConsent.defaultChecked = true;
+                wizard.draftSaved = true;
+                wizard.deleteDraftButton.hidden = false;
+                toggleEmploymentFields(form);
+                toggleEducationLevel(form);
+                syncCurriculumSection(form);
+                syncFirstJobSection(form);
+                syncPresentEmploymentSection(form);
+                syncSuggestionToggle(form, 'has_curriculum_suggestions', '#tracer_curriculum_suggestions_group');
+                syncSuggestionToggle(form, 'has_employability_suggestions', '#tracer_employability_suggestions_group');
+                syncSuggestionToggle(form, 'has_facility_suggestions', '#tracer_facility_suggestions_group');
+                syncTracerRequiredFields(form);
+                form.dataset.initialSnapshot = serializeTracerForm(form);
+                setTracerWizardStep(form, Number(draft.step) - 1, false);
+                const savedLabel = draft.saved_at ? new Date(draft.saved_at).toLocaleString() : 'recently';
+                wizard.draftStatus.textContent = `Draft restored from ${savedLabel}. Your selected employment PDF must be attached again before submitting.`;
+                updateTracerReviewSummary(form);
+            } catch (error) {
+                wizard.draftStatus.textContent = 'Could not load your saved draft. Your existing tracer answers are still available.';
+            }
+        }
+
+        function queueTracerDraftSave(form) {
+            const wizard = form?._tracerWizard;
+            if (!wizard || form.dataset.tracerDraftEnabled !== 'true' || !wizard.draftConsent.checked) {
+                return;
+            }
+
+            window.clearTimeout(wizard.saveTimer);
+            wizard.draftStatus.textContent = 'Saving your draft…';
+            wizard.saveTimer = window.setTimeout(() => saveTracerDraft(form, false), 900);
+        }
+
+        async function saveTracerDraft(form, andExit) {
+            const wizard = form?._tracerWizard;
+            if (!wizard || !wizard.draftConsent.checked) {
+                if (wizard) {
+                    wizard.draftStatus.textContent = 'Allow encrypted draft saving above before saving or leaving this draft.';
+                }
+                return;
+            }
+            if (wizard.saving) {
+                return;
+            }
+
+            window.clearTimeout(wizard.saveTimer);
+            wizard.saving = true;
+            wizard.saveDraftButton.disabled = true;
+            wizard.saveDraftButton.classList.add('opacity-60');
+
+            try {
+                const response = await fetch(form.dataset.tracerDraftSaveUrl, {
+                    method: 'PUT',
+                    headers: tracerDraftHeaders(form),
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        consent: true,
+                        step: Number(form.dataset.tracerWizardCurrent || 0) + 1,
+                        data: collectTracerDraftData(form),
+                    }),
+                });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok) {
+                    throw new Error(result?.message || 'Could not save your draft. Please try again.');
+                }
+
+                wizard.draftSaved = true;
+                wizard.deleteDraftButton.hidden = false;
+                wizard.draftStatus.textContent = `Draft saved at ${new Date(result.saved_at || Date.now()).toLocaleTimeString()}. Your employment PDF is not stored in the draft.`;
+                if (andExit) {
+                    window.location.assign(form.dataset.tracerDashboardUrl);
+                }
+            } catch (error) {
+                wizard.draftStatus.textContent = error instanceof Error ? error.message : 'Could not save your draft. Please try again.';
+            } finally {
+                wizard.saving = false;
+                wizard.saveDraftButton.disabled = false;
+                wizard.saveDraftButton.classList.remove('opacity-60');
+            }
+        }
+
+        async function deleteTracerDraft(form) {
+            const wizard = form?._tracerWizard;
+            if (!wizard || !wizard.draftSaved) {
+                return;
+            }
+
+            try {
+                const response = await fetch(form.dataset.tracerDraftUrl, {
+                    method: 'DELETE',
+                    headers: tracerDraftHeaders(form),
+                    credentials: 'same-origin',
+                });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok) {
+                    throw new Error(result?.message || 'Could not delete the saved draft.');
+                }
+                wizard.draftSaved = false;
+                wizard.deleteDraftButton.hidden = true;
+                wizard.draftConsent.checked = false;
+                wizard.draftStatus.textContent = result?.message || 'Saved draft deleted.';
+            } catch (error) {
+                wizard.draftStatus.textContent = error instanceof Error ? error.message : 'Could not delete the saved draft.';
+            }
+        }
+
         function initTracerPage() {
             const formShell = document.querySelector('[data-tracer-form]');
             const form = document.querySelector('[data-tracer-entry-form]');
@@ -2663,6 +3246,8 @@
             if (!formShell || !form) {
                 return;
             }
+
+            createTracerWizard(form);
 
             document.querySelectorAll('[data-tracer-jump-target]').forEach((trigger) => {
                 if (!(trigger instanceof HTMLElement) || trigger.dataset.tracerJumpBound === 'true') {
@@ -2730,6 +3315,9 @@
                 form.addEventListener('submit', handleTracerSubmit);
                 form.addEventListener('input', () => {
                     syncTracerAnalyticsReminder(form);
+                    queueTracerDraftSave(form);
+                    updateTracerReviewSummary(form);
+                    updateTracerWizardCompletion(form);
                     if (serializeTracerForm(form) !== form.dataset.initialSnapshot) {
                         setInlineReminderVisible(noChangesReminder, false);
                     }
@@ -2737,6 +3325,9 @@
                 form.addEventListener('change', () => {
                     syncTracerRequiredFields(form);
                     syncTracerAnalyticsReminder(form);
+                    queueTracerDraftSave(form);
+                    updateTracerReviewSummary(form);
+                    updateTracerWizardCompletion(form);
                     if (serializeTracerForm(form) !== form.dataset.initialSnapshot) {
                         setInlineReminderVisible(noChangesReminder, false);
                     }
@@ -2745,6 +3336,11 @@
                     control.addEventListener('click', () => hideAttestationDialog(attestationDialog, attestationCheckbox, submitButton));
                 });
                 resetButton?.addEventListener('click', handleTracerReset);
+                form.addEventListener('reset', () => window.setTimeout(() => {
+                    queueTracerDraftSave(form);
+                    updateTracerReviewSummary(form);
+                    updateTracerWizardCompletion(form);
+                }, 0));
                 form.dataset.tracerJsBound = 'true';
             }
 
@@ -2792,6 +3388,12 @@
             syncTracerRequiredFields(form);
             syncTracerAnalyticsReminder(form);
             form.dataset.initialSnapshot = serializeTracerForm(form);
+            updateTracerReviewSummary(form);
+            updateTracerWizardCompletion(form);
+            if (!form.dataset.tracerDraftLoadStarted) {
+                form.dataset.tracerDraftLoadStarted = 'true';
+                loadTracerDraft(form);
+            }
             if (isVisibleDialog(form.querySelector('[data-tracer-attestation]'))) {
                 showAttestationDialog(
                     form.querySelector('[data-tracer-attestation]'),

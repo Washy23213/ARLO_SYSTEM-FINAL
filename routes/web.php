@@ -59,6 +59,9 @@ Route::middleware(['auth', 'no_admin'])->group(function () {
     Route::view('/help-desk', 'help-desk')->name('help-desk');
     Route::get('/tracer', [AlumniTracerController::class, 'index'])->name('tracer.index');
     Route::post('/tracer', [AlumniTracerController::class, 'store'])->name('tracer.store');
+    Route::get('/tracer/draft', [AlumniTracerController::class, 'showDraft'])->name('tracer.draft.show');
+    Route::put('/tracer/draft', [AlumniTracerController::class, 'saveDraft'])->name('tracer.draft.save');
+    Route::delete('/tracer/draft', [AlumniTracerController::class, 'deleteDraft'])->name('tracer.draft.delete');
     Route::get('/tracer/{record}/employment-proof', [AlumniTracerController::class, 'downloadEmploymentProof'])->name('tracer.proof.download');
 
     // ==================== JOBS ROUTE ====================

@@ -44,6 +44,35 @@
             </span>
         </div>
 
+        <form method="GET" action="{{ route('jobs') }}" class="grid grid-cols-1 gap-3 border-b border-slate-200 bg-slate-50/70 p-4 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(180px,0.45fr)_minmax(180px,0.45fr)_auto_auto] lg:items-end" role="search" aria-label="Search job opportunities">
+            <div>
+                <label for="job-board-search" class="mb-1 block text-xs font-semibold text-slate-700">Search jobs</label>
+                <input id="job-board-search" type="search" name="q" value="{{ $jobSearch ?? '' }}" maxlength="120" placeholder="Job title, company, location, or keywords" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100">
+            </div>
+            <div>
+                <label for="job-board-type" class="mb-1 block text-xs font-semibold text-slate-700">Employment type</label>
+                <select id="job-board-type" name="type" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100">
+                    <option value="">All types</option>
+                    @foreach(($jobTypeOptions ?? []) as $option)
+                        <option value="{{ $option }}" @selected(($jobTypeFilter ?? '') === $option)>{{ $option }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label for="job-board-location" class="mb-1 block text-xs font-semibold text-slate-700">Location</label>
+                <select id="job-board-location" name="location" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100">
+                    <option value="">All locations</option>
+                    @foreach(($jobLocationOptions ?? []) as $option)
+                        <option value="{{ $option }}" @selected(($jobLocationFilter ?? '') === $option)>{{ $option }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-800 px-4 py-2.5 text-sm font-bold text-white hover:bg-emerald-900"><i class='bx bx-search'></i> Search</button>
+            @if(($jobSearch ?? '') !== '' || ($jobTypeFilter ?? '') !== '' || ($jobLocationFilter ?? '') !== '')
+                <a href="{{ route('jobs') }}" class="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100">Clear filters</a>
+            @endif
+        </form>
+
         @if(isset($jobOpportunities) && $jobOpportunities->count() > 0)
             <div class="alumni-job-rows">
                 @foreach($jobOpportunities as $job)
@@ -114,7 +143,16 @@
                         <i class='bx bx-briefcase-alt-2'></i>
                     </span>
                     <p class="empty-state-card__title">No job opportunities available</p>
-                    <p class="empty-state-card__body">Approved job opportunities will appear here once OARL publishes them.</p>
+                    <p class="empty-state-card__body">
+                        @if(($jobSearch ?? '') !== '' || ($jobTypeFilter ?? '') !== '' || ($jobLocationFilter ?? '') !== '')
+                            No openings match these filters. Try another keyword or clear your filters.
+                        @else
+                            Approved job opportunities will appear here once OARL publishes them.
+                        @endif
+                    </p>
+                    @if(($jobSearch ?? '') !== '' || ($jobTypeFilter ?? '') !== '' || ($jobLocationFilter ?? '') !== '')
+                        <a href="{{ route('jobs') }}" class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-emerald-800">Clear filters <i class='bx bx-right-arrow-alt'></i></a>
+                    @endif
                 </div>
             </div>
         @endif

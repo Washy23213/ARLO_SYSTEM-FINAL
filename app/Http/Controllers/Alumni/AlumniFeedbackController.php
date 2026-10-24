@@ -6,16 +6,27 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Alumni\SubmitFeedbackRequest;
 use App\Services\AuditLogService;
 use App\Support\SystemOptions;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class AlumniFeedbackController extends Controller
 {
-    public function feedbackForm()
+    public function feedbackForm(Request $request)
     {
+        $feedbackHistory = Schema::hasTable('feedback')
+            ? DB::table('feedback')
+                ->where('user_id', $request->user()->getAuthIdentifier())
+                ->select('id', 'subject', 'type', 'status', 'created_at', 'resolved_at')
+                ->orderByDesc('created_at')
+                ->limit(10)
+                ->get()
+            : collect();
+
         return view('feedback', [
             'feedbackCategories' => $this->feedbackCategories(),
+            'feedbackHistory' => $feedbackHistory,
         ]);
     }
 
@@ -49,7 +60,12 @@ class AlumniFeedbackController extends Controller
             $request
         );
 
-        return redirect()->route('feedback.form')->with('success', 'Feedback submitted successfully.');
+        $reference = 'FB-' . strtoupper(substr(str_replace('-', '', $feedbackId), 0, 8));
+
+        return redirect()
+            ->route('feedback.form')
+            ->with('feedback_reference', $reference)
+            ->with('success', 'Feedback received. Save this reference number if you contact OARL about it.');
     }
 
     protected function feedbackCategories(): array
