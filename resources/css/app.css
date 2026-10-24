@@ -1272,7 +1272,7 @@ body.sidebar-collapsed .admin-sidebar::-webkit-scrollbar {
 
 .tracer-form-shell {
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 }
 
@@ -1315,21 +1315,84 @@ body.sidebar-collapsed .admin-sidebar::-webkit-scrollbar {
     box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.16);
 }
 
-.tracer-helper-note {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.45rem;
-    margin-top: 0.5rem;
-    color: #64748b;
-    font-size: 0.8rem;
-    line-height: 1.45;
+.tracer-guide-field {
+    position: relative;
+    z-index: 0;
 }
 
-.tracer-helper-note i {
-    flex-shrink: 0;
-    margin-top: 0.05rem;
+.tracer-guide-field:hover,
+.tracer-guide-field:focus-within {
+    z-index: 30;
+}
+
+.tracer-guide-field::after {
+    content: attr(data-tracer-guide);
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 0.65rem);
+    width: max-content;
+    max-width: min(22rem, calc(100vw - 2.5rem));
+    padding: 0.7rem 0.9rem;
+    border: 1px solid rgba(167, 243, 208, 0.9);
+    border-radius: 0.85rem;
+    background: #073b25;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.5;
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.2);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 100;
+    transition: opacity 0.16s ease, visibility 0s linear 0.16s, transform 0.16s ease;
+    transform: translateY(0.2rem);
+}
+
+.tracer-guide-field::before {
+    content: "";
+    position: absolute;
+    left: 1rem;
+    bottom: calc(100% + 0.35rem);
+    width: 0.65rem;
+    height: 0.65rem;
+    border-right: 1px solid rgba(167, 243, 208, 0.9);
+    border-bottom: 1px solid rgba(167, 243, 208, 0.9);
+    background: #073b25;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 101;
+    transition: opacity 0.16s ease, visibility 0s linear 0.16s;
+    transform: rotate(45deg);
+}
+
+.tracer-guide-field:hover::after,
+.tracer-guide-field:focus-within::after,
+.tracer-guide-field:hover::before,
+.tracer-guide-field:focus-within::before {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 1s;
+}
+
+.tracer-guide-field:hover::after,
+.tracer-guide-field:focus-within::after {
+    transform: translateY(0);
+}
+
+.tracer-guide-indicator {
+    margin-left: 0.2rem;
     color: #047857;
-    font-size: 1rem;
+    font-size: 0.95rem;
+    vertical-align: -0.08em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tracer-guide-field::before,
+    .tracer-guide-field::after {
+        transition-duration: 0s;
+    }
 }
 
 .scroll-jump-focus {

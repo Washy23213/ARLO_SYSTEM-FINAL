@@ -51,6 +51,12 @@
     $employmentTypeValue = old('employment_type', $formTracer?->employment_type);
     $currentPositionValue = old('current_position', $formTracer?->current_position);
     $currentCompanyValue = old('current_company', $formTracer?->current_company);
+    $currentPositionGuide = blank($currentPositionValue)
+        ? ($employmentTypeValue === 'Unemployed' ? $employmentConditionalNote : $registrationMissingNote)
+        : null;
+    $currentCompanyGuide = blank($currentCompanyValue)
+        ? ($employmentTypeValue === 'Unemployed' ? $employmentConditionalNote : $registrationMissingNote)
+        : null;
     $monthlyIncomeValue = \App\Support\SystemOptions::presentJobEarningsRangeForIncome(old('monthly_income', $formTracer?->monthly_income));
     $firstJobMonthlyEarningsValue = \App\Support\SystemOptions::firstJobEarningsLabel(old('first_job_monthly_earnings', $formTracer?->first_job_monthly_earnings));
     $presentJobMonthlyEarningsValue = \App\Support\SystemOptions::presentJobEarningsLabel(old('present_job_monthly_earnings', $formTracer?->present_job_monthly_earnings));
@@ -71,13 +77,26 @@
         return null;
     };
     $industryValue = $selectOptionValue($industryValue, $industryOptions);
+    $monthlyIncomeGuide = blank($monthlyIncomeValue)
+        ? ($employmentTypeValue === 'Unemployed' ? $employmentConditionalNote : $registrationMissingNote)
+        : null;
+    $industryGuide = blank($industryValue)
+        ? ($employmentTypeValue === 'Unemployed' ? $employmentConditionalNote : $registrationMissingNote)
+        : null;
     $jobSatisfactionValue = old('job_satisfaction', $formTracer?->job_satisfaction);
+    $jobSatisfactionGuide = blank($jobSatisfactionValue) ? $registrationMissingNote : null;
     $furtherEducationValue = old('further_education', $formTracer?->further_education);
     $furtherEducationEnabled = filter_var($furtherEducationValue, FILTER_VALIDATE_BOOLEAN);
     $educationLevelValue = old('education_level', $formTracer?->education_level);
+    $educationLevelGuide = blank($educationLevelValue)
+        ? ($furtherEducationEnabled ? $registrationMissingNote : $educationConditionalNote)
+        : null;
     $skillsUsedValue = old('skills_used', $formTracer?->skills_used);
+    $skillsUsedGuide = blank($skillsUsedValue) ? $registrationMissingNote : null;
     $challengesFacedValue = old('challenges_faced', $formTracer?->challenges_faced);
+    $challengesFacedGuide = blank($challengesFacedValue) ? $registrationMissingNote : null;
     $recommendationsValue = old('recommendations', $formTracer?->recommendations);
+    $recommendationsGuide = blank($recommendationsValue) ? $registrationMissingNote : null;
     $showTracerAttestation = old('information_attestation') || $errors->has('information_attestation');
     $scholarshipNameOptions = \App\Support\SystemOptions::scholarshipNames();
     $scholarshipUser = auth()->user();
@@ -368,25 +387,40 @@
                     </span>
                 </div>
 
-                <div data-tracer-employed-field data-tracer-field-anchor="current_position">
-                    <label class="mb-1 block text-sm font-medium text-slate-700">Current Position</label>
-                    <input name="current_position" type="text" value="{{ $currentPositionValue }}" placeholder="e.g. Systems Analyst" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100">
-                    @if(blank($currentPositionValue))
-                        <p class="tracer-helper-note"><i class='bx bx-info-circle' aria-hidden="true"></i><span>{{ $employmentTypeValue === 'Unemployed' ? $employmentConditionalNote : $registrationMissingNote }}</span></p>
+                <div data-tracer-employed-field data-tracer-field-anchor="current_position" class="{{ $currentPositionGuide ? 'tracer-guide-field' : '' }}"
+                    @if($currentPositionGuide)
+                        data-tracer-guide="{{ $currentPositionGuide }}"
+                        data-tracer-guide-kind="employment"
+                        data-tracer-guide-available="{{ $registrationMissingNote }}"
+                        data-tracer-guide-unavailable="{{ $employmentConditionalNote }}"
                     @endif
+                >
+                    <label class="mb-1 block text-sm font-medium text-slate-700">Current Position @if($currentPositionGuide)<i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i>@endif</label>
+                    <input name="current_position" type="text" value="{{ $currentPositionValue }}" placeholder="e.g. Systems Analyst" @if($currentPositionGuide) aria-description="{{ $currentPositionGuide }}" @endif class="w-full rounded-xl border border-slate-300 px-3 py-2.5 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100">
                 </div>
-                <div data-tracer-employed-field data-tracer-field-anchor="current_company">
-                    <label class="mb-1 block text-sm font-medium text-slate-700">Current Company / Business</label>
-                    <input name="current_company" type="text" value="{{ $currentCompanyValue }}" placeholder="Company or business name" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100">
-                    @if(blank($currentCompanyValue))
-                        <p class="tracer-helper-note"><i class='bx bx-info-circle' aria-hidden="true"></i><span>{{ $employmentTypeValue === 'Unemployed' ? $employmentConditionalNote : $registrationMissingNote }}</span></p>
+                <div data-tracer-employed-field data-tracer-field-anchor="current_company" class="{{ $currentCompanyGuide ? 'tracer-guide-field' : '' }}"
+                    @if($currentCompanyGuide)
+                        data-tracer-guide="{{ $currentCompanyGuide }}"
+                        data-tracer-guide-kind="employment"
+                        data-tracer-guide-available="{{ $registrationMissingNote }}"
+                        data-tracer-guide-unavailable="{{ $employmentConditionalNote }}"
                     @endif
+                >
+                    <label class="mb-1 block text-sm font-medium text-slate-700">Current Company / Business @if($currentCompanyGuide)<i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i>@endif</label>
+                    <input name="current_company" type="text" value="{{ $currentCompanyValue }}" placeholder="Company or business name" @if($currentCompanyGuide) aria-description="{{ $currentCompanyGuide }}" @endif class="w-full rounded-xl border border-slate-300 px-3 py-2.5 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100">
                 </div>
 
-                <div data-tracer-employed-field data-tracer-field-anchor="monthly_income">
-                    <label class="mb-1 block text-sm font-medium text-slate-700">Monthly Income Range</label>
+                <div data-tracer-employed-field data-tracer-field-anchor="monthly_income" class="{{ $monthlyIncomeGuide ? 'tracer-guide-field' : '' }}"
+                    @if($monthlyIncomeGuide)
+                        data-tracer-guide="{{ $monthlyIncomeGuide }}"
+                        data-tracer-guide-kind="employment"
+                        data-tracer-guide-available="{{ $registrationMissingNote }}"
+                        data-tracer-guide-unavailable="{{ $employmentConditionalNote }}"
+                    @endif
+                >
+                    <label class="mb-1 block text-sm font-medium text-slate-700">Monthly Income Range @if($monthlyIncomeGuide)<i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i>@endif</label>
                     <span class="tracer-select-wrap">
-                        <select name="monthly_income" class="tracer-select w-full rounded-xl border border-slate-300 px-3 py-2.5 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100">
+                        <select name="monthly_income" @if($monthlyIncomeGuide) aria-description="{{ $monthlyIncomeGuide }}" @endif class="tracer-select w-full rounded-xl border border-slate-300 px-3 py-2.5 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100">
                             <option value="">Select monthly income range</option>
                             @foreach($presentJobEarningsOptions as $incomeRangeOption)
                                 <option value="{{ $incomeRangeOption }}" {{ $monthlyIncomeValue === $incomeRangeOption ? 'selected' : '' }}>
@@ -398,14 +432,18 @@
                             <i class='bx bx-chevron-down text-lg'></i>
                         </span>
                     </span>
-                    @if(blank($monthlyIncomeValue))
-                        <p class="tracer-helper-note"><i class='bx bx-info-circle' aria-hidden="true"></i><span>{{ $employmentTypeValue === 'Unemployed' ? $employmentConditionalNote : $registrationMissingNote }}</span></p>
-                    @endif
                 </div>
-                <div data-tracer-employed-field data-tracer-field-anchor="industry">
-                    <label class="mb-1 block text-sm font-medium text-slate-700">Industry</label>
+                <div data-tracer-employed-field data-tracer-field-anchor="industry" class="{{ $industryGuide ? 'tracer-guide-field' : '' }}"
+                    @if($industryGuide)
+                        data-tracer-guide="{{ $industryGuide }}"
+                        data-tracer-guide-kind="employment"
+                        data-tracer-guide-available="{{ $registrationMissingNote }}"
+                        data-tracer-guide-unavailable="{{ $employmentConditionalNote }}"
+                    @endif
+                >
+                    <label class="mb-1 block text-sm font-medium text-slate-700">Industry @if($industryGuide)<i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i>@endif</label>
                     <span class="tracer-select-wrap">
-                        <select name="industry" class="tracer-select w-full rounded-xl border border-slate-300 px-3 py-2.5 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100">
+                        <select name="industry" @if($industryGuide) aria-description="{{ $industryGuide }}" @endif class="tracer-select w-full rounded-xl border border-slate-300 px-3 py-2.5 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100">
                             <option value="">Select industry</option>
                             @foreach($industryOptions as $industryOption)
                                 <option value="{{ $industryOption }}" {{ $industryValue === $industryOption ? 'selected' : '' }}>
@@ -417,15 +455,12 @@
                             <i class='bx bx-chevron-down text-lg'></i>
                         </span>
                     </span>
-                    @if(blank($industryValue))
-                        <p class="tracer-helper-note"><i class='bx bx-info-circle' aria-hidden="true"></i><span>{{ $employmentTypeValue === 'Unemployed' ? $employmentConditionalNote : $registrationMissingNote }}</span></p>
-                    @endif
                 </div>
 
-                <div data-tracer-field-anchor="job_satisfaction">
-                    <label class="mb-1 block text-sm font-medium text-slate-700">Job Satisfaction</label>
+                <div data-tracer-field-anchor="job_satisfaction" class="{{ $jobSatisfactionGuide ? 'tracer-guide-field' : '' }}" @if($jobSatisfactionGuide) data-tracer-guide="{{ $jobSatisfactionGuide }}" @endif>
+                    <label class="mb-1 block text-sm font-medium text-slate-700">Job Satisfaction @if($jobSatisfactionGuide)<i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i>@endif</label>
                     <span class="tracer-select-wrap">
-                        <select name="job_satisfaction" class="tracer-select w-full rounded-xl border border-slate-300 px-3 py-2.5 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100">
+                        <select name="job_satisfaction" @if($jobSatisfactionGuide) aria-description="{{ $jobSatisfactionGuide }}" @endif class="tracer-select w-full rounded-xl border border-slate-300 px-3 py-2.5 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100">
                             <option value="">Select rating</option>
                             @foreach($jobSatisfactionOptions as $score => $label)
                                 <option value="{{ $score }}" {{ (string) $jobSatisfactionValue === (string) $score ? 'selected' : '' }}>
@@ -437,9 +472,6 @@
                             <i class='bx bx-chevron-down text-lg'></i>
                         </span>
                     </span>
-                    @if(blank($jobSatisfactionValue))
-                        <p class="tracer-helper-note"><i class='bx bx-info-circle' aria-hidden="true"></i><span>{{ $registrationMissingNote }}</span></p>
-                    @endif
                 </div>
                 <div class="flex items-center">
                     <div class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
@@ -451,10 +483,17 @@
                     </div>
                 </div>
 
-                <div id="tracer_education_level_group" class="md:col-span-2">
-                    <label class="mb-1 block text-sm font-medium text-slate-700">Education Level</label>
+                <div id="tracer_education_level_group" class="md:col-span-2 {{ $educationLevelGuide ? 'tracer-guide-field' : '' }}"
+                    @if($educationLevelGuide)
+                        data-tracer-guide="{{ $educationLevelGuide }}"
+                        data-tracer-guide-kind="education"
+                        data-tracer-guide-available="{{ $registrationMissingNote }}"
+                        data-tracer-guide-unavailable="{{ $educationConditionalNote }}"
+                    @endif
+                >
+                    <label class="mb-1 block text-sm font-medium text-slate-700">Education Level @if($educationLevelGuide)<i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i>@endif</label>
                     <span class="tracer-select-wrap">
-                        <select id="tracer_education_level" name="education_level" class="tracer-select w-full rounded-xl border border-slate-300 px-3 py-2.5 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100">
+                        <select id="tracer_education_level" name="education_level" @if($educationLevelGuide) aria-description="{{ $educationLevelGuide }}" @endif class="tracer-select w-full rounded-xl border border-slate-300 px-3 py-2.5 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100">
                             <option value="">Select education level</option>
                             @foreach($educationLevels as $educationLevel)
                                 <option value="{{ $educationLevel }}" {{ $educationLevelValue === $educationLevel ? 'selected' : '' }}>
@@ -466,31 +505,19 @@
                             <i class='bx bx-chevron-down text-lg'></i>
                         </span>
                     </span>
-                    @if(blank($educationLevelValue))
-                        <p class="tracer-helper-note"><i class='bx bx-info-circle' aria-hidden="true"></i><span>{{ $furtherEducationEnabled ? $registrationMissingNote : $educationConditionalNote }}</span></p>
-                    @endif
                 </div>
 
-                <div class="md:col-span-2" data-tracer-field-anchor="skills_used">
-                    <label class="mb-1 block text-sm font-medium text-slate-700">Skills Used in Work</label>
-                    <textarea name="skills_used" rows="3" placeholder="e.g. SQL, reporting, classroom management, project planning" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100">{{ $skillsUsedValue }}</textarea>
-                    @if(blank($skillsUsedValue))
-                        <p class="tracer-helper-note"><i class='bx bx-info-circle' aria-hidden="true"></i><span>{{ $registrationMissingNote }}</span></p>
-                    @endif
+                <div data-tracer-field-anchor="skills_used" class="md:col-span-2 {{ $skillsUsedGuide ? 'tracer-guide-field' : '' }}" @if($skillsUsedGuide) data-tracer-guide="{{ $skillsUsedGuide }}" @endif>
+                    <label class="mb-1 block text-sm font-medium text-slate-700">Skills Used in Work @if($skillsUsedGuide)<i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i>@endif</label>
+                    <textarea name="skills_used" rows="3" placeholder="e.g. SQL, reporting, classroom management, project planning" @if($skillsUsedGuide) aria-description="{{ $skillsUsedGuide }}" @endif class="w-full rounded-xl border border-slate-300 px-3 py-2.5 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100">{{ $skillsUsedValue }}</textarea>
                 </div>
-                <div class="md:col-span-2" data-tracer-field-anchor="challenges_faced">
-                    <label class="mb-1 block text-sm font-medium text-slate-700">Challenges Faced</label>
-                    <textarea name="challenges_faced" rows="3" placeholder="Share job-search or workplace challenges you have faced." class="w-full rounded-xl border border-slate-300 px-3 py-2.5 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100">{{ $challengesFacedValue }}</textarea>
-                    @if(blank($challengesFacedValue))
-                        <p class="tracer-helper-note"><i class='bx bx-info-circle' aria-hidden="true"></i><span>{{ $registrationMissingNote }}</span></p>
-                    @endif
+                <div data-tracer-field-anchor="challenges_faced" class="md:col-span-2 {{ $challengesFacedGuide ? 'tracer-guide-field' : '' }}" @if($challengesFacedGuide) data-tracer-guide="{{ $challengesFacedGuide }}" @endif>
+                    <label class="mb-1 block text-sm font-medium text-slate-700">Challenges Faced @if($challengesFacedGuide)<i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i>@endif</label>
+                    <textarea name="challenges_faced" rows="3" placeholder="Share job-search or workplace challenges you have faced." @if($challengesFacedGuide) aria-description="{{ $challengesFacedGuide }}" @endif class="w-full rounded-xl border border-slate-300 px-3 py-2.5 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100">{{ $challengesFacedValue }}</textarea>
                 </div>
-                <div class="md:col-span-2" data-tracer-field-anchor="recommendations">
-                    <label class="mb-1 block text-sm font-medium text-slate-700">Recommendations</label>
-                    <textarea name="recommendations" rows="3" placeholder="Suggestions that may help the university improve alumni support." class="w-full rounded-xl border border-slate-300 px-3 py-2.5 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100">{{ $recommendationsValue }}</textarea>
-                    @if(blank($recommendationsValue))
-                        <p class="tracer-helper-note"><i class='bx bx-info-circle' aria-hidden="true"></i><span>{{ $registrationMissingNote }}</span></p>
-                    @endif
+                <div data-tracer-field-anchor="recommendations" class="md:col-span-2 {{ $recommendationsGuide ? 'tracer-guide-field' : '' }}" @if($recommendationsGuide) data-tracer-guide="{{ $recommendationsGuide }}" @endif>
+                    <label class="mb-1 block text-sm font-medium text-slate-700">Recommendations @if($recommendationsGuide)<i class='bx bx-info-circle tracer-guide-indicator' aria-hidden="true"></i>@endif</label>
+                    <textarea name="recommendations" rows="3" placeholder="Suggestions that may help the university improve alumni support." @if($recommendationsGuide) aria-description="{{ $recommendationsGuide }}" @endif class="w-full rounded-xl border border-slate-300 px-3 py-2.5 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100">{{ $recommendationsValue }}</textarea>
                 </div>
 
                 <div class="md:col-span-2 rounded-3xl border border-slate-200 bg-slate-50/70 p-5">
@@ -1921,6 +1948,16 @@
 
             const unemployed = employmentTypeSelect.value === 'Unemployed';
 
+            form.querySelectorAll('[data-tracer-guide-kind="employment"]').forEach((field) => {
+                const message = unemployed ? field.dataset.tracerGuideUnavailable : field.dataset.tracerGuideAvailable;
+                const control = field.querySelector('input:not([type="hidden"]), select, textarea');
+
+                if (message) {
+                    field.dataset.tracerGuide = message;
+                    control?.setAttribute('aria-description', message);
+                }
+            });
+
             employedFields.forEach((field) => {
                 field.classList.toggle('opacity-60', unemployed);
                 field.querySelectorAll('input, select, textarea').forEach((input) => {
@@ -1945,6 +1982,17 @@
             educationLevelGroup.classList.toggle('opacity-60', !enabled);
             educationLevelInput.disabled = !enabled;
             educationLevelInput.required = enabled;
+
+            if (educationLevelGroup.dataset.tracerGuideKind === 'education') {
+                const message = enabled
+                    ? educationLevelGroup.dataset.tracerGuideAvailable
+                    : educationLevelGroup.dataset.tracerGuideUnavailable;
+
+                if (message) {
+                    educationLevelGroup.dataset.tracerGuide = message;
+                    educationLevelInput.setAttribute('aria-description', message);
+                }
+            }
 
             if (!enabled) {
                 educationLevelInput.value = '';
