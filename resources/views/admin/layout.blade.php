@@ -160,10 +160,10 @@
             border: 1px solid rgba(255, 255, 255, 0.78);
             border-radius: 1.55rem;
             background:
-                radial-gradient(circle at top right, rgba(200, 154, 45, 0.22), transparent 28%),
-                radial-gradient(circle at bottom left, rgba(20, 87, 38, 0.12), transparent 30%),
-                linear-gradient(135deg, rgba(255, 255, 255, 0.97), rgba(251, 248, 241, 0.93));
-            box-shadow: 0 18px 42px rgba(7, 24, 14, 0.14);
+                radial-gradient(circle at top right, rgba(87, 135, 190, 0.16), transparent 30%),
+                radial-gradient(circle at bottom left, rgba(64, 105, 150, 0.1), transparent 34%),
+                linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(239, 245, 251, 0.96));
+            box-shadow: 0 18px 42px rgba(23, 43, 68, 0.12);
         }
 
         .admin-portal .alumni-topbar::before {
@@ -172,8 +172,8 @@
             inset: 0;
             pointer-events: none;
             background:
-                linear-gradient(120deg, rgba(255, 255, 255, 0.52), transparent 38%),
-                repeating-linear-gradient(90deg, rgba(11, 59, 31, 0.04) 0 1px, transparent 1px 34px);
+                linear-gradient(120deg, rgba(255, 255, 255, 0.64), transparent 38%),
+                repeating-linear-gradient(90deg, rgba(48, 82, 118, 0.035) 0 1px, transparent 1px 34px);
             opacity: 0.42;
         }
 
@@ -185,7 +185,7 @@
             height: 18rem;
             border-radius: 999px;
             pointer-events: none;
-            background: radial-gradient(circle, rgba(200, 154, 45, 0.24), transparent 68%);
+            background: radial-gradient(circle, rgba(87, 135, 190, 0.2), transparent 68%);
         }
 
         .admin-portal .alumni-topbar__shell {
@@ -228,7 +228,7 @@
 
         .admin-portal .alumni-topbar__eyebrow {
             margin: 0;
-            color: #9a6800;
+            color: #466c95;
             letter-spacing: 0.28em;
             font-size: 0.68rem;
             font-weight: 800;
@@ -238,7 +238,7 @@
             margin: 0;
             max-width: 12ch;
             padding-inline-start: 0.08rem;
-            color: var(--alumni-emerald-deep);
+            color: #18344f;
             font-size: clamp(1.85rem, 3vw, 3.2rem);
             line-height: 0.94;
             text-wrap: balance;
@@ -256,11 +256,11 @@
             gap: 0.6rem;
             max-width: 100%;
             padding: 0.62rem 0.85rem;
-            border: 1px solid rgba(11, 59, 31, 0.1);
+            border: 1px solid rgba(48, 82, 118, 0.13);
             border-radius: 999px;
-            background: rgba(255, 255, 255, 0.82);
-            box-shadow: 0 14px 28px rgba(7, 24, 14, 0.08), inset 0 1px rgba(255, 255, 255, 0.75);
-            color: var(--alumni-emerald-deep);
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 10px 20px rgba(23, 43, 68, 0.07), inset 0 1px rgba(255, 255, 255, 0.85);
+            color: #24486c;
             font-size: 0.8rem;
             font-weight: 700;
             line-height: 1.35;
@@ -274,9 +274,9 @@
             width: 1.65rem;
             height: 1.65rem;
             border-radius: 999px;
-            background: linear-gradient(135deg, rgba(20, 87, 38, 0.12), rgba(200, 154, 45, 0.18));
-            box-shadow: inset 0 0 0 1px rgba(11, 59, 31, 0.08);
-            color: var(--alumni-emerald-deep);
+            background: linear-gradient(135deg, rgba(70, 108, 149, 0.13), rgba(130, 163, 198, 0.18));
+            box-shadow: inset 0 0 0 1px rgba(48, 82, 118, 0.08);
+            color: #315b83;
             font-size: 0.88rem;
         }
 
@@ -463,6 +463,11 @@
                 justify-content: flex-start;
                 border-radius: 1rem;
             }
+
+            .admin-portal .alumni-topbar__actions .admin-topbar-notification {
+                width: auto;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -470,23 +475,6 @@
     <div class="portal-flash-overlay fixed right-3 top-3 z-[100] sm:right-6 sm:top-6">
         @include('components.flash-messages')
     </div>
-
-    @if($canAccessAdminNotifications)
-        <div class="alumni-notification-dock admin-notification-dock">
-            <a
-                href="{{ route('admin.announcements') }}"
-                class="alumni-live-bell alumni-notification-dock__bell {{ $announcementBadge ? 'has-unread' : '' }}"
-                aria-label="{{ $announcementBellLabel }}"
-                data-tooltip="Notifications"
-            >
-                <span class="alumni-live-bell__icon">
-                    <i class='bx {{ $announcementBellIcon }} text-2xl'></i>
-                </span>
-                <span class="alumni-live-bell__badge {{ $announcementBadge ? '' : 'hidden' }}">{{ $announcementBadge }}</span>
-                <span class="sr-only">Open notifications</span>
-            </a>
-        </div>
-    @endif
 
     <div id="mobileSidebarOverlay" class="alumni-sidebar-overlay lg:hidden"></div>
 
@@ -611,8 +599,16 @@
                         </div>
                         <div class="alumni-topbar__meta" aria-label="Current admin context">
                             <span class="alumni-topbar__meta-chip">
+                                <i class='bx bx-calendar-star'></i>
+                                <span>{{ now()->format('l, F j, Y') }}</span>
+                            </span>
+                            <span class="alumni-topbar__meta-chip">
                                 <i class='bx bx-shield-quarter'></i>
                                 <span>{{ $adminAccessLabel }}</span>
+                            </span>
+                            <span class="alumni-topbar__meta-chip">
+                                <i class='bx bx-user-circle'></i>
+                                <span>{{ $adminName }}</span>
                             </span>
                             <span class="alumni-topbar__meta-chip">
                                 <i class='bx bx-building-house'></i>
@@ -623,6 +619,20 @@
                     <div class="alumni-topbar__toolbar">
                         @include('components.portal-quick-search', ['items' => $quickSearchItems])
                         <div class="alumni-topbar__actions">
+                            @if($canAccessAdminNotifications)
+                                <a href="{{ route('admin.announcements') }}" class="alumni-topbar-notice admin-topbar-notification" aria-label="{{ $announcementBellLabel }}" title="Notifications">
+                                    <span class="relative inline-flex">
+                                        <i class='bx {{ $announcementBellIcon }} text-lg'></i>
+                                        @if($announcementBadge)
+                                            <span class="alumni-topbar-notice__dot"></span>
+                                        @endif
+                                    </span>
+                                    <span class="hidden xl:inline">Notifications</span>
+                                    @if($announcementBadge)
+                                        <span class="alumni-topbar-notice__count">{{ $announcementBadge }}</span>
+                                    @endif
+                                </a>
+                            @endif
                             @if($isSuperAdminConsole)
                                 <a href="{{ route('super-admin.admin-accounts.index') }}" class="alumni-topbar-notice">
                                     <i class='bx bx-shield-quarter text-lg'></i>

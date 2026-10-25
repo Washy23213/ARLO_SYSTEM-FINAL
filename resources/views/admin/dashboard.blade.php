@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'Admin Overview')
+@section('title', 'Dashboard')
 
 @section('content')
 <div class="space-y-6">

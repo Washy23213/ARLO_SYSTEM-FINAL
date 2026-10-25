@@ -428,6 +428,21 @@
         gap: 0.35rem;
         margin-left: 0;
     }
+
+    .alumni-portal .alumni-primary-nav__quick-search {
+        flex: 0 0 clamp(13rem, 15vw, 16rem);
+        width: auto;
+        order: 1;
+    }
+
+    .alumni-portal .alumni-primary-nav__links {
+        order: 0;
+        flex: 1 1 auto;
+    }
+
+    .alumni-portal .alumni-primary-nav__tools {
+        order: 2;
+    }
 }
 
 @media (max-width: 1023px) {

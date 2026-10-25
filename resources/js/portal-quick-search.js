@@ -1,5 +1,81 @@
 const searchRoots = '[data-portal-quick-search]';
 
+function normalizeSearchText(value) {
+    return value
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLocaleLowerCase()
+        .replace(/[^\p{L}\p{N}]+/gu, ' ')
+        .trim();
+}
+
+function editDistance(left, right, cutoff) {
+    if (Math.abs(left.length - right.length) > cutoff) {
+        return cutoff + 1;
+    }
+
+    let previous = Array.from({ length: right.length + 1 }, (_, index) => index);
+    for (let row = 1; row <= left.length; row += 1) {
+        const current = [row];
+        let rowMinimum = row;
+        for (let column = 1; column <= right.length; column += 1) {
+            current[column] = Math.min(
+                current[column - 1] + 1,
+                previous[column] + 1,
+                previous[column - 1] + (left[row - 1] === right[column - 1] ? 0 : 1),
+            );
+            rowMinimum = Math.min(rowMinimum, current[column]);
+        }
+        if (rowMinimum > cutoff) {
+            return cutoff + 1;
+        }
+        previous = current;
+    }
+
+    return previous[right.length];
+}
+
+function scoreSearchOption(option, queryTerms, normalizedQuery) {
+    const searchableText = normalizeSearchText(option.dataset.searchTerms || option.textContent || '');
+    const label = normalizeSearchText(option.querySelector('strong')?.textContent || '');
+    const searchableWords = [...new Set(searchableText.split(/\s+/).filter(Boolean))];
+    let score = 0;
+
+    for (const queryTerm of queryTerms) {
+        let best = 0;
+        for (const word of searchableWords) {
+            if (word === queryTerm) {
+                best = Math.max(best, 100);
+            } else if (word.startsWith(queryTerm)) {
+                best = Math.max(best, 78);
+            } else if (word.includes(queryTerm)) {
+                best = Math.max(best, 58);
+            } else if (queryTerm.length >= 4) {
+                const distanceLimit = queryTerm.length >= 8 ? 2 : 1;
+                const distance = editDistance(queryTerm, word, distanceLimit);
+                if (distance <= distanceLimit) {
+                    best = Math.max(best, 44 - (distance * 8));
+                }
+            }
+        }
+
+        if (best === 0) {
+            return 0;
+        }
+        score += best;
+    }
+
+    if (label === normalizedQuery) {
+        score += 60;
+    } else if (label.startsWith(normalizedQuery)) {
+        score += 30;
+    } else if (searchableText.includes(normalizedQuery)) {
+        score += 18;
+    }
+
+    return score;
+}
+
 function initPortalQuickSearch() {
     document.querySelectorAll(searchRoots).forEach((root, rootIndex) => {
         if (root.dataset.quickSearchReady === 'true') {
@@ -32,35 +108,39 @@ function initPortalQuickSearch() {
             activeIndex = -1;
         };
 
+        const getVisibleOptions = () => Array.from(results.querySelectorAll('[data-portal-quick-search-option]'))
+            .filter((option) => !option.hidden);
+
         const render = () => {
-            const terms = input.value.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
-            const visibleOptions = [];
+            const normalizedQuery = normalizeSearchText(input.value);
+            const queryTerms = normalizedQuery.split(/\s+/).filter(Boolean);
+            const rankedOptions = queryTerms.length === 0
+                ? []
+                : options
+                    .map((option) => ({ option, score: scoreSearchOption(option, queryTerms, normalizedQuery) }))
+                    .filter((result) => result.score > 0)
+                    .sort((left, right) => right.score - left.score)
+                    .slice(0, 7);
+            const visibleOptions = rankedOptions.map(({ option }) => option);
 
             options.forEach((option) => {
-                const searchableText = (option.dataset.searchTerms || '').toLocaleLowerCase();
-                const matches = terms.length === 0
-                    ? visibleOptions.length < 5
-                    : terms.every((term) => searchableText.includes(term));
-
-                option.hidden = !matches;
+                option.hidden = !visibleOptions.includes(option);
                 option.classList.remove('is-active');
                 option.setAttribute('aria-selected', 'false');
-                if (matches) {
-                    visibleOptions.push(option);
-                }
             });
+            visibleOptions.forEach((option) => results.insertBefore(option, emptyState || null));
 
             activeIndex = -1;
             if (emptyState) {
-                emptyState.hidden = visibleOptions.length > 0;
+                emptyState.hidden = visibleOptions.length > 0 || queryTerms.length === 0;
             }
-            results.hidden = false;
-            input.setAttribute('aria-expanded', 'true');
+            results.hidden = queryTerms.length === 0;
+            input.setAttribute('aria-expanded', results.hidden ? 'false' : 'true');
             input.removeAttribute('aria-activedescendant');
         };
 
         const selectActive = (nextIndex) => {
-            const visibleOptions = options.filter((option) => !option.hidden);
+            const visibleOptions = getVisibleOptions();
             if (visibleOptions.length === 0) {
                 activeIndex = -1;
                 return;
@@ -78,7 +158,7 @@ function initPortalQuickSearch() {
         input.addEventListener('focus', render);
         input.addEventListener('input', render);
         input.addEventListener('keydown', (event) => {
-            const visibleOptions = options.filter((option) => !option.hidden);
+            const visibleOptions = getVisibleOptions();
 
             if (event.key === 'ArrowDown' && !results.hidden) {
                 event.preventDefault();

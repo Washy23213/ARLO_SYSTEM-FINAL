@@ -1,9 +1,23 @@
 .portal-quick-search {
     position: relative;
-    z-index: 80;
-    flex: 0 1 17rem;
-    width: clamp(12rem, 20vw, 18rem);
+    z-index: 90;
+    flex: 0 1 16rem;
+    width: clamp(12rem, 16vw, 16rem);
     min-width: 0;
+}
+
+body.alumni-portal.portal-page {
+    background:
+        radial-gradient(circle at 100% 0, rgba(31, 122, 52, 0.11), transparent 30%),
+        radial-gradient(circle at 0 100%, rgba(11, 59, 31, 0.08), transparent 25%),
+        linear-gradient(180deg, #f5fbf7 0%, #ffffff 42%, #f6faf7 100%);
+}
+
+body.admin-portal.portal-page {
+    background:
+        radial-gradient(circle at 100% 0, rgba(70, 108, 149, 0.14), transparent 30%),
+        radial-gradient(circle at 0 100%, rgba(50, 88, 128, 0.08), transparent 26%),
+        linear-gradient(180deg, #f2f6fb 0%, #ffffff 46%, #f4f7fb 100%);
 }
 
 .portal-quick-search__field {
@@ -66,8 +80,9 @@
     position: absolute;
     top: calc(100% + 0.45rem);
     right: 0;
-    left: 0;
+    left: auto;
     z-index: 100;
+    width: min(25rem, calc(100vw - 2rem));
     max-height: min(26rem, calc(100vh - 7rem));
     overflow-y: auto;
     padding: 0.35rem;
@@ -146,23 +161,54 @@
 }
 
 .alumni-portal .alumni-primary-nav__quick-search {
-    flex: 0 1 auto;
+    flex: 0 1 16rem;
     min-width: 0;
 }
 
 .admin-portal .alumni-topbar__toolbar {
-    gap: 0.75rem;
+    gap: 0.65rem;
     flex-wrap: wrap;
     align-items: center;
 }
 
 .admin-portal .portal-quick-search {
-    width: clamp(13rem, 22vw, 19rem);
+    width: clamp(12rem, 18vw, 16rem);
 }
 
 @media (min-width: 1024px) {
     .alumni-portal .alumni-primary-nav__quick-search {
-        flex: 0 1 15rem;
+        flex: 0 1 16rem;
+    }
+}
+
+@media (min-width: 1024px) and (max-width: 1450px) {
+    .alumni-portal .alumni-primary-nav {
+        flex-wrap: wrap;
+        row-gap: 0.35rem;
+    }
+
+    .alumni-portal .alumni-primary-nav__brand {
+        order: 0;
+    }
+
+    .alumni-portal .alumni-primary-nav__tools {
+        order: 1;
+        margin-left: auto;
+    }
+
+    .alumni-portal .alumni-primary-nav__links {
+        order: 2;
+        flex: 1 0 100%;
+    }
+
+    .alumni-portal .alumni-primary-nav__quick-search {
+        order: 3;
+        flex: 1 0 100%;
+        width: 100%;
+    }
+
+    .alumni-portal .alumni-primary-nav__quick-search .portal-quick-search {
+        width: 100%;
     }
 }
 
@@ -178,7 +224,7 @@
     }
 
     .portal-quick-search__results {
-        right: auto;
+        right: 0;
         width: min(100%, 30rem);
     }
 }
@@ -191,7 +237,7 @@
 
     .admin-portal .portal-quick-search__results {
         right: 0;
-        left: 0;
+        left: auto;
         width: 100%;
     }
 }
