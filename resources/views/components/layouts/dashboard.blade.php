@@ -7,7 +7,6 @@
     $degreeLabel = $currentUser?->degree ?: 'Complete your alumni profile';
     $departmentLabel = $currentUser?->department ?: 'CMU Alumni';
     $classLabel = $currentUser?->year_graduated ? 'Batch ' . $currentUser->year_graduated : 'Alumni';
-    $todayLabel = now()->format('l, F j, Y');
     $sidebarStorageUserKey = substr(sha1((string) ($currentUser?->getAuthIdentifier() ?? 'guest')), 0, 16);
     $notificationBadgeCount = (int) ($sidebarNotificationIndicatorCount ?? 0);
     $notificationBadge = $notificationBadgeCount > 0 ? ($notificationBadgeCount > 99 ? '99+' : (string) $notificationBadgeCount) : null;
@@ -679,16 +678,8 @@
                         </div>
                         <div class="alumni-topbar__meta" aria-label="Current alumni context">
                             <span class="alumni-topbar__meta-chip">
-                                <i class='bx bx-calendar-star'></i>
-                                <span>{{ $todayLabel }}</span>
-                            </span>
-                            <span class="alumni-topbar__meta-chip">
                                 <i class='bx bx-medal'></i>
                                 <span>{{ $classLabel }}</span>
-                            </span>
-                            <span class="alumni-topbar__meta-chip">
-                                <i class='bx bx-building-house'></i>
-                                <span>{{ $departmentLabel }}</span>
                             </span>
                         </div>
                     </div>
