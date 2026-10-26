@@ -10,8 +10,6 @@
     $adminName = $adminName !== '' ? $adminName : 'System Administrator';
     $adminInitials = strtoupper(substr((string) ($currentUser?->firstname ?? 'A'), 0, 1) . substr((string) ($currentUser?->lastname ?? 'D'), 0, 1));
     $adminInitials = $adminInitials !== '' ? $adminInitials : 'AD';
-    $adminAccessLabel = $isSuperAdminConsole ? 'Super Admin full access' : ($currentUser?->roleLabel() ?? 'Administrative access');
-    $adminOfficeLabel = 'Office of the Alumni Relations and Linkages (OARL)';
     $sidebarStorageUserKey = substr(sha1((string) ($currentUser?->getAuthIdentifier() ?? 'guest')), 0, 16);
     $canAccessAdminPermission = function (string $permission) use ($isSuperAdminConsole, $currentAdmin, $currentUser): bool {
         if ($isSuperAdminConsole) {
@@ -596,24 +594,6 @@
                                 <p class="alumni-topbar__eyebrow">{{ $isSuperAdminConsole ? 'CMU Super Admin UI' : 'CMU Admin Workspace' }}</p>
                                 <h2 class="alumni-topbar__title">{!! $pageTitle !!}</h2>
                             </div>
-                        </div>
-                        <div class="alumni-topbar__meta" aria-label="Current admin context">
-                            <span class="alumni-topbar__meta-chip">
-                                <i class='bx bx-calendar-star'></i>
-                                <span>{{ now()->format('l, F j, Y') }}</span>
-                            </span>
-                            <span class="alumni-topbar__meta-chip">
-                                <i class='bx bx-shield-quarter'></i>
-                                <span>{{ $adminAccessLabel }}</span>
-                            </span>
-                            <span class="alumni-topbar__meta-chip">
-                                <i class='bx bx-user-circle'></i>
-                                <span>{{ $adminName }}</span>
-                            </span>
-                            <span class="alumni-topbar__meta-chip">
-                                <i class='bx bx-building-house'></i>
-                                <span>{{ $adminOfficeLabel }}</span>
-                            </span>
                         </div>
                     </div>
                     <div class="alumni-topbar__toolbar">
