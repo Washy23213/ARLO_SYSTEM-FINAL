@@ -12,24 +12,6 @@
         : 0;
 @endphp
 <div class="alumni-jobs-page space-y-6">
-    <section class="alumni-jobs-summary">
-        <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-                <p class="alumni-jobs-summary__kicker">Career board</p>
-                <h2 class="alumni-jobs-summary__title">Job Opportunities</h2>
-            </div>
-            <div class="alumni-jobs-summary__metric">
-                <span class="alumni-jobs-summary__metric-icon">
-                    <i class='bx bx-briefcase-alt-2'></i>
-                </span>
-                <div>
-                    <span class="alumni-jobs-summary__metric-value">{{ number_format($availableJobCount) }}</span>
-                    <span class="alumni-jobs-summary__metric-label">open {{ $availableJobCount === 1 ? 'role' : 'roles' }}</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <section class="alumni-job-board">
         <div class="alumni-job-board__header">
             <div>
