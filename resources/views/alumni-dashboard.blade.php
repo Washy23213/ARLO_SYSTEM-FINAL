@@ -120,36 +120,6 @@
 @endphp
 
 <div class="alumni-overview -mt-2 space-y-4">
-    <section class="surface-card overflow-hidden border border-emerald-950/10 bg-gradient-to-r from-white via-emerald-50/60 to-amber-50/50 p-0">
-        <div class="grid gap-4 p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-            <div>
-                <p class="text-xs font-bold uppercase tracking-[0.2em] text-amber-700">CMU OARL Alumni Portal</p>
-                <h2 class="mt-2 text-3xl font-black tracking-tight text-emerald-950">Welcome back, {{ $user->firstname }}.</h2>
-                <p class="mt-2 text-sm leading-6 text-slate-600">
-                    {{ $user->degree ?: 'Your CMU alumni profile' }}
-                    @if($user->year_graduated)
-                        <span class="px-1 text-slate-400">·</span> Class of {{ $user->year_graduated }}
-                    @endif
-                    @if($user->department)
-                        <span class="px-1 text-slate-400">·</span> {{ $user->department }}
-                    @endif
-                </p>
-                <div class="mt-4 flex flex-wrap gap-2">
-                    <span class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 ring-1 ring-emerald-100">
-                        <i class='bx bx-id-card text-emerald-700'></i> Profile {{ $profilePercent }}% complete
-                    </span>
-                    <span class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 ring-1 ring-emerald-100">
-                        <i class='bx bx-spreadsheet text-emerald-700'></i> Tracer {{ $tracerStatus['label'] ?? 'Not submitted' }}
-                    </span>
-                </div>
-            </div>
-            <a href="{{ route('tracer.index') }}#tracer-form" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-emerald-800 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-300">
-                {{ ($tracerStatus['tone'] ?? 'amber') === 'emerald' ? 'Update Tracer Survey' : 'Continue Tracer Survey' }}
-                <i class='bx bx-right-arrow-alt text-lg'></i>
-            </a>
-        </div>
-    </section>
-
     <div class="alumni-overview-stats grid grid-cols-1 gap-3 md:grid-cols-3">
         <section class="alumni-overview-stat alumni-overview-stat--profile surface-card overflow-hidden border p-4 {{ $profileCardState }}">
             <div class="flex items-start justify-between gap-4">
@@ -191,6 +161,10 @@
             <div class="alumni-overview-stat__pill mt-4 inline-flex rounded-full bg-white/85 px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-black/5">
                 {{ $tracerPillLabel }}
             </div>
+            <a href="{{ route('tracer.index') }}#tracer-form" class="mt-3 inline-flex min-h-9 items-center gap-1 rounded-lg border border-amber-200 bg-white px-3 py-2 text-xs font-bold text-amber-800 transition hover:bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-300">
+                {{ ($tracerStatus['tone'] ?? 'amber') === 'emerald' ? 'Update Tracer Survey' : 'Continue Tracer Survey' }}
+                <i class='bx bx-right-arrow-alt text-base' aria-hidden="true"></i>
+            </a>
         </section>
 
         <section class="alumni-overview-stat alumni-overview-stat--jobs surface-card overflow-hidden border border-slate-200 bg-gradient-to-br from-white via-slate-50/80 to-slate-100/60 p-4 {{ $jobPostsCardState }}">
