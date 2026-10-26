@@ -220,12 +220,15 @@
                 @foreach($profileChecklist as $item => $done)
                     @php($checklistTarget = !$done ? ($checklistTargets[$item] ?? null) : null)
                     @if($checklistTarget)
-                        <a href="{{ $checklistTarget['url'] }}" class="alumni-overview-checklist-item group flex items-center justify-between gap-3 rounded-xl border border-amber-100 bg-amber-50/75 px-3 py-3 transition hover:border-amber-200 hover:bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-300">
+                        <a href="{{ $checklistTarget['url'] }}" class="alumni-overview-checklist-item group flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3 py-3 transition hover:border-amber-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-amber-300">
                             <span class="flex min-w-0 items-center gap-3">
                                 <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-amber-700 ring-1 ring-amber-200"><i class='bx bx-time-five text-lg' aria-hidden="true"></i></span>
                                 <span class="min-w-0">
                                     <span class="block text-sm font-semibold text-amber-950">{{ $item }}</span>
-                                    <span class="mt-0.5 block text-xs text-slate-600">Open {{ $checklistTarget['page'] }}</span>
+                                    <span class="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-xs">
+                                        <span class="font-bold text-amber-700">Incomplete</span>
+                                        <span class="text-slate-500">· Open {{ $checklistTarget['page'] }}</span>
+                                    </span>
                                 </span>
                             </span>
                             <span class="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-amber-800">Update <i class='bx bx-right-arrow-alt text-base' aria-hidden="true"></i></span>
@@ -233,10 +236,10 @@
                     @else
                         <div class="alumni-overview-checklist-item flex items-center justify-between gap-3 rounded-xl border px-3 py-3 {{ $done ? 'border-emerald-100 bg-emerald-50/60' : 'border-slate-200 bg-slate-50' }}">
                             <span class="flex min-w-0 items-center gap-3">
-                                <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white {{ $done ? 'text-emerald-700 ring-1 ring-emerald-200' : 'text-slate-500 ring-1 ring-slate-200' }}"><i class='bx {{ $done ? 'bx-check' : 'bx-time-five' }} text-lg' aria-hidden="true"></i></span>
-                                <span class="text-sm font-medium {{ $done ? 'text-emerald-900' : 'text-slate-700' }}">{{ $item }}</span>
+                                <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white {{ $done ? 'text-emerald-700 ring-1 ring-emerald-200' : 'text-amber-700 ring-1 ring-amber-200' }}"><i class='bx {{ $done ? 'bx-check' : 'bx-time-five' }} text-lg' aria-hidden="true"></i></span>
+                                <span class="text-sm font-medium {{ $done ? 'text-emerald-900' : 'text-amber-950' }}">{{ $item }}</span>
                             </span>
-                            <span class="shrink-0 text-xs font-semibold {{ $done ? 'text-emerald-700' : 'text-slate-600' }}">{{ $done ? 'Complete' : 'Needs update' }}</span>
+                            <span class="shrink-0 text-xs font-semibold {{ $done ? 'text-emerald-700' : 'text-amber-700' }}">{{ $done ? 'Complete' : 'Incomplete' }}</span>
                         </div>
                     @endif
                 @endforeach
@@ -292,10 +295,12 @@
             <a href="{{ route('notifications.index') }}" class="inline-flex items-center gap-1 text-sm font-semibold text-emerald-800 hover:text-emerald-950 focus:outline-none focus:ring-2 focus:ring-emerald-300">View all updates <i class='bx bx-right-arrow-alt text-lg' aria-hidden="true"></i></a>
         </div>
 
-        <div class="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-3">
+        <div class="alumni-dashboard-news-carousel p-4 sm:p-5" data-dashboard-news-carousel role="region" aria-roledescription="carousel" aria-label="Latest news and updates">
+            <div class="alumni-dashboard-news-carousel__viewport">
+                <div class="alumni-dashboard-news-carousel__track">
             @if($dashboardNewsCards->isNotEmpty())
                 @foreach($dashboardNewsCards as $newsCard)
-                    <a href="{{ $newsCard['url'] }}" class="alumni-dashboard-feature-card alumni-dashboard-news-card group overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-300">
+                    <a data-news-carousel-item href="{{ $newsCard['url'] }}" class="alumni-dashboard-feature-card alumni-dashboard-news-card group overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-300">
                         <img src="{{ $newsCard['image'] }}" alt="" class="alumni-dashboard-feature-card__image alumni-dashboard-news-card__image">
                         <span class="block p-4">
                             <span class="flex items-center justify-between gap-2">
@@ -315,8 +320,10 @@
                     </a>
                 @endforeach
             @else
-                <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 px-4 py-5 text-sm text-slate-600 sm:col-span-2 lg:col-span-3">New CMU OARL news and announcements will appear here.</div>
+                <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 px-4 py-5 text-sm text-slate-600">New CMU OARL news and announcements will appear here.</div>
             @endif
+                </div>
+            </div>
         </div>
         @if($dashboardNewsCards->contains(fn ($newsCard) => $newsCard['sample']))
             <p class="px-5 pb-5 text-xs text-slate-500">Sample previews. Official updates appear here when published.</p>

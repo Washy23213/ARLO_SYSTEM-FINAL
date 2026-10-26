@@ -1,12 +1,12 @@
 <div class="portal-quick-search" data-portal-quick-search>
     <label class="portal-quick-search__field">
         <i class="bx bx-search" aria-hidden="true"></i>
-        <span class="sr-only">Search portal pages</span>
+        <span class="sr-only">Search portal pages and settings</span>
         <input
             type="search"
             autocomplete="off"
-            placeholder="Search pages..."
-            aria-label="Search portal pages"
+            placeholder="Search pages or settings..."
+            aria-label="Search portal pages and settings"
             aria-expanded="false"
             aria-controls="portalQuickSearchResults"
             data-portal-quick-search-input
@@ -31,6 +31,6 @@
                 <i class="bx bx-arrow-back portal-quick-search__result-arrow" aria-hidden="true"></i>
             </a>
         @endforeach
-        <p class="portal-quick-search__empty" hidden data-portal-quick-search-empty>No matching page. Try a different keyword.</p>
+        <p class="portal-quick-search__empty" hidden data-portal-quick-search-empty>No matching destination. Try a page, profile field, or setting.</p>
     </div>
 </div>

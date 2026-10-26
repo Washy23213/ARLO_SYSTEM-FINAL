@@ -1,8 +1,8 @@
 .portal-quick-search {
     position: relative;
     z-index: 90;
-    flex: 0 1 16rem;
-    width: clamp(12rem, 16vw, 16rem);
+    flex: 0 1 14rem;
+    width: clamp(11rem, 14vw, 15rem);
     min-width: 0;
 }
 
@@ -161,8 +161,14 @@ body.admin-portal.portal-page {
 }
 
 .alumni-portal .alumni-primary-nav__quick-search {
-    flex: 0 1 16rem;
+    flex: 0 1 14rem;
     min-width: 0;
+}
+
+.alumni-portal .alumni-primary-nav__tools,
+.admin-portal .alumni-topbar__actions {
+    position: relative;
+    z-index: 91;
 }
 
 .admin-portal .alumni-topbar__toolbar {
@@ -177,7 +183,7 @@ body.admin-portal.portal-page {
 
 @media (min-width: 1024px) {
     .alumni-portal .alumni-primary-nav__quick-search {
-        flex: 0 1 16rem;
+        flex: 0 1 clamp(11rem, 14vw, 15rem);
     }
 }
 

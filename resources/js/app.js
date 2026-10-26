@@ -3,6 +3,7 @@ import 'boxicons/css/boxicons.min.css';
 import './login';
 import './registration';
 import './portal-quick-search';
+import './dashboard-news-carousel';
 import Chart from 'chart.js/auto';
 
 window.Chart = Chart;

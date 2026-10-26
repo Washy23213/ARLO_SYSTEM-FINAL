@@ -1523,29 +1523,54 @@ body.alumni-dashboard-page .alumni-job-opportunities-section {
     background: #e8f1eb;
 }
 
-.alumni-portal .alumni-dashboard-news-card__image {
-    transform-origin: center;
-    animation: alumniNewsImageDrift 18s ease-in-out infinite alternate;
+.alumni-portal .alumni-dashboard-news-carousel__track {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+}
+
+.alumni-portal .alumni-dashboard-news-carousel.is-animated .alumni-dashboard-news-carousel__viewport {
+    overflow: hidden;
+}
+
+.alumni-portal .alumni-dashboard-news-carousel.is-animated .alumni-dashboard-news-carousel__track {
+    display: flex;
+    width: max-content;
+    animation: alumniNewsSlide var(--news-slide-duration, 32s) linear infinite;
     will-change: transform;
 }
 
-.alumni-portal .alumni-dashboard-news-card:hover .alumni-dashboard-news-card__image,
-.alumni-portal .alumni-dashboard-news-card:focus-visible .alumni-dashboard-news-card__image {
+.alumni-portal .alumni-dashboard-news-carousel.is-animated .alumni-dashboard-news-carousel__track > * {
+    flex: 0 0 var(--news-card-width);
+    width: var(--news-card-width);
+}
+
+.alumni-portal .alumni-dashboard-news-carousel.is-animated:hover .alumni-dashboard-news-carousel__track,
+.alumni-portal .alumni-dashboard-news-carousel.is-animated:focus-within .alumni-dashboard-news-carousel__track {
     animation-play-state: paused;
 }
 
-@keyframes alumniNewsImageDrift {
-    from {
-        transform: scale(1.04) translate3d(0, 0, 0);
-    }
-
+@keyframes alumniNewsSlide {
     to {
-        transform: scale(1.12) translate3d(-1.2%, 0.5%, 0);
+        transform: translate3d(var(--news-slide-end), 0, 0);
+    }
+}
+
+@media (min-width: 640px) {
+    .alumni-portal .alumni-dashboard-news-carousel__track {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .alumni-portal .alumni-dashboard-news-carousel__track {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .alumni-portal .alumni-dashboard-news-card__image {
+
+    .alumni-portal .alumni-dashboard-news-carousel.is-animated .alumni-dashboard-news-carousel__track {
         animation: none;
         transform: none;
         will-change: auto;

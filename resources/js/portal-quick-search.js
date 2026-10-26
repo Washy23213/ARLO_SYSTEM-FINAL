@@ -1,11 +1,12 @@
 const searchRoots = '[data-portal-quick-search]';
+const searchStopWords = new Set(['a', 'an', 'and', 'can', 'do', 'does', 'find', 'for', 'get', 'go', 'how', 'i', 'in', 'me', 'my', 'of', 'open', 'please', 'show', 'the', 'to', 'where']);
 
 function normalizeSearchText(value) {
     return value
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
         .toLocaleLowerCase()
-        .replace(/[^\p{L}\p{N}]+/gu, ' ')
+        .replace(/[^a-z0-9]+/g, ' ')
         .trim();
 }
 
@@ -40,6 +41,7 @@ function scoreSearchOption(option, queryTerms, normalizedQuery) {
     const label = normalizeSearchText(option.querySelector('strong')?.textContent || '');
     const searchableWords = [...new Set(searchableText.split(/\s+/).filter(Boolean))];
     let score = 0;
+    let matchedTerms = 0;
 
     for (const queryTerm of queryTerms) {
         let best = 0;
@@ -59,10 +61,14 @@ function scoreSearchOption(option, queryTerms, normalizedQuery) {
             }
         }
 
-        if (best === 0) {
-            return 0;
+        if (best > 0) {
+            matchedTerms += 1;
+            score += best;
         }
-        score += best;
+    }
+
+    if (matchedTerms === 0) {
+        return 0;
     }
 
     if (label === normalizedQuery) {
@@ -73,7 +79,8 @@ function scoreSearchOption(option, queryTerms, normalizedQuery) {
         score += 18;
     }
 
-    return score;
+    // Keep useful suggestions visible when people include extra words in a search.
+    return Math.max(1, score - ((queryTerms.length - matchedTerms) * 24));
 }
 
 function initPortalQuickSearch() {
@@ -113,7 +120,7 @@ function initPortalQuickSearch() {
 
         const render = () => {
             const normalizedQuery = normalizeSearchText(input.value);
-            const queryTerms = normalizedQuery.split(/\s+/).filter(Boolean);
+            const queryTerms = normalizedQuery.split(/\s+/).filter((term) => term && !searchStopWords.has(term));
             const rankedOptions = queryTerms.length === 0
                 ? []
                 : options
@@ -157,6 +164,7 @@ function initPortalQuickSearch() {
 
         input.addEventListener('focus', render);
         input.addEventListener('input', render);
+        input.addEventListener('search', render);
         input.addEventListener('keydown', (event) => {
             const visibleOptions = getVisibleOptions();
 
@@ -173,25 +181,6 @@ function initPortalQuickSearch() {
             } else if (event.key === 'Escape') {
                 close();
             }
-        });
-
-        root.addEventListener('click', (event) => {
-            const option = event.target instanceof Element
-                ? event.target.closest('[data-portal-quick-search-option]')
-                : null;
-
-            if (!(option instanceof HTMLAnchorElement)) {
-                return;
-            }
-
-            if (event instanceof MouseEvent && (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) {
-                close();
-                return;
-            }
-
-            event.preventDefault();
-            event.stopPropagation();
-            window.location.assign(option.href);
         });
 
         document.addEventListener('pointerdown', (event) => {

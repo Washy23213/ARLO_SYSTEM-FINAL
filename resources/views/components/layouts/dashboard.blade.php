@@ -78,17 +78,68 @@
     $quickSearchItems = array_map(static function (array $item): array {
         $aliases = match ($item['label']) {
             'Dashboard' => 'home overview recent activity',
-            'Profile' => 'personal information contact phone email birthdate college degree education address',
-            'Tracer' => 'tracer survey employment work company salary graduate employment education',
+            'Profile' => 'personal information contact phone mobile email birthdate college degree education address graduation year skills location',
+            'Tracer' => 'tracer survey employment work company salary graduate employment education training job satisfaction',
             'Job Opportunities' => 'job board jobs openings career employer posting',
             'Feedback' => 'comments suggestions teaching facilities experience survey',
-            'Settings' => 'account security password devices sessions privacy delete account',
+            'Settings' => 'account security password devices sessions privacy delete account email preferences notifications',
             'Help Desk' => 'help support guide frequently asked questions',
             default => '',
         };
         $item['terms'] = trim(($item['description'] ?? '').' '.$item['label'].' '.$aliases);
         return $item;
     }, $navigationItems);
+    $quickSearchItems = array_merge($quickSearchItems, [
+        [
+            'label' => 'Phone number',
+            'description' => 'Update your profile contact number',
+            'route' => route('profile', ['from' => 'overview', 'focus_field' => 'phone']) . '#profile-phone-field',
+            'icon' => 'bx-phone',
+            'terms' => 'profile phone mobile contact number',
+        ],
+        [
+            'label' => 'College',
+            'description' => 'Update your college or department',
+            'route' => route('profile', ['from' => 'overview', 'focus_field' => 'department']) . '#profile-department-field',
+            'icon' => 'bx-building-house',
+            'terms' => 'profile college department school',
+        ],
+        [
+            'label' => 'Degree',
+            'description' => 'Update your degree',
+            'route' => route('profile', ['from' => 'overview', 'focus_field' => 'degree']) . '#profile-degree-field',
+            'icon' => 'bx-book-open',
+            'terms' => 'profile degree course program major',
+        ],
+        [
+            'label' => 'Graduation year',
+            'description' => 'Update your batch year',
+            'route' => route('profile', ['from' => 'overview', 'focus_field' => 'year_graduated']) . '#profile-year-graduated-field',
+            'icon' => 'bx-calendar',
+            'terms' => 'profile graduation year batch class graduated',
+        ],
+        [
+            'label' => 'Location',
+            'description' => 'Update your city or address',
+            'route' => route('profile', ['from' => 'overview', 'focus_field' => 'location']) . '#profile-location-field',
+            'icon' => 'bx-map',
+            'terms' => 'profile location address city region',
+        ],
+        [
+            'label' => 'Skills',
+            'description' => 'Update your skills and certifications',
+            'route' => route('profile', ['from' => 'overview', 'focus_field' => 'skills']) . '#profile-skills-field',
+            'icon' => 'bx-badge-check',
+            'terms' => 'profile skills certification qualification',
+        ],
+        [
+            'label' => 'Employment details',
+            'description' => 'Update your tracer employment information',
+            'route' => route('tracer.index', ['from' => 'overview', 'focus_field' => 'employment_summary']) . '#tracer-form',
+            'icon' => 'bx-briefcase-alt-2',
+            'terms' => 'tracer employment job work company salary position employer',
+        ],
+    ]);
     array_unshift($quickSearchItems, [
         'label' => 'Notifications',
         'description' => 'Updates and unread notices',
