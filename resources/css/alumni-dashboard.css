@@ -1321,6 +1321,20 @@ body.alumni-dashboard-page .alumni-job-opportunities-section {
     }
 }
 
+.alumni-portal .alumni-overview-checklist-item.is-incomplete {
+    border-color: rgba(217, 119, 6, 0.38) !important;
+}
+
+.alumni-portal .alumni-overview-checklist-item.is-incomplete .alumni-overview-checklist-item__title {
+    color: #92400e !important;
+}
+
+.alumni-portal .alumni-overview-checklist-item.is-incomplete .alumni-overview-checklist-item__status,
+.alumni-portal .alumni-overview-checklist-item.is-incomplete .alumni-overview-checklist-item__icon,
+.alumni-portal .alumni-overview-checklist-item.is-incomplete .alumni-overview-checklist-item__action {
+    color: #b45309 !important;
+}
+
 @media (max-width: 767px) {
     .alumni-portal .alumni-notification-dock {
         top: 0.75rem;

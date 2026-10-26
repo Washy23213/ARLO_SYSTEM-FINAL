@@ -220,26 +220,26 @@
                 @foreach($profileChecklist as $item => $done)
                     @php($checklistTarget = !$done ? ($checklistTargets[$item] ?? null) : null)
                     @if($checklistTarget)
-                        <a href="{{ $checklistTarget['url'] }}" class="alumni-overview-checklist-item group flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3 py-3 transition hover:border-amber-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-amber-300">
+                        <a href="{{ $checklistTarget['url'] }}" class="alumni-overview-checklist-item is-incomplete group flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3 py-3 transition hover:border-amber-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-amber-300">
                             <span class="flex min-w-0 items-center gap-3">
-                                <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-amber-700 ring-1 ring-amber-200"><i class='bx bx-time-five text-lg' aria-hidden="true"></i></span>
+                                <span class="alumni-overview-checklist-item__icon inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-amber-700 ring-1 ring-amber-200"><i class='bx bx-time-five text-lg' aria-hidden="true"></i></span>
                                 <span class="min-w-0">
-                                    <span class="block text-sm font-semibold text-amber-950">{{ $item }}</span>
+                                    <span class="alumni-overview-checklist-item__title block text-sm font-semibold text-amber-950">{{ $item }}</span>
                                     <span class="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-xs">
-                                        <span class="font-bold text-amber-700">Incomplete</span>
+                                        <span class="alumni-overview-checklist-item__status font-bold text-amber-700">Incomplete</span>
                                         <span class="text-slate-500">· Open {{ $checklistTarget['page'] }}</span>
                                     </span>
                                 </span>
                             </span>
-                            <span class="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-amber-800">Update <i class='bx bx-right-arrow-alt text-base' aria-hidden="true"></i></span>
+                            <span class="alumni-overview-checklist-item__action inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-amber-800">Update <i class='bx bx-right-arrow-alt text-base' aria-hidden="true"></i></span>
                         </a>
                     @else
-                        <div class="alumni-overview-checklist-item flex items-center justify-between gap-3 rounded-xl border px-3 py-3 {{ $done ? 'border-emerald-100 bg-emerald-50/60' : 'border-slate-200 bg-slate-50' }}">
+                        <div class="alumni-overview-checklist-item {{ $done ? 'is-complete' : 'is-incomplete' }} flex items-center justify-between gap-3 rounded-xl border px-3 py-3 {{ $done ? 'border-emerald-100 bg-emerald-50/60' : 'border-slate-200 bg-white' }}">
                             <span class="flex min-w-0 items-center gap-3">
-                                <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white {{ $done ? 'text-emerald-700 ring-1 ring-emerald-200' : 'text-amber-700 ring-1 ring-amber-200' }}"><i class='bx {{ $done ? 'bx-check' : 'bx-time-five' }} text-lg' aria-hidden="true"></i></span>
-                                <span class="text-sm font-medium {{ $done ? 'text-emerald-900' : 'text-amber-950' }}">{{ $item }}</span>
+                                <span class="alumni-overview-checklist-item__icon inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white {{ $done ? 'text-emerald-700 ring-1 ring-emerald-200' : 'text-amber-700 ring-1 ring-amber-200' }}"><i class='bx {{ $done ? 'bx-check' : 'bx-time-five' }} text-lg' aria-hidden="true"></i></span>
+                                <span class="alumni-overview-checklist-item__title text-sm font-medium {{ $done ? 'text-emerald-900' : 'text-amber-950' }}">{{ $item }}</span>
                             </span>
-                            <span class="shrink-0 text-xs font-semibold {{ $done ? 'text-emerald-700' : 'text-amber-700' }}">{{ $done ? 'Complete' : 'Incomplete' }}</span>
+                            <span class="alumni-overview-checklist-item__status shrink-0 text-xs font-semibold {{ $done ? 'text-emerald-700' : 'text-amber-700' }}">{{ $done ? 'Complete' : 'Incomplete' }}</span>
                         </div>
                     @endif
                 @endforeach

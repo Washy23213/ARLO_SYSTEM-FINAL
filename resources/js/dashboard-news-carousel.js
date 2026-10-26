@@ -1,6 +1,19 @@
 const carouselSelector = '[data-dashboard-news-carousel]';
+const carouselCleanups = new Map();
+
+function cleanupDetachedCarousels() {
+    carouselCleanups.forEach((cleanup, carousel) => {
+        if (carousel.isConnected) {
+            return;
+        }
+
+        cleanup();
+        carouselCleanups.delete(carousel);
+    });
+}
 
 function initializeDashboardNewsCarousels() {
+    cleanupDetachedCarousels();
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     document.querySelectorAll(carouselSelector).forEach((carousel) => {
@@ -81,19 +94,36 @@ function initializeDashboardNewsCarousels() {
             track.style.setProperty('--news-slide-duration', `${Math.max(22, slideDistance / 48)}s`);
         };
 
+        const resizeHandler = () => update();
         const motionPreferenceChanged = () => update();
-        reduceMotion.addEventListener?.('change', motionPreferenceChanged);
+        if (reduceMotion.addEventListener) {
+            reduceMotion.addEventListener('change', motionPreferenceChanged);
+        } else {
+            reduceMotion.addListener?.(motionPreferenceChanged);
+        }
 
         if ('ResizeObserver' in window) {
             resizeObserver = new ResizeObserver(update);
             resizeObserver.observe(viewport);
         } else {
-            window.addEventListener('resize', update, { passive: true });
+            window.addEventListener('resize', resizeHandler, { passive: true });
         }
+
+        carouselCleanups.set(carousel, () => {
+            resizeObserver?.disconnect();
+            window.removeEventListener('resize', resizeHandler);
+            if (reduceMotion.removeEventListener) {
+                reduceMotion.removeEventListener('change', motionPreferenceChanged);
+            } else {
+                reduceMotion.removeListener?.(motionPreferenceChanged);
+            }
+        });
 
         update();
     });
 }
+
+document.addEventListener('alumni:page-ready', initializeDashboardNewsCarousels);
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeDashboardNewsCarousels, { once: true });

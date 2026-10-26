@@ -1909,6 +1909,13 @@ async function navigatePortalShell(targetUrl, options = {}) {
             return;
         }
 
+        if (mode === 'alumni') {
+            document.body.classList.toggle(
+                'alumni-dashboard-page',
+                nextDocument.body.classList.contains('alumni-dashboard-page'),
+            );
+        }
+
         if (typeof window.__portalPageCleanup === 'function') {
             try {
                 window.__portalPageCleanup();
