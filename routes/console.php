@@ -364,7 +364,7 @@ Artisan::command('mail:test {email}', function (string $email) {
     return Command::SUCCESS;
 })->purpose('Send a test email using the configured mailer');
 
-Artisan::command('demo:accounts {--reset-admin-password : Generate a new temporary password for the demo admin}', function () {
+Artisan::command('demo:accounts {--reset-admin-password : Set the demo admin password to "password" and rename the account to Washy}', function () {
     if (! app()->environment('production')) {
         $this->error('This command only creates demo accounts in the production environment.');
 
@@ -386,9 +386,12 @@ Artisan::command('demo:accounts {--reset-admin-password : Generate a new tempora
 
         if ($user !== null) {
             if ($number === 1) {
-                $user->forceFill(['password' => $password])->save();
+                $user->forceFill([
+                    'firstname' => 'Washy',
+                    'password' => $password,
+                ])->save();
                 $accounts[] = ['Alumni', $email, $password];
-                $this->info("Reset the demo password for {$email}.");
+                $this->info("Updated the demo alumni name and password for {$email}.");
             } else {
                 $this->warn("Skipped {$email}; that account already exists.");
             }
@@ -397,7 +400,7 @@ Artisan::command('demo:accounts {--reset-admin-password : Generate a new tempora
         }
 
         User::query()->create([
-            'firstname' => 'Demo',
+            'firstname' => 'Washy',
             'lastname' => 'Alumni '.$number,
             'email' => $email,
             'email_verified_at' => now(),
@@ -416,26 +419,29 @@ Artisan::command('demo:accounts {--reset-admin-password : Generate a new tempora
 
     if ($adminExists) {
         if ($this->option('reset-admin-password')) {
-            $adminPassword = Str::random(24);
+            $adminPassword = 'password';
 
             Admin::query()
                 ->whereRaw('LOWER(email) = ?', [$adminEmail])
                 ->firstOrFail()
-                ->forceFill(['password' => $adminPassword])
+                ->forceFill([
+                    'firstname' => 'Washy',
+                    'password' => $adminPassword,
+                ])
                 ->save();
 
             $accounts[] = ['Administrator', $adminEmail, $adminPassword];
-            $this->info("Generated a new temporary password for {$adminEmail}.");
+            $this->info("Set the demo admin name and password for {$adminEmail}.");
         } else {
-            $this->warn("Skipped {$adminEmail}; use --reset-admin-password to generate a new temporary password.");
+            $this->warn("Skipped {$adminEmail}; use --reset-admin-password to set the demo password to 'password' and rename the account to Washy.");
         }
     } elseif ($emailUsedByOtherAccount) {
         $this->error("Cannot create {$adminEmail}; another account already uses that email.");
     } else {
-        $adminPassword = Str::random(24);
+        $adminPassword = 'password';
 
         Admin::query()->create([
-            'firstname' => 'Demo',
+            'firstname' => 'Washy',
             'lastname' => 'Administrator',
             'email' => $adminEmail,
             'password' => $adminPassword,
@@ -454,7 +460,7 @@ Artisan::command('demo:accounts {--reset-admin-password : Generate a new tempora
 
     $this->newLine();
     $this->table(['Account', 'Email', 'Password'], $accounts);
-    $this->warn('The demo01 password is reset to "password" each time. The admin password is shown when the account is created or explicitly reset. Save it before leaving the shell.');
+    $this->warn('Demo preview accounts use the password "password". Demo accounts sign in using the email addresses shown above.');
 
     return Command::SUCCESS;
 })->purpose('Create demo alumni and admin preview accounts in production');
